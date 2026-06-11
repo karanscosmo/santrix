@@ -59,7 +59,7 @@ export default function SignupPage() {
       <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
 
       {/* Left Column: Product pitch & Trust indicators */}
-      <div className="hidden md:flex md:w-1/2 bg-[#0a0a0f] border-r border-white/5 flex-col justify-between p-12 relative z-10 overflow-hidden">
+      <div className="hidden md:flex md:flex-1 md:w-1/2 bg-[#0a0a0f] border-r border-white/5 flex-col justify-between p-12 relative z-10 overflow-hidden shrink-0">
         {/* Animated shader background */}
         <div className="absolute inset-0 opacity-40 pointer-events-none">
           <WebGLBackground />
@@ -117,7 +117,7 @@ export default function SignupPage() {
       </div>
 
       {/* Right Column: Sign Up Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
+      <div className="w-full md:flex-1 md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10 shrink-0">
         <div className="w-full max-w-[420px] glass-panel p-8 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] relative flex flex-col space-y-5">
           <div className="flex flex-col items-center text-center">
             {/* Small responsive logo for mobile */}
