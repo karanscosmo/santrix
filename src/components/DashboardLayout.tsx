@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSecurity } from "@/context/SecurityContext";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import CommandPalette from "./CommandPalette";
@@ -8,6 +10,15 @@ import Watermark from "./Watermark";
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const { isAuthenticated } = useSecurity();
+  const router = useRouter();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, router]);
 
   // Global hotkey listener: Cmd+K / Ctrl+K
   useEffect(() => {
@@ -23,6 +34,15 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
   const openPalette = () => setIsPaletteOpen(true);
   const closePalette = () => setIsPaletteOpen(false);
+
+  // Avoid rendering anything while checking authentication
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex text-on-surface bg-[#050505]">

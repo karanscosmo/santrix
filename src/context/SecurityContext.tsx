@@ -6,6 +6,10 @@ import DOMPurify from "dompurify";
 
 interface SecurityContextProps {
   currentUser: User;
+  isAuthenticated: boolean;
+  login: (email: string, password?: string) => Promise<boolean>;
+  signup: (name: string, email: string, org: string, password?: string) => Promise<boolean>;
+  logout: () => void;
   setRole: (role: UserRole) => void;
   auditLogs: AuditLogEntry[];
   addAuditLog: (action: string, details: string, status?: "SUCCESS" | "FAILED") => void;
@@ -25,7 +29,24 @@ const defaultUser: User = {
 const SecurityContext = createContext<SecurityContextProps | undefined>(undefined);
 
 export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User>(defaultUser);
+  const [currentUser, setCurrentUser] = useState<User>(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("sanktrix_user");
+      if (storedUser) {
+        try {
+          return JSON.parse(storedUser);
+        } catch (e) {}
+      }
+    }
+    return defaultUser;
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const storedAuth = localStorage.getItem("sanktrix_auth");
+      return storedAuth !== "false";
+    }
+    return true;
+  });
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>(() => [
     {
       id: "evt_001",
@@ -60,6 +81,91 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return () => clearInterval(timer);
   }, []);
 
+  const login = async (email: string, password?: string) => {
+    // Simulate delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const name = email.split("@")[0];
+    const formattedName = name.charAt(0).toUpperCase() + name.slice(1);
+    
+    const loggedInUser: User = {
+      id: `usr_${Math.floor(Math.random() * 9000 + 1000)}`,
+      name: email === defaultUser.email ? defaultUser.name : `${formattedName} (Executive)`,
+      email: email,
+      role: email === defaultUser.email ? "Admin" : "Executive",
+      avatarUrl: defaultUser.avatarUrl
+    };
+    
+    setCurrentUser(loggedInUser);
+    setIsAuthenticated(true);
+    localStorage.setItem("sanktrix_auth", "true");
+    localStorage.setItem("sanktrix_user", JSON.stringify(loggedInUser));
+    
+    const newEntry: AuditLogEntry = {
+      id: `evt_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      userId: loggedInUser.id,
+      userEmail: loggedInUser.email,
+      role: loggedInUser.role,
+      action: "system.login",
+      details: `User successfully authenticated into Sanktrix OS Command Center (${loggedInUser.role})`,
+      status: "SUCCESS",
+      ipAddress: "192.168.1.100"
+    };
+    setAuditLogs(prev => [newEntry, ...prev]);
+    return true;
+  };
+
+  const signup = async (name: string, email: string, org: string, password?: string) => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const newUser: User = {
+      id: `usr_${Math.floor(Math.random() * 9000 + 1000)}`,
+      name: name,
+      email: email,
+      role: "Executive",
+      avatarUrl: defaultUser.avatarUrl
+    };
+    
+    setCurrentUser(newUser);
+    setIsAuthenticated(true);
+    localStorage.setItem("sanktrix_auth", "true");
+    localStorage.setItem("sanktrix_user", JSON.stringify(newUser));
+    
+    const newEntry: AuditLogEntry = {
+      id: `evt_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      userId: newUser.id,
+      userEmail: newUser.email,
+      role: newUser.role,
+      action: "system.signup",
+      details: `New user registered and authenticated: ${name} (${org})`,
+      status: "SUCCESS",
+      ipAddress: "192.168.1.100"
+    };
+    setAuditLogs(prev => [newEntry, ...prev]);
+    return true;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    localStorage.setItem("sanktrix_auth", "false");
+    localStorage.removeItem("sanktrix_user");
+    
+    const newEntry: AuditLogEntry = {
+      id: `evt_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      userId: currentUser.id,
+      userEmail: currentUser.email,
+      role: currentUser.role,
+      action: "system.logout",
+      details: "User successfully signed out from Sanktrix OS",
+      status: "SUCCESS",
+      ipAddress: "192.168.1.100"
+    };
+    setAuditLogs(prev => [newEntry, ...prev]);
+  };
+
   const setRole = (role: UserRole) => {
     setCurrentUser(prev => {
       const updated = { ...prev, role };
@@ -78,16 +184,14 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       action,
       details,
       status,
-      ipAddress: "192.168.1.100" // Mock client IP
+      ipAddress: "192.168.1.100"
     };
     setAuditLogs(prev => [newEntry, ...prev]);
   };
 
-  // Enforce Action Restrictions (RBAC Policy)
   const checkPermission = (action: string): boolean => {
     const role = currentUser.role;
 
-    // View-only actions
     if (action.startsWith("read:") || action.startsWith("navigation:")) {
       return true;
     }
@@ -95,12 +199,10 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (role === "Admin") return true;
 
     if (role === "Executive") {
-      // Executive can run simulations and view/export boards, but not change system configurations or API keys
       return !action.startsWith("admin:") && !action.startsWith("config:write");
     }
 
     if (role === "Analyst") {
-      // Analyst can trigger simulations, run models, write to notebooks, but cannot execute boardroom trades or exports
       return (
         action.startsWith("simulation:run") ||
         action.startsWith("model:run") ||
@@ -110,14 +212,12 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
 
     if (role === "Viewer") {
-      // Viewer is read-only
       return false;
     }
 
     return false;
   };
 
-  // Client rate limiter: maximum 10 operations per minute
   const rateLimitCheck = (): boolean => {
     const maxReq = parseInt(process.env.NEXT_PUBLIC_RATE_LIMIT_MAX_REQUESTS || "10", 10);
     if (rateLimitCounter >= maxReq) {
@@ -128,7 +228,6 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return true;
   };
 
-  // XSS protection input sanitization wrapper
   const sanitizeInput = (input: string): string => {
     return DOMPurify.sanitize(input);
   };
@@ -137,6 +236,10 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <SecurityContext.Provider
       value={{
         currentUser,
+        isAuthenticated,
+        login,
+        signup,
+        logout,
         setRole,
         auditLogs,
         addAuditLog,

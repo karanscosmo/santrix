@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSecurity } from "@/context/SecurityContext";
 
 interface SidebarProps {
@@ -11,7 +11,13 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
   const pathname = usePathname();
-  const { currentUser } = useSecurity();
+  const router = useRouter();
+  const { currentUser, logout } = useSecurity();
+
+  const handleLogout = () => {
+    logout();
+    router.push("/logout");
+  };
 
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: "dashboard" },
@@ -34,23 +40,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
 
   return (
     <nav className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-white/5 bg-[#10131b] py-6 px-4 z-50">
-      {/* Brand logo section with floating and premium shadow glow */}
       <div className="mb-8">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
-          <div className="relative w-10 h-10 rounded-lg overflow-hidden border border-primary/20 shadow-[0_0_15px_rgba(86,141,255,0.15)] group-hover:scale-105 group-hover:border-primary/40 transition-all duration-300 animate-pulse-slow">
+        <Link href="/dashboard" className="flex items-center group">
+          <div className="relative w-full h-12 overflow-hidden border border-white/5 rounded-xl bg-black/40 shadow-[0_0_15px_rgba(86,141,255,0.05)] hover:border-primary/20 transition-all duration-300">
             <img
               src="/Santrix_logo.jpeg"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain filter brightness-110 hover:brightness-125 transition-all duration-300"
               alt="Sanktrix Logo"
             />
-          </div>
-          <div>
-            <h1 className="font-display text-[18px] font-bold text-white tracking-tight uppercase leading-none group-hover:text-primary transition-colors duration-300">
-              SANKTRIX
-            </h1>
-            <p className="text-[9px] text-[#4edea3] font-mono uppercase tracking-widest mt-1">
-              Computational OS
-            </p>
           </div>
         </Link>
       </div>
@@ -111,6 +108,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
           <span>ROLE: <span className="text-tertiary font-bold">{currentUser.role.toUpperCase()}</span></span>
           <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3] animate-pulse"></span>
         </div>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs text-[#ffb4ab] hover:text-white hover:bg-red-950/20 transition-all cursor-pointer border border-transparent hover:border-red-900/30"
+        >
+          <span className="material-symbols-outlined text-[18px]">logout</span>
+          <span className="font-sans tracking-wider uppercase font-semibold text-left">
+            Sign Out
+          </span>
+        </button>
       </div>
     </nav>
   );
