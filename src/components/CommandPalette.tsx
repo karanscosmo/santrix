@@ -168,11 +168,11 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
   return (
     <div
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="fixed inset-0 z-[100] bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-md"
+      className="fixed inset-0 z-[100] bg-[#050505]/80 backdrop-blur-md flex items-center justify-center p-4"
     >
-      <div className="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+      <div className="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.2)] flex flex-col border border-primary/20">
         {/* Search Field */}
-        <div className="p-md border-b border-outline-variant/50 flex items-center gap-md bg-[#090b10]">
+        <div className="p-4 border-b border-white/5 flex items-center gap-3 bg-[#090b10]">
           <span className="material-symbols-outlined text-primary text-xl">terminal</span>
           <input
             ref={inputRef}
@@ -180,40 +180,40 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
             placeholder="Type a command or search modules... (e.g. /simulate, /forecast)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 text-sm focus:outline-none focus:ring-0 outline-none"
+            className="flex-1 bg-transparent border-none text-white placeholder-on-surface-variant/50 text-sm focus:outline-none focus:ring-0 outline-none"
           />
-          <span className="text-[10px] bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono">
+          <span className="text-[10px] bg-white/5 border border-white/10 px-2 py-0.5 rounded text-on-surface-variant font-mono">
             ESC
           </span>
         </div>
 
         {/* Command Search Results */}
-        <div className="max-h-[350px] overflow-y-auto p-sm space-y-md">
+        <div className="max-h-[350px] overflow-y-auto p-2 space-y-4">
           {/* Executive Commands Section */}
           {filteredCommands.some((c) => c.category === "Executive") && (
             <div>
-              <div className="px-md py-xs font-mono text-[10px] text-outline uppercase tracking-wider">
+              <div className="px-4 py-1 font-mono text-[9px] text-[#ffb955] uppercase tracking-widest font-bold">
                 Executive Commands
               </div>
-              <div className="space-y-xs mt-xs">
+              <div className="space-y-1 mt-1">
                 {filteredCommands
                   .filter((c) => c.category === "Executive")
                   .map((cmd) => (
                     <button
                       key={cmd.name}
                       onClick={() => handleCommandClick(cmd)}
-                      className="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group cursor-pointer"
+                      className="command-item w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 flex items-center justify-between text-white group cursor-pointer"
                     >
-                      <span className="flex items-center gap-md">
-                        <span className="material-symbols-outlined text-secondary text-sm">
+                      <span className="flex items-center gap-3">
+                        <span className="material-symbols-outlined text-[#ffb955] text-sm">
                           {cmd.icon}
                         </span>
-                        <span className="font-mono text-xs">{cmd.name}</span>
-                        <span className="text-[10px] text-on-surface-variant group-hover:text-primary transition-colors">
+                        <span className="font-mono text-xs text-primary">{cmd.name}</span>
+                        <span className="text-[10px] text-on-surface-variant group-hover:text-primary transition-colors pl-3">
                           {cmd.description}
                         </span>
                       </span>
-                      <span className="text-[10px] text-on-surface-variant font-mono">
+                      <span className="text-[9px] text-on-surface-variant font-mono bg-white/5 px-1.5 py-0.5 rounded">
                         Enter
                       </span>
                     </button>
@@ -225,17 +225,17 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           {/* Navigation Section */}
           {filteredCommands.some((c) => c.category === "Navigation") && (
             <div>
-              <div className="px-md py-xs font-mono text-[10px] text-outline uppercase tracking-wider">
+              <div className="px-4 py-1 font-mono text-[9px] text-primary uppercase tracking-widest font-bold">
                 Go To Section
               </div>
-              <div className="grid grid-cols-2 gap-xs mt-xs">
+              <div className="grid grid-cols-2 gap-1 mt-1">
                 {filteredCommands
                   .filter((c) => c.category === "Navigation")
                   .map((cmd) => (
                     <button
                       key={cmd.name}
                       onClick={() => handleCommandClick(cmd)}
-                      className="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-xs cursor-pointer"
+                      className="command-item text-left px-4 py-2 rounded-lg hover:bg-white/5 flex items-center gap-3 text-on-surface-variant hover:text-white text-xs cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-primary text-sm">
                         {cmd.icon}
@@ -248,7 +248,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           )}
 
           {filteredCommands.length === 0 && (
-            <div className="text-center p-xl text-on-surface-variant text-xs font-mono">
+            <div className="text-center py-12 text-on-surface-variant text-xs font-mono">
               No matching computational command found.
             </div>
           )}

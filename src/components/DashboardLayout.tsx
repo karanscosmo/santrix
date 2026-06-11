@@ -25,7 +25,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   const closePalette = () => setIsPaletteOpen(false);
 
   return (
-    <div className="min-h-screen flex text-on-surface">
+    <div className="min-h-screen flex text-on-surface bg-[#050505]">
       {/* Side Navigation Bar */}
       <Sidebar onOpenPalette={openPalette} />
 
@@ -35,17 +35,17 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         <Header onOpenPalette={openPalette} />
 
         {/* Scrollable Main View Area */}
-        <main className="flex-1 pt-16 pb-8 overflow-y-auto overflow-x-hidden bg-background relative">
+        <main className="flex-1 pt-16 pb-8 overflow-y-auto overflow-x-hidden bg-[#050505] relative">
           {/* Atmospheric Background Radial Glow */}
           <div
             className="absolute inset-0 pointer-events-none opacity-20"
             style={{
-              background: "radial-gradient(circle at 80% 20%, rgba(176, 198, 255, 0.15) 0%, transparent 40%)",
+              background: "radial-gradient(circle at 80% 20%, rgba(176, 198, 255, 0.1) 0%, transparent 40%)",
             }}
           />
 
-          {/* Page content wrapper */}
-          <div className="p-container-margin max-w-7xl mx-auto space-y-container-margin relative z-10">
+          {/* Page content wrapper with standard responsive spacing */}
+          <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 relative z-10">
             {children}
           </div>
 

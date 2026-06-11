@@ -18,6 +18,10 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Sanktrix - Autonomous Computational OS",
   description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
+  icons: {
+    icon: "/Santrix_logo.jpeg",
+    apple: "/Santrix_logo.jpeg",
+  },
 };
 
 export default function RootLayout({
