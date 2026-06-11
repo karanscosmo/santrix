@@ -25,7 +25,7 @@ export default function EventFabricPage() {
     { timestamp: "23:51:02", topic: "telemetry.user_actions", content: 'user_login { user_id: "usr_8912", device: "MacBook Pro" }' },
     { timestamp: "23:51:04", topic: "agents.reasoning_steps", content: 'agent_thought { role: "SDR Swarm Analyst", thought: "Ingesting target contact lists" }' },
     { timestamp: "23:51:05", topic: "billing.transactions", content: 'invoice_paid { invoice_id: "inv_90a12", amount: "$4,200.00" }' },
-    { timestamp: "23:51:08", topic: "system:Trigger", content: "Executed Rule: ARR Net Runway recalculation triggered.", colorClass: "text-tertiary" },
+    { timestamp: "23:51:08", topic: "system:Trigger", content: "Executed Rule: ARR Net Runway recalculation triggered.", colorClass: "text-tertiary font-bold" },
   ]);
 
   const [rules, setRules] = useState<Rule[]>([
@@ -124,6 +124,7 @@ export default function EventFabricPage() {
   return (
     <DashboardLayout>
       <div className="space-y-md">
+        
         {/* Kafka Stream Visualizer */}
         <div className="glass-panel rounded-xl p-md flex flex-col h-[420px] relative overflow-hidden">
           <div className="stream-pulse"></div>
@@ -136,66 +137,66 @@ export default function EventFabricPage() {
                 REAL-TIME DATA STREAM FLOW AND KAFKA BROKER ROUTING
               </p>
             </div>
-            <div className="flex gap-sm items-center">
+            <div className="flex gap-sm items-center shrink-0">
               <button
                 onClick={triggerTestEvent}
-                className="bg-primary/20 hover:bg-primary/30 border border-primary text-primary text-[10px] font-mono px-2 py-1 rounded cursor-pointer transition-colors"
+                className="bg-primary/15 hover:bg-primary/25 border border-primary/30 text-primary text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
               >
                 Inject Test Event
               </button>
               <button
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="border border-outline text-on-surface-variant text-[10px] font-mono px-2 py-1 rounded cursor-pointer hover:bg-surface-container-highest transition-all"
+                className="border border-white/10 text-on-surface-variant text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-pointer hover:bg-white/5 transition-all"
               >
                 {isPlaying ? "Pause Stream" : "Resume Stream"}
               </button>
-              <span className="text-xs text-tertiary font-mono">
-                STATUS: {isPlaying ? "NOMINAL (LAG: 0ms)" : "PAUSED"}
+              <span className="text-xs text-tertiary font-mono font-bold tracking-wider uppercase ml-1">
+                {isPlaying ? "ACTIVE" : "PAUSED"}
               </span>
             </div>
           </div>
 
           {/* Event streams */}
-          <div className="flex-grow bg-surface-container-lowest/30 rounded border border-outline-variant/30 relative flex flex-col justify-around p-lg overflow-hidden">
+          <div className="flex-grow bg-[#050505]/60 rounded-xl border border-white/5 relative flex flex-col justify-around p-md md:p-lg overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:30px_30px] pointer-events-none"></div>
 
             {/* Stream 1: Telemetry */}
             <div className="flex items-center justify-between relative z-10">
-              <span className="font-mono text-xs w-44 text-primary">telemetry.user_actions</span>
-              <div className="flex-grow h-0.5 bg-outline-variant relative mx-md max-w-[50%]">
-                {isPlaying && <div className="animated-dot absolute w-2 h-2 rounded-full bg-primary -top-1"></div>}
+              <span className="font-mono text-xs w-44 text-primary font-bold">telemetry.user_actions</span>
+              <div className="flex-grow h-[1px] bg-white/5 relative mx-md max-w-[50%]">
+                {isPlaying && <div className="animated-dot absolute w-2.5 h-2.5 rounded-full bg-primary -top-1 shadow-[0_0_8px_rgba(0,219,231,0.6)]"></div>}
               </div>
-              <span className="font-mono text-[11px] text-on-surface-variant">
+              <span className="font-mono text-[10px] text-on-surface-variant font-bold">
                 {isPlaying ? "4,282 msg/s" : "0 msg/s"}
               </span>
             </div>
 
             {/* Stream 2: Billing */}
             <div className="flex items-center justify-between relative z-10">
-              <span className="font-mono text-xs w-44 text-tertiary">billing.transactions</span>
-              <div className="flex-grow h-0.5 bg-outline-variant relative mx-md max-w-[50%]">
+              <span className="font-mono text-xs w-44 text-tertiary font-bold">billing.transactions</span>
+              <div className="flex-grow h-[1px] bg-white/5 relative mx-md max-w-[50%]">
                 {isPlaying && (
                   <div
-                    className="animated-dot absolute w-2 h-2 rounded-full bg-tertiary -top-1"
+                    className="animated-dot absolute w-2.5 h-2.5 rounded-full bg-tertiary -top-1 shadow-[0_0_8px_rgba(78,222,163,0.6)]"
                     style={{ animationDelay: "0.5s" }}
                   ></div>
                 )}
               </div>
-              <span className="font-mono text-[11px] text-on-surface-variant">{isPlaying ? "148 msg/s" : "0 msg/s"}</span>
+              <span className="font-mono text-[10px] text-on-surface-variant font-bold">{isPlaying ? "148 msg/s" : "0 msg/s"}</span>
             </div>
 
             {/* Stream 3: Agents Reasoning */}
             <div className="flex items-center justify-between relative z-10">
-              <span className="font-mono text-xs w-44 text-secondary">agents.reasoning_steps</span>
-              <div className="flex-grow h-0.5 bg-outline-variant relative mx-md max-w-[50%]">
+              <span className="font-mono text-xs w-44 text-secondary font-bold">agents.reasoning_steps</span>
+              <div className="flex-grow h-[1px] bg-white/5 relative mx-md max-w-[50%]">
                 {isPlaying && (
                   <div
-                    className="animated-dot absolute w-2 h-2 rounded-full bg-secondary -top-1"
+                    className="animated-dot absolute w-2.5 h-2.5 rounded-full bg-secondary -top-1 shadow-[0_0_8px_rgba(255,185,85,0.6)]"
                     style={{ animationDelay: "1s" }}
                   ></div>
                 )}
               </div>
-              <span className="font-mono text-[11px] text-on-surface-variant">
+              <span className="font-mono text-[10px] text-on-surface-variant font-bold">
                 {isPlaying ? "10,412 msg/s" : "0 msg/s"}
               </span>
             </div>
@@ -203,99 +204,107 @@ export default function EventFabricPage() {
         </div>
 
         {/* Row 3: Autonomous Trigger Console & Event Log */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md pb-8">
           {/* Autonomous Triggers */}
-          <div className="lg:col-span-6 glass-panel rounded-xl p-md flex flex-col justify-between">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm flex justify-between items-center">
-              <div>
-                <h3 className="font-display text-headline-md text-on-surface text-[18px]">Autonomous Action Triggers</h3>
-                <p className="font-mono text-xs text-on-surface-variant mt-1">
-                  KAFKA-CONSUMER BASED n8n WORKFLOW TRIGGERS
-                </p>
+          <div className="lg:col-span-6 glass-panel rounded-xl p-md flex flex-col justify-between min-h-[300px]">
+            <div>
+              <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
+                <div>
+                  <h3 className="font-display text-headline-md text-on-surface text-[18px]">Autonomous Action Triggers</h3>
+                  <p className="font-mono text-xs text-on-surface-variant mt-1.5 uppercase">
+                    KAFKA-CONSUMER BASED n8n WORKFLOW TRIGGERS
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowAddRule(!showAddRule)}
+                  className="text-primary hover:text-primary-container text-xs font-bold uppercase tracking-wider text-[10px] cursor-pointer transition-colors"
+                >
+                  {showAddRule ? "Cancel" : "+ Add Rule"}
+                </button>
               </div>
-              <button
-                onClick={() => setShowAddRule(!showAddRule)}
-                className="text-primary hover:underline text-xs font-semibold uppercase tracking-wider text-[10px]"
-              >
-                {showAddRule ? "Cancel" : "Add Rule"}
-              </button>
-            </div>
 
-            <div className="space-y-sm my-md max-h-[180px] overflow-y-auto pr-xs">
-              {showAddRule ? (
-                <form onSubmit={handleAddRuleSubmit} className="bg-surface-container p-sm rounded border border-primary/40 space-y-sm">
-                  <div>
-                    <label className="block text-[10px] text-on-surface-variant font-mono mb-1">RULE NAME</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Memory Leak Trigger"
-                      value={newRuleName}
-                      onChange={e => setNewRuleName(e.target.value)}
-                      className="w-full bg-surface-container-low border border-outline rounded p-xs text-xs text-on-surface focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] text-on-surface-variant font-mono mb-1">EXPRESSION</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="If RAM > 90% -> trigger worker restart"
-                      value={newRuleExpr}
-                      onChange={e => setNewRuleExpr(e.target.value)}
-                      className="w-full bg-surface-container-low border border-outline rounded p-xs text-xs text-on-surface focus:outline-none focus:border-primary"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full bg-primary text-on-primary text-xs py-1 rounded font-semibold tracking-wider uppercase cursor-pointer"
-                  >
-                    Save Rule
-                  </button>
-                </form>
-              ) : (
-                rules.map(rule => (
-                  <div
-                    key={rule.id}
-                    className="flex justify-between items-center bg-surface-container p-sm rounded border border-outline-variant"
-                  >
+              <div className="space-y-sm my-md max-h-[180px] overflow-y-auto pr-xs">
+                {showAddRule ? (
+                  <form onSubmit={handleAddRuleSubmit} className="bg-[#050505]/40 p-md rounded-xl border border-white/10 space-y-md">
                     <div>
-                      <span className="text-xs font-bold text-on-surface block">Rule: {rule.name}</span>
-                      <p className="text-[10px] text-on-surface-variant mt-0.5">{rule.expression}</p>
+                      <label className="block text-[10px] text-on-surface-variant font-mono mb-1.5 uppercase font-bold tracking-wider">RULE NAME</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Memory Leak Trigger"
+                        value={newRuleName}
+                        onChange={e => setNewRuleName(e.target.value)}
+                        className="w-full bg-[#050505] border border-white/10 rounded-lg p-sm text-xs text-white focus:outline-none focus:border-primary font-sans"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-on-surface-variant font-mono mb-1.5 uppercase font-bold tracking-wider">EXPRESSION</label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="If RAM > 90% -> trigger worker restart"
+                        value={newRuleExpr}
+                        onChange={e => setNewRuleExpr(e.target.value)}
+                        className="w-full bg-[#050505] border border-white/10 rounded-lg p-sm text-xs text-white focus:outline-none focus:border-primary font-sans"
+                      />
                     </div>
                     <button
-                      onClick={() => handleToggleRule(rule.id)}
-                      className={`text-[9px] font-bold px-1.5 py-0.5 rounded cursor-pointer transition-colors ${
-                        rule.status === "ACTIVE" ? "text-tertiary bg-tertiary/10" : "text-outline bg-outline/10"
-                      }`}
+                      type="submit"
+                      className="w-full bg-primary text-on-primary text-xs py-md rounded-lg font-semibold tracking-wider uppercase cursor-pointer hover:bg-primary-container transition-colors"
                     >
-                      {rule.status}
+                      Save Trigger Rule
                     </button>
-                  </div>
-                ))
-              )}
+                  </form>
+                ) : (
+                  rules.map(rule => (
+                    <div
+                      key={rule.id}
+                      className="flex justify-between items-center bg-[#050505]/40 p-md rounded-xl border border-white/5 hover:border-white/10 transition-all"
+                    >
+                      <div className="space-y-1">
+                        <span className="text-xs font-bold text-white block">Rule: {rule.name}</span>
+                        <p className="text-[10px] text-on-surface-variant font-light leading-relaxed">{rule.expression}</p>
+                      </div>
+                      <button
+                        onClick={() => handleToggleRule(rule.id)}
+                        className={`text-[9px] font-bold px-2.5 py-1 rounded-lg cursor-pointer transition-colors border ${
+                          rule.status === "ACTIVE"
+                            ? "text-tertiary bg-tertiary/10 border-tertiary/20"
+                            : "text-on-surface-variant/75 bg-white/5 border-white/5"
+                        }`}
+                      >
+                        {rule.status}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
 
-            <div className="pt-sm border-t border-outline-variant/30 text-[10px] text-on-surface-variant font-mono">
-              Broker Connections: Active (Broker Localhost:9092)
+            <div className="pt-md border-t border-outline-variant/30 text-[10px] text-on-surface-variant/70 font-mono mt-md">
+              Broker Connections: <span className="text-tertiary font-semibold">ACTIVE</span> (Broker Localhost:9092)
             </div>
           </div>
 
           {/* Event logs */}
-          <div className="lg:col-span-6 glass-panel rounded-xl p-md flex flex-col h-[280px]">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm flex justify-between items-center">
+          <div className="lg:col-span-6 glass-panel rounded-xl p-md flex flex-col h-[300px] min-h-[300px]">
+            <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
               <h3 className="font-display text-headline-md text-on-surface text-[18px]">Fabric Stream Console</h3>
               <span className="material-symbols-outlined text-outline text-sm">terminal</span>
             </div>
-            <div className="flex-grow bg-surface-container-lowest border border-outline-variant/60 rounded p-sm font-mono text-xs overflow-y-auto text-on-surface-variant space-y-1">
+            <div className="flex-1 bg-[#050505]/60 border border-white/5 rounded-xl p-md font-mono text-xs overflow-y-auto text-on-surface-variant space-y-2 select-all h-[150px]">
               {logs.map((log, index) => (
-                <div key={index} className={log.colorClass || ""}>
-                  [{log.timestamp}] [TOPIC: {log.topic}] MSG: {log.content}
+                <div key={index} className={`${log.colorClass || ""} flex items-start gap-1.5 leading-relaxed font-light`}>
+                  <span className="text-primary/45 shrink-0">&raquo;</span>
+                  <div>
+                    [{log.timestamp}] [TOPIC: <span className="text-white font-semibold">{log.topic}</span>] MSG: {log.content}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
+
       </div>
     </DashboardLayout>
   );

@@ -143,204 +143,228 @@ export default function StatusPage() {
 
   return (
     <DashboardLayout>
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-md border-b border-outline-variant pb-md mb-md">
-        <div>
-          <div className="flex items-center gap-sm">
-            <h2 className="font-display text-4xl text-on-surface">System Status</h2>
-            <span className="h-4 w-px bg-outline-variant mx-2 hidden md:inline"></span>
-            <div className="flex items-center gap-2 text-tertiary">
-              <span className="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
-              <span className="font-mono text-xs text-on-surface-variant">
-                Local Stack Status: <strong className={isStressed ? "text-error" : "text-tertiary"}>{isStressed ? "DEGRADED" : "NOMINAL"}</strong>
-              </span>
+      <div className="space-y-md">
+        
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-md border-b border-outline-variant pb-md mb-xl">
+          <div>
+            <div className="flex items-center gap-sm">
+              <h2 className="font-display text-3xl text-on-surface font-bold">System Status</h2>
+              <span className="h-4 w-px bg-white/10 mx-2 hidden md:inline"></span>
+              <div className="flex items-center gap-2 text-tertiary">
+                <span className="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
+                <span className="font-mono text-xs text-on-surface-variant">
+                  Local Stack Status: <strong className={isStressed ? "text-error" : "text-tertiary"}>{isStressed ? "DEGRADED" : "NOMINAL"}</strong>
+                </span>
+              </div>
             </div>
+            <p className="font-mono text-xs text-on-surface-variant mt-xs">Real-time OpenTelemetry nodes, Docker clusters, and API metrics.</p>
           </div>
-          <p className="font-mono text-xs text-on-surface-variant mt-1">Real-time OpenTelemetry nodes, Docker clusters, and API metrics.</p>
+
+          <button
+            onClick={toggleStressTest}
+            className={`px-lg py-md rounded-lg font-sans text-xs uppercase font-bold tracking-wider transition-all shadow-[0_0_15px_rgba(176,198,255,0.15)] cursor-pointer hover:scale-[1.01] shrink-0 ${
+              isStressed
+                ? "bg-error text-on-error hover:bg-error/85"
+                : "bg-primary text-on-primary hover:bg-primary-container"
+            }`}
+          >
+            {isStressed ? "Cool Down System" : "Simulate Stress Test"}
+          </button>
         </div>
 
-        <button
-          onClick={toggleStressTest}
-          className={`px-md py-sm rounded font-sans text-xs uppercase font-bold transition-all shadow-[0_0_15px_rgba(176,198,255,0.3)] cursor-pointer ${
-            isStressed
-              ? "bg-error text-on-error hover:bg-error/80"
-              : "bg-primary text-on-primary hover:bg-primary-container"
-          }`}
-        >
-          {isStressed ? "Cool Down System" : "Simulate Stress Test"}
-        </button>
-      </div>
+        <div className="space-y-md pb-8">
+          
+          {/* Grafana Check Grid */}
+          <div className="glass-panel rounded-xl p-md relative overflow-hidden flex flex-col">
+            {isStressed && <div className="stream-pulse bg-error"></div>}
+            {!isStressed && <div className="stream-pulse"></div>}
 
-      <div className="space-y-md pb-8">
-        {/* Grafana Check Grid */}
-        <div className="glass-panel rounded-xl p-md relative overflow-hidden">
-          {isStressed && <div className="stream-pulse bg-error"></div>}
-          {!isStressed && <div className="stream-pulse"></div>}
-
-          <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
-            <div>
-              <h3 className="font-display text-base text-on-surface">Grafana Services Monitor</h3>
-              <p className="font-mono text-[9px] text-on-surface-variant mt-1">HEALTH CHECKS FOR KERNEL &amp; WORKFLOW DRIVERS</p>
+            <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
+              <div>
+                <h3 className="font-display text-base text-on-surface font-semibold uppercase tracking-wider flex items-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-primary font-bold">query_stats</span>
+                  Grafana Services Monitor
+                </h3>
+                <p className="font-mono text-[9px] text-on-surface-variant mt-1.5 uppercase">HEALTH CHECKS FOR KERNEL &amp; WORKFLOW DRIVERS</p>
+              </div>
+              <span className="text-[9px] font-mono text-on-surface-variant">POLLING RATE: 1000ms</span>
             </div>
-            <span className="text-[9px] font-mono text-on-surface-variant">POLLING RATE: 1000ms</span>
+
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-sm text-center">
+              {services.map((srv, idx) => {
+                const srvStatus =
+                  srv.status === "HEALTHY"
+                    ? "text-tertiary bg-tertiary/5 border-tertiary/20"
+                    : srv.status === "STRESSED"
+                    ? "text-secondary bg-secondary/5 border-secondary/20"
+                    : "text-error bg-error/5 border-error/20";
+                
+                const dotColor =
+                  srv.status === "HEALTHY"
+                    ? "bg-tertiary"
+                    : srv.status === "STRESSED"
+                    ? "bg-secondary"
+                    : "bg-error";
+
+                return (
+                  <div key={idx} className={`p-md rounded-xl border flex flex-col items-center justify-center space-y-2 hover:bg-white/5 transition-all ${srvStatus}`}>
+                    <span className="font-mono text-[10px] text-on-surface-variant block uppercase truncate w-full font-semibold">{srv.name}</span>
+                    <span className={`w-2 h-2 rounded-full ${dotColor} ${srv.status === "STRESSED" || srv.status === "CRITICAL" ? "animate-pulse" : ""}`}></span>
+                    <span className="font-mono text-xs block font-bold uppercase">{srv.status}</span>
+                    <span className="font-mono text-[8px] text-on-surface-variant/85 block">Uptime: {srv.uptime}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-6 gap-sm text-center">
-            {services.map((srv, idx) => {
-              const statusColor =
-                srv.status === "HEALTHY"
-                  ? "text-tertiary"
-                  : srv.status === "STRESSED"
-                  ? "text-secondary"
-                  : "text-error";
+          {/* Charts & Gauges */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-md">
+            
+            {/* Cumulative API costs */}
+            <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[320px] relative overflow-hidden">
+              <div className="border-b border-outline-variant/30 pb-sm mb-md">
+                <span className="font-sans text-[10px] uppercase font-bold text-primary block tracking-wider">LLM API Cumulative Costs</span>
+                <h4 className="font-mono text-3xl text-white font-bold mt-1">
+                  ${llmCost.toFixed(2)}{" "}
+                  <span className="text-xs text-on-surface-variant font-normal font-sans tracking-normal font-light">this month</span>
+                </h4>
+              </div>
 
-              return (
-                <div key={idx} className="bg-surface-container p-sm rounded-lg border border-outline-variant/65">
-                  <span className="font-mono text-[10px] text-on-surface-variant block uppercase truncate">{srv.name}</span>
-                  <span className={`material-symbols-outlined mt-2 ${statusColor}`}>
-                    {srv.status === "HEALTHY" ? "task_alt" : "warning"}
-                  </span>
-                  <span className={`font-mono text-xs block font-bold mt-1 ${statusColor}`}>{srv.status}</span>
-                  <span className="font-mono text-[8px] text-on-surface-variant block mt-0.5">Uptime: {srv.uptime}</span>
+              {/* Simulated bar chart representation */}
+              <div className="flex items-end justify-between h-32 px-md mt-sm bg-[#050505]/40 rounded-xl border border-white/5 p-sm">
+                <div className="w-12 bg-primary/20 hover:bg-primary/30 border border-primary/20 rounded-t-lg h-[40%] flex flex-col items-center justify-end pb-2 text-[8px] font-mono text-on-surface-variant transition-all cursor-pointer">
+                  <span>GPT-4o</span>
+                  <span className="font-bold text-white mt-0.5">$49</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Charts & Gauges */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-md">
-          {/* Cumulative API costs */}
-          <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[300px] relative overflow-hidden">
-            <div className="border-b border-outline-variant/30 pb-xs mb-sm">
-              <span className="font-sans text-[10px] uppercase font-bold text-primary block">LLM API Cumulative Costs</span>
-              <h4 className="font-mono text-2xl text-on-surface font-bold">
-                ${llmCost.toFixed(2)}{" "}
-                <span className="text-xs text-on-surface-variant font-normal font-sans">this month</span>
-              </h4>
-            </div>
-
-            {/* Simulated bar chart representation */}
-            <div className="flex items-end justify-between h-32 px-sm">
-              <div className="w-12 bg-primary/40 rounded-t h-[40%] flex flex-col items-center justify-end pb-1 text-[8px] font-mono text-on-surface">
-                <span>GPT-4o</span>
-                <span className="font-bold">$49</span>
+                <div className="w-12 bg-primary/40 hover:bg-primary/50 border border-primary/30 rounded-t-lg h-[75%] flex flex-col items-center justify-end pb-2 text-[8px] font-mono text-on-surface-variant transition-all cursor-pointer">
+                  <span>Claude</span>
+                  <span className="font-bold text-white mt-0.5">$92</span>
+                </div>
+                <div className="w-12 bg-primary/60 hover:bg-primary/70 border border-primary/45 rounded-t-lg h-[20%] flex flex-col items-center justify-end pb-2 text-[8px] font-mono text-on-surface-variant transition-all cursor-pointer">
+                  <span>Llama</span>
+                  <span className="font-bold text-white mt-0.5">$22</span>
+                </div>
               </div>
-              <div className="w-12 bg-primary/60 rounded-t h-[75%] flex flex-col items-center justify-end pb-1 text-[8px] font-mono text-on-surface">
-                <span>Claude</span>
-                <span className="font-bold">$92</span>
-              </div>
-              <div className="w-12 bg-primary/80 rounded-t h-[20%] flex flex-col items-center justify-end pb-1 text-[8px] font-mono text-on-surface">
-                <span>Llama</span>
-                <span className="font-bold">$22</span>
+
+              <div className="pt-md border-t border-outline-variant/30 mt-md flex justify-between text-[10px] font-mono text-on-surface-variant">
+                <span>Daily Limit: $500.00</span>
+                <span className="text-tertiary font-bold uppercase">Safe Range</span>
               </div>
             </div>
 
-            <div className="pt-sm border-t border-outline-variant/30 flex justify-between text-[10px] font-mono text-on-surface-variant">
-              <span>Daily Limit: $500.00</span>
-              <span className="text-tertiary">Safe Range</span>
-            </div>
-          </div>
+            {/* Average response times sparkline */}
+            <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[320px]">
+              <div className="border-b border-outline-variant/30 pb-sm mb-md">
+                <span className="font-sans text-[10px] uppercase font-bold text-tertiary block tracking-wider">Agent Response Latency (TTFT)</span>
+                <h4 className="font-mono text-3xl text-white font-bold mt-1">
+                  {avgLatency}ms{" "}
+                  <span className="text-xs text-on-surface-variant font-normal font-sans tracking-normal font-light">avg span</span>
+                </h4>
+              </div>
 
-          {/* Average response times sparkline */}
-          <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[300px]">
-            <div className="border-b border-outline-variant/30 pb-xs mb-sm">
-              <span className="font-sans text-[10px] uppercase font-bold text-tertiary block">Agent Response Latency (TTFT)</span>
-              <h4 className="font-mono text-2xl text-on-surface font-bold">
-                {avgLatency}ms{" "}
-                <span className="text-xs text-on-surface-variant font-normal font-sans">avg span</span>
-              </h4>
+              {/* Sparkline SVG */}
+              <div className="h-32 flex items-center justify-center p-xs relative bg-[#050505]/40 rounded-xl border border-white/5">
+                <svg className="w-full h-full text-tertiary px-sm" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  {/* Grid lines inside chart */}
+                  <line x1="0" y1="20" x2="200" y2="20" stroke="#ffffff" strokeOpacity="0.03" strokeWidth="1" />
+                  <line x1="0" y1="40" x2="200" y2="40" stroke="#ffffff" strokeOpacity="0.03" strokeWidth="1" />
+                  <line x1="0" y1="60" x2="200" y2="60" stroke="#ffffff" strokeOpacity="0.03" strokeWidth="1" />
+                  
+                  <path
+                    d={
+                      isStressed
+                        ? "M 0 50 Q 20 10 40 70 T 80 15 T 120 75 T 160 5 T 200 68"
+                        : "M 0 60 Q 20 40 40 50 T 80 20 T 120 45 T 160 10 T 200 30"
+                    }
+                    stroke={isStressed ? "#ffb4ab" : "#4edea3"}
+                    strokeWidth="2.5"
+                    fill="none"
+                    className="transition-all duration-500"
+                  />
+                </svg>
+                {isStressed && (
+                  <div className="absolute top-2 right-2 bg-error/15 border border-error/30 text-error px-2 py-0.5 rounded text-[8px] font-mono uppercase font-bold animate-pulse">
+                    Latent Spikes Detected
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-md border-t border-outline-variant/30 mt-md flex justify-between text-[10px] font-mono text-on-surface-variant">
+                <span>P99 Limit: 2.5s</span>
+                <span>P50 Target: 500ms</span>
+              </div>
             </div>
 
-            {/* Sparkline SVG */}
-            <div className="h-32 flex items-center justify-center p-xs relative">
-              <svg className="w-full h-full text-tertiary" viewBox="0 0 200 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d={
+            {/* Wolfram Core allocation Ring indicators */}
+            <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[320px]">
+              <div className="border-b border-outline-variant/30 pb-sm mb-md">
+                <span className="font-sans text-[10px] uppercase font-bold text-secondary block tracking-wider">Wolfram Kernel Allocation</span>
+                <h4 className="font-mono text-3xl text-white font-bold mt-1">
+                  {cpuLoad}%{" "}
+                  <span className="text-xs text-on-surface-variant font-normal font-sans tracking-normal font-light">Active Compute</span>
+                </h4>
+              </div>
+
+              <div className="h-32 flex items-center justify-around bg-[#050505]/40 rounded-xl border border-white/5 p-sm">
+                <div
+                  className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center font-mono text-xs font-bold transition-all relative ${
                     isStressed
-                      ? "M 0 50 Q 20 10 40 70 T 80 15 T 120 75 T 160 5 T 200 68"
-                      : "M 0 60 Q 20 40 40 50 T 80 20 T 120 45 T 160 10 T 200 30"
-                  }
-                  stroke={isStressed ? "#ffb4ab" : "#4edea3"}
-                  strokeWidth="2"
-                  fill="none"
-                  className="transition-all duration-500"
-                />
-              </svg>
-              {isStressed && (
-                <div className="absolute top-2 right-2 bg-error/15 border border-error/30 text-error px-2 py-0.5 rounded text-[8px] font-mono uppercase">
-                  Latent Spikes Detected
+                      ? "border-error text-error shadow-[0_0_15px_rgba(255,180,171,0.2)]"
+                      : "border-tertiary text-tertiary"
+                  }`}
+                >
+                  <span className="text-white font-bold">{isStressed ? "16 / 16" : "4 / 16"}</span>
+                  <span className="text-[7px] text-on-surface-variant font-sans uppercase font-bold mt-1">Kernels</span>
                 </div>
-              )}
-            </div>
-
-            <div className="pt-sm border-t border-outline-variant/30 flex justify-between text-[10px] font-mono text-on-surface-variant">
-              <span>P99 Limit: 2.5s</span>
-              <span>P50 Target: 500ms</span>
-            </div>
-          </div>
-
-          {/* Wolfram Core allocation Ring indicators */}
-          <div className="glass-panel rounded-xl p-md flex flex-col justify-between h-[300px]">
-            <div className="border-b border-outline-variant/30 pb-xs mb-sm">
-              <span className="font-sans text-[10px] uppercase font-bold text-secondary block">Wolfram Kernel Allocation</span>
-              <h4 className="font-mono text-2xl text-on-surface font-bold">
-                {cpuLoad}%{" "}
-                <span className="text-xs text-on-surface-variant font-normal font-sans">Active Compute</span>
-              </h4>
-            </div>
-
-            <div className="h-32 flex items-center justify-around">
-              <div
-                className={`w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center font-mono text-sm font-bold transition-all relative ${
-                  isStressed
-                    ? "border-error text-error shadow-[0_0_15px_rgba(255,180,171,0.2)] animate-pulse"
-                    : "border-tertiary text-tertiary"
-                }`}
-              >
-                <span>{isStressed ? "16 / 16" : "4 / 16"}</span>
-                <span className="text-[7px] text-on-surface-variant font-sans uppercase font-bold mt-1">Kernels</span>
+                <div className="text-[10px] font-mono text-on-surface-variant space-y-1">
+                  <div>Memory: <span className="text-white font-bold">{isStressed ? "24.2GB / 32GB" : "8.4GB / 32GB"}</span></div>
+                  <div>Status: <span className={isStressed ? "text-error font-bold" : "text-tertiary font-bold"}>{isStressed ? "HIGH LOAD" : "Nominal"}</span></div>
+                  <div>Compute: <span className="text-white font-semibold">Local MathLink</span></div>
+                </div>
               </div>
-              <div className="text-[10px] font-mono text-on-surface-variant space-y-1">
-                <div>Memory: <span className="text-on-surface font-bold">{isStressed ? "24.2GB / 32GB" : "8.4GB / 32GB"}</span></div>
-                <div>Status: <span className={isStressed ? "text-error font-bold" : "text-tertiary font-bold"}>{isStressed ? "HIGH LOAD" : "Nominal"}</span></div>
-                <div>Compute: <span className="text-on-surface">Local MathLink</span></div>
+
+              <div className="pt-md border-t border-outline-variant/30 mt-md flex justify-between text-[10px] font-mono text-on-surface-variant">
+                <span>Engine Status: Synchronized</span>
+                <span className="text-tertiary font-bold uppercase">Online</span>
               </div>
             </div>
+          </div>
 
-            <div className="pt-sm border-t border-outline-variant/30 flex justify-between text-[10px] font-mono text-on-surface-variant">
-              <span>Engine Status: Synchronized</span>
-              <span className="text-tertiary">Online</span>
+          {/* OTEL Span Trace logs */}
+          <div className="glass-panel rounded-xl p-md flex flex-col h-[320px]">
+            <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
+              <h3 className="font-display text-base text-on-surface font-semibold uppercase tracking-wider flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm text-primary">terminal</span>
+                OpenTelemetry Distributed Spans
+              </h3>
+              <span className="font-mono text-[9px] text-on-surface-variant">OUTPUT CHANNEL: /dev/stdout</span>
+            </div>
+
+            <div className="flex-1 bg-[#050505]/60 border border-white/5 rounded-xl p-md font-mono text-xs overflow-y-auto text-on-surface-variant space-y-2 select-all h-[150px]">
+              {spanLogs.map((log, index) => {
+                const statusColor =
+                  log.status === "error"
+                    ? "text-error font-bold"
+                    : log.status === "warning"
+                    ? "text-secondary font-bold"
+                    : "text-tertiary";
+
+                return (
+                  <div key={index} className="leading-relaxed flex items-start gap-1 font-light">
+                    <span className="text-primary/45 shrink-0">&raquo;</span>
+                    <div>
+                      [{log.time}]{" "}
+                      <span className="text-primary font-semibold">SPAN</span> {"//"} parent: <span className="text-white font-semibold">{log.span}</span> [{log.duration}ms] -{" "}
+                      <span className={statusColor}>{log.meta}</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
 
-        {/* OTEL Span Trace logs */}
-        <div className="glass-panel rounded-xl p-md flex flex-col h-[300px]">
-          <div className="border-b border-outline-variant/30 pb-sm mb-sm flex justify-between items-center">
-            <h3 className="font-display text-base text-on-surface">OpenTelemetry Distributed Spans</h3>
-            <span className="font-mono text-[9px] text-on-surface-variant">OUTPUT CHANNEL: /dev/stdout</span>
-          </div>
-
-          <div className="flex-1 bg-surface-container-lowest border border-outline-variant/60 rounded p-sm font-mono text-xs overflow-y-auto text-on-surface-variant space-y-1 select-all">
-            {spanLogs.map((log, index) => {
-              const statusColor =
-                log.status === "error"
-                  ? "text-error font-bold"
-                  : log.status === "warning"
-                  ? "text-secondary"
-                  : "text-tertiary";
-
-              return (
-                <div key={index} className="leading-tight">
-                  [{log.time}]{" "}
-                  <span className="text-primary font-bold">SPAN</span> {"//"} parent: {log.span} [
-                  {log.duration}ms] -{" "}
-                  <span className={statusColor}>{log.meta}</span>
-                </div>
-              );
-            })}
-          </div>
         </div>
       </div>
     </DashboardLayout>

@@ -132,34 +132,35 @@ export default function DigitalTwinPage() {
   return (
     <DashboardLayout>
       <div className="space-y-md">
+        
+        {/* Visual Network Mapping of Twin (Department nodes) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
-          {/* Visual Network Mapping of Twin (Department nodes) */}
-          <div className="lg:col-span-8 glass-panel rounded-xl p-md flex flex-col h-[500px] relative">
+          <div className="lg:col-span-8 glass-panel rounded-xl p-md flex flex-col h-[520px] relative">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-outline-variant/30 pb-sm mb-md gap-sm">
               <div>
                 <h3 className="font-display text-headline-md text-on-surface text-[18px]">
-                  Dependency Tree & Risk Flow
+                  Dependency Tree &amp; Risk Flow
                 </h3>
                 <p className="font-mono text-xs text-on-surface-variant mt-1">
                   SIMULATE FAILURE PROPAGATION ACROSS BUSINESS VECTORS
                 </p>
               </div>
-              <div className="flex gap-sm">
+              <div className="flex gap-sm shrink-0">
                 <button
                   onClick={() => triggerRiskPropagation("aws")}
-                  className="bg-error/25 hover:bg-error/35 border border-error text-error text-[10px] font-mono px-2 py-1 rounded cursor-pointer transition-colors"
+                  className="bg-error/15 hover:bg-error/25 border border-error/30 text-error text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
                 >
                   Simulate AWS Outage
                 </button>
                 <button
                   onClick={() => triggerRiskPropagation("dev")}
-                  className="bg-secondary/25 hover:bg-secondary/35 border border-secondary text-secondary text-[10px] font-mono px-2 py-1 rounded cursor-pointer transition-colors"
+                  className="bg-secondary/15 hover:bg-secondary/25 border border-secondary/30 text-secondary text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
                 >
                   Simulate Dev Delay
                 </button>
                 <button
                   onClick={resetTwin}
-                  className="border border-outline text-on-surface-variant text-[10px] font-mono px-2 py-1 rounded cursor-pointer hover:bg-surface-container-highest transition-colors"
+                  className="border border-white/10 text-on-surface-variant text-[10px] font-mono px-3 py-1.5 rounded-lg cursor-pointer hover:bg-white/5 transition-colors"
                 >
                   Reset
                 </button>
@@ -167,59 +168,71 @@ export default function DigitalTwinPage() {
             </div>
 
             {/* Twin Map Canvas/SVG */}
-            <div className="flex-1 bg-surface-container-lowest/30 rounded border border-outline-variant/30 relative flex items-center justify-center overflow-hidden">
-              <div className="absolute inset-0 bg-radial from-surface-container-highest/10 via-surface-dim/80 to-surface-dim pointer-events-none"></div>
+            <div className="flex-grow bg-[#050505]/60 rounded-xl border border-white/5 relative flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 bg-radial from-primary/5 via-transparent to-transparent pointer-events-none"></div>
 
               {/* Dynamic Connecting Lines SVG */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#00dbe7" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#b0c6ff" stopOpacity="0.4" />
+                  </linearGradient>
+                  <linearGradient id="errorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#ffb4ab" stopOpacity="0.4" />
+                    <stop offset="100%" stopColor="#ff5449" stopOpacity="0.8" />
+                  </linearGradient>
+                </defs>
                 {/* Product -> Engineering */}
                 <line
                   x1="120"
                   y1="250"
-                  x2="280"
-                  y2="150"
-                  stroke={nodeHealth.Engineering.val < 60 ? "#ffb955" : "#8c90a1"}
-                  strokeWidth="2"
-                  className={nodeHealth.Engineering.val < 60 ? "connection-line stroke-secondary" : ""}
+                  x2="260"
+                  y2="140"
+                  stroke={nodeHealth.Engineering.val < 60 ? "url(#errorGrad)" : "url(#lineGrad)"}
+                  strokeWidth="2.5"
+                  strokeDasharray={nodeHealth.Engineering.val < 60 ? "4" : "0"}
+                  className={nodeHealth.Engineering.val < 60 ? "animate-pulse" : ""}
                 />
                 {/* Product -> Marketing */}
                 <line
                   x1="120"
                   y1="250"
-                  x2="280"
-                  y2="350"
-                  stroke="#8c90a1"
+                  x2="260"
+                  y2="360"
+                  stroke="url(#lineGrad)"
                   strokeWidth="2"
                 />
                 {/* Engineering -> Operations */}
                 <line
-                  x1="392"
-                  y1="150"
+                  x1="380"
+                  y1="140"
                   x2="520"
-                  y2="150"
-                  stroke={nodeHealth.Operations.val < 50 ? "#ffb4ab" : "#8c90a1"}
-                  strokeWidth="2"
-                  className={nodeHealth.Operations.val < 50 ? "connection-line stroke-error" : ""}
+                  y2="140"
+                  stroke={nodeHealth.Operations.val < 50 ? "url(#errorGrad)" : "url(#lineGrad)"}
+                  strokeWidth="2.5"
+                  strokeDasharray={nodeHealth.Operations.val < 50 ? "6 4" : "0"}
+                  className={nodeHealth.Operations.val < 50 ? "animate-pulse" : ""}
                 />
                 {/* Marketing -> Sales */}
                 <line
-                  x1="392"
-                  y1="350"
+                  x1="380"
+                  y1="360"
                   x2="520"
-                  y2="350"
-                  stroke="#8c90a1"
+                  y2="360"
+                  stroke="url(#lineGrad)"
                   strokeWidth="2"
                 />
                 {/* Operations -> Sales */}
                 <line
-                  x1="576"
-                  y1="190"
-                  x2="576"
-                  y2="310"
-                  stroke={nodeHealth.Sales.val < 80 ? "#ffb955" : "#8c90a1"}
-                  strokeWidth="2"
+                  x1="580"
+                  y1="180"
+                  x2="580"
+                  y2="320"
+                  stroke={nodeHealth.Sales.val < 80 ? "url(#errorGrad)" : "url(#lineGrad)"}
+                  strokeWidth="2.5"
                   strokeDasharray="4"
-                  className={nodeHealth.Sales.val < 80 ? "connection-line" : ""}
+                  className={nodeHealth.Sales.val < 80 ? "animate-pulse" : ""}
                 />
               </svg>
 
@@ -227,132 +240,135 @@ export default function DigitalTwinPage() {
               {/* Product */}
               <button
                 onClick={() => setSelectedNode("Product")}
-                className={`absolute left-10 top-1/2 -translate-y-1/2 bg-surface-container-high border p-sm rounded text-center cursor-pointer transition-all w-24 ${
-                  selectedNode === "Product" ? "border-white glow-primary" : "border-primary/50 hover:border-white"
+                className={`absolute left-8 top-1/2 -translate-y-1/2 bg-[#090b10]/90 border p-md rounded-xl text-center cursor-pointer transition-all w-28 hover:scale-[1.03] ${
+                  selectedNode === "Product" ? "border-primary glow-primary shadow-[0_0_20px_rgba(0,219,231,0.15)]" : "border-white/10 hover:border-white/30"
                 }`}
               >
                 <span className="material-symbols-outlined text-primary text-xl">design_services</span>
-                <div className="font-mono text-xs mt-1">Product</div>
-                <span className="text-[9px] text-tertiary">HEALTH: {nodeHealth.Product.val}%</span>
+                <div className="font-mono text-xs font-bold text-white mt-1">Product</div>
+                <div className="text-[9px] text-tertiary mt-0.5">HEALTH: {nodeHealth.Product.val}%</div>
               </button>
 
               {/* Engineering */}
               <button
                 onClick={() => setSelectedNode("Engineering")}
-                className={`absolute left-[260px] top-1/4 -translate-y-1/2 bg-surface-container-high border p-sm rounded text-center cursor-pointer transition-all w-28 ${
-                  selectedNode === "Engineering" ? "border-white glow-primary" : ""
+                className={`absolute left-[260px] top-1/4 -translate-y-1/2 bg-[#090b10]/90 border p-md rounded-xl text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
+                  selectedNode === "Engineering" ? "border-primary glow-primary shadow-[0_0_20px_rgba(0,219,231,0.15)]" : ""
                 } ${
                   nodeHealth.Engineering.val < 60
                     ? "border-secondary/80 animate-pulse text-secondary"
-                    : "border-primary/50 hover:border-white"
+                    : selectedNode !== "Engineering" ? "border-white/10 hover:border-white/30" : ""
                 }`}
               >
                 <span className="material-symbols-outlined text-primary text-xl">developer_board</span>
-                <div className="font-mono text-xs mt-1">Engineering</div>
-                <span className={`text-[9px] font-bold ${nodeHealth.Engineering.colorClass}`}>
-                  HEALTH: {nodeHealth.Engineering.val}% {nodeHealth.Engineering.status !== "NOMINAL" && nodeHealth.Engineering.status}
-                </span>
+                <div className="font-mono text-xs font-bold text-white mt-1">Engineering</div>
+                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Engineering.colorClass}`}>
+                  H: {nodeHealth.Engineering.val}% {nodeHealth.Engineering.status !== "NOMINAL" && nodeHealth.Engineering.status}
+                </div>
               </button>
 
               {/* Marketing */}
               <button
                 onClick={() => setSelectedNode("Marketing")}
-                className={`absolute left-[260px] bottom-1/4 translate-y-1/2 bg-surface-container-high border p-sm rounded text-center cursor-pointer transition-all w-28 ${
-                  selectedNode === "Marketing" ? "border-white glow-primary" : "border-primary/50 hover:border-white"
+                className={`absolute left-[260px] bottom-1/4 translate-y-1/2 bg-[#090b10]/90 border p-md rounded-xl text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
+                  selectedNode === "Marketing" ? "border-primary glow-primary shadow-[0_0_20px_rgba(0,219,231,0.15)]" : "border-white/10 hover:border-white/30"
                 }`}
               >
                 <span className="material-symbols-outlined text-primary text-xl">campaign</span>
-                <div className="font-mono text-xs mt-1">Marketing</div>
-                <span className="text-[9px] text-tertiary">HEALTH: {nodeHealth.Marketing.val}%</span>
+                <div className="font-mono text-xs font-bold text-white mt-1">Marketing</div>
+                <div className="text-[9px] text-tertiary mt-0.5">HEALTH: {nodeHealth.Marketing.val}%</div>
               </button>
 
               {/* Operations */}
               <button
                 onClick={() => setSelectedNode("Operations")}
-                className={`absolute right-[120px] top-1/4 -translate-y-1/2 bg-surface-container-high border p-sm rounded text-center cursor-pointer transition-all w-28 ${
-                  selectedNode === "Operations" ? "border-white glow-primary" : ""
+                className={`absolute right-[120px] top-1/4 -translate-y-1/2 bg-[#090b10]/90 border p-md rounded-xl text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
+                  selectedNode === "Operations" ? "border-primary glow-primary shadow-[0_0_20px_rgba(0,219,231,0.15)]" : ""
                 } ${
                   nodeHealth.Operations.val < 50
                     ? "border-error/80 animate-pulse text-error"
-                    : "border-primary/50 hover:border-white"
+                    : selectedNode !== "Operations" ? "border-white/10 hover:border-white/30" : ""
                 }`}
               >
                 <span className="material-symbols-outlined text-primary text-xl">cloud_done</span>
-                <div className="font-mono text-xs mt-1">Operations</div>
-                <span className={`text-[9px] font-bold ${nodeHealth.Operations.colorClass}`}>
-                  HEALTH: {nodeHealth.Operations.val}% {nodeHealth.Operations.status !== "NOMINAL" && nodeHealth.Operations.status}
-                </span>
+                <div className="font-mono text-xs font-bold text-white mt-1">Operations</div>
+                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Operations.colorClass}`}>
+                  H: {nodeHealth.Operations.val}% {nodeHealth.Operations.status !== "NOMINAL" && nodeHealth.Operations.status}
+                </div>
               </button>
 
               {/* Sales */}
               <button
                 onClick={() => setSelectedNode("Sales")}
-                className={`absolute right-[120px] bottom-1/4 translate-y-1/2 bg-surface-container-high border p-sm rounded text-center cursor-pointer transition-all w-28 ${
-                  selectedNode === "Sales" ? "border-white glow-primary" : ""
+                className={`absolute right-[120px] bottom-1/4 translate-y-1/2 bg-[#090b10]/90 border p-md rounded-xl text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
+                  selectedNode === "Sales" ? "border-primary glow-primary shadow-[0_0_20px_rgba(0,219,231,0.15)]" : ""
                 } ${
                   nodeHealth.Sales.val < 80
                     ? "border-secondary/80 animate-pulse text-secondary"
-                    : "border-primary/50 hover:border-white"
+                    : selectedNode !== "Sales" ? "border-white/10 hover:border-white/30" : ""
                 }`}
               >
                 <span className="material-symbols-outlined text-primary text-xl">payments</span>
-                <div className="font-mono text-xs mt-1">Sales</div>
-                <span className={`text-[9px] font-bold ${nodeHealth.Sales.colorClass}`}>
-                  HEALTH: {nodeHealth.Sales.val}% {nodeHealth.Sales.status !== "NOMINAL" && nodeHealth.Sales.status}
-                </span>
+                <div className="font-mono text-xs font-bold text-white mt-1">Sales</div>
+                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Sales.colorClass}`}>
+                  H: {nodeHealth.Sales.val}% {nodeHealth.Sales.status !== "NOMINAL" && nodeHealth.Sales.status}
+                </div>
               </button>
             </div>
           </div>
 
           {/* Inspect Panel / Twin Settings */}
-          <div className="lg:col-span-4 glass-panel rounded-xl p-md flex flex-col justify-between h-[500px]">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm">
-              <h3 className="font-display text-headline-md text-on-surface text-[18px]">Department Telemetry</h3>
-              <p className="font-mono text-xs text-on-surface-variant mt-1">NODE INSPECTION DETAILS</p>
+          <div className="lg:col-span-4 glass-panel rounded-xl p-md flex flex-col justify-between h-[520px]">
+            <div>
+              <div className="border-b border-outline-variant/30 pb-sm mb-md">
+                <h3 className="font-display text-headline-md text-on-surface text-[18px]">Department Telemetry</h3>
+                <p className="font-mono text-xs text-on-surface-variant mt-1">NODE INSPECTION DETAILS</p>
+              </div>
+
+              <div className="space-y-md">
+                <div className="bg-[#050505]/40 p-md rounded-xl border border-white/5">
+                  <span className="font-sans text-[10px] text-primary block font-semibold uppercase tracking-wider">
+                    SELECTED NODE
+                  </span>
+                  <h4 className="font-bold text-sm text-white mt-1.5">{currentInspect.name} Department</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1.5 leading-relaxed font-light">{currentInspect.desc}</p>
+                </div>
+                
+                <div className="space-y-sm">
+                  <div className="flex justify-between items-center text-xs font-mono">
+                    <span className="text-on-surface-variant">Operational Load</span>
+                    <span className="font-bold text-white">{currentInspect.load}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary rounded-full transition-all duration-500 shadow-[0_0_8px_rgba(0,219,231,0.5)]"
+                      style={{ width: currentInspect.load }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div className="space-y-sm">
+                  <div className="flex justify-between items-center text-xs font-mono">
+                    <span className="text-on-surface-variant">Headcount Utilization</span>
+                    <span className="font-bold text-white">{currentInspect.FTE}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-xs font-mono">
+                    <span className="text-on-surface-variant">Monthly Operating Cost</span>
+                    <span className="font-bold text-white">{currentInspect.cost}</span>
+                  </div>
+                </div>
+
+                <div className="bg-[#050505]/40 p-md rounded-xl border border-white/5 text-[11px] font-mono text-on-surface-variant">
+                  <span className="text-primary font-bold uppercase tracking-wider text-[10px] block mb-1">DEPENDENTS</span>
+                  <p className="font-light">{currentInspect.deps}</p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex-grow space-y-md my-md">
-              <div className="bg-surface-container p-sm rounded border border-outline-variant">
-                <span className="font-sans text-[10px] text-primary block font-semibold uppercase tracking-wider">
-                  SELECTED NODE
-                </span>
-                <h4 className="font-bold text-sm text-on-surface mt-1">{currentInspect.name} Department</h4>
-                <p className="text-[11px] text-on-surface-variant mt-1 leading-relaxed">{currentInspect.desc}</p>
-              </div>
-              <div className="space-y-sm">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-on-surface-variant font-mono">Operational Load</span>
-                  <span className="font-bold text-on-surface font-mono">{currentInspect.load}</span>
-                </div>
-                <div className="w-full h-1 bg-surface-container-highest rounded">
-                  <div
-                    className="h-full bg-primary rounded transition-all duration-300"
-                    style={{ width: currentInspect.load }}
-                  ></div>
-                </div>
-              </div>
-              <div className="space-y-xs">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-on-surface-variant font-mono">Headcount Utilization</span>
-                  <span className="font-bold text-on-surface font-mono">{currentInspect.FTE}</span>
-                </div>
-              </div>
-              <div className="space-y-xs">
-                <div className="flex justify-between items-center text-xs">
-                  <span className="text-on-surface-variant font-mono">Monthly Operating Cost</span>
-                  <span className="font-bold text-on-surface font-mono">{currentInspect.cost}</span>
-                </div>
-              </div>
-              <div className="bg-surface-container-low p-sm rounded border border-outline-variant text-[11px] font-mono text-on-surface-variant">
-                <span className="text-primary font-bold">DEPENDENTS</span>
-                <p className="mt-1">{currentInspect.deps}</p>
-              </div>
-            </div>
-
-            <div className="pt-sm border-t border-outline-variant/30">
+            <div className="pt-md border-t border-outline-variant/30 mt-md">
               <button
                 onClick={runDiagnostic}
-                className="w-full bg-primary text-on-primary font-semibold text-xs tracking-wider uppercase text-center py-sm rounded hover:bg-primary-container transition-all cursor-pointer"
+                className="w-full bg-primary text-on-primary font-semibold text-xs tracking-wider uppercase text-center py-md rounded-lg hover:bg-primary-container transition-all cursor-pointer glow-button"
               >
                 Run Complete Twin Diagnostics
               </button>
@@ -361,35 +377,38 @@ export default function DigitalTwinPage() {
         </div>
 
         {/* Department Bottlenecks & Risk Analysis */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-md pb-8">
+          
           {/* Bottleneck list */}
           <div className="glass-panel rounded-xl p-md">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm">
+            <div className="border-b border-outline-variant/30 pb-sm mb-md">
               <h3 className="font-display text-headline-md text-on-surface text-[18px]">
                 Autonomous Bottleneck Analysis
               </h3>
               <p className="font-mono text-xs text-on-surface-variant mt-1">CRITICAL OPERATIONAL SLOWDOWNS</p>
             </div>
-            <div className="space-y-sm my-sm">
-              <div className="flex justify-between items-center p-sm bg-surface-container rounded border border-outline-variant/50">
-                <div>
-                  <span className="text-xs text-on-surface font-bold">Engineering Pipeline Delay</span>
-                  <p className="text-[10px] text-on-surface-variant mt-0.5">
+            
+            <div className="space-y-sm">
+              <div className="flex justify-between items-center p-md bg-[#050505]/40 rounded-xl border border-white/5 hover:border-secondary/20 transition-all">
+                <div className="space-y-1">
+                  <span className="text-xs text-white font-bold block">Engineering Pipeline Delay</span>
+                  <p className="text-[10px] text-on-surface-variant font-light leading-relaxed">
                     QA automation bottlenecks slowing release pipeline by 1.2 days.
                   </p>
                 </div>
-                <span className="text-xs text-secondary bg-secondary/10 px-1.5 py-0.5 rounded font-mono font-bold">
+                <span className="text-[9px] text-secondary bg-secondary/10 px-2.5 py-1 rounded-lg border border-secondary/20 font-mono font-bold shrink-0">
                   MEDIUM
                 </span>
               </div>
-              <div className="flex justify-between items-center p-sm bg-surface-container rounded border border-outline-variant/50">
-                <div>
-                  <span className="text-xs text-on-surface font-bold">Operations Compute Limit</span>
-                  <p className="text-[10px] text-on-surface-variant mt-0.5">
+              
+              <div className="flex justify-between items-center p-md bg-[#050505]/40 rounded-xl border border-white/5 hover:border-error/20 transition-all">
+                <div className="space-y-1">
+                  <span className="text-xs text-white font-bold block">Operations Compute Limit</span>
+                  <p className="text-[10px] text-on-surface-variant font-light leading-relaxed">
                     Peak hour AWS cluster utilization exceeding 92% thresholds.
                   </p>
                 </div>
-                <span className="text-xs text-error bg-error/10 px-1.5 py-0.5 rounded font-mono font-bold">
+                <span className="text-[9px] text-error bg-error/10 px-2.5 py-1 rounded-lg border border-error/20 font-mono font-bold shrink-0">
                   CRITICAL
                 </span>
               </div>
@@ -397,12 +416,12 @@ export default function DigitalTwinPage() {
           </div>
 
           {/* Simulation Output Terminal */}
-          <div className="glass-panel rounded-xl p-md flex flex-col justify-between">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm">
+          <div className="glass-panel rounded-xl p-md flex flex-col h-full min-h-[260px]">
+            <div className="border-b border-outline-variant/30 pb-sm mb-md">
               <h3 className="font-display text-headline-md text-on-surface text-[18px]">Risk Propagation Log</h3>
               <p className="font-mono text-xs text-on-surface-variant mt-1">AUTONOMOUS TRIGGER EVENT TELEMETRY</p>
             </div>
-            <div className="bg-surface-container-lowest border border-outline-variant/60 rounded p-sm font-mono text-xs h-[100px] overflow-y-auto text-on-surface-variant space-y-1">
+            <div className="flex-1 bg-[#050505]/60 border border-white/5 rounded-xl p-md font-mono text-xs overflow-y-auto text-on-surface-variant space-y-2 select-all h-[130px]">
               {riskLogs.map((log, index) => {
                 let colorClass = "text-on-surface-variant";
                 if (log.includes("RISK_TRIGGER") || log.includes("degraded") || log.includes("compromised")) {
@@ -411,13 +430,15 @@ export default function DigitalTwinPage() {
                   colorClass = "text-tertiary";
                 }
                 return (
-                  <div key={index} className={colorClass}>
-                    {log}
+                  <div key={index} className={`${colorClass} flex items-start gap-1 font-light leading-relaxed`}>
+                    <span className="text-primary/45 shrink-0">&raquo;</span>
+                    <span>{log}</span>
                   </div>
                 );
               })}
             </div>
           </div>
+
         </div>
       </div>
     </DashboardLayout>
