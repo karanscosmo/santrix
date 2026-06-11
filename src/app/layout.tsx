@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Inter, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SecurityProvider } from "@/context/SecurityContext";
 
@@ -9,9 +9,15 @@ const inter = Inter({
   display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-space-grotesk",
+  variable: "--font-geist",
+  display: "swap",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
   display: "swap",
 });
 
@@ -38,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased dark`}
+      className={`${inter.variable} ${geist.variable} ${jetbrainsMono.variable} h-full antialiased dark`}
     >
       <head>
         <link

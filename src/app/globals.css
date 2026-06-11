@@ -50,7 +50,8 @@
   --color-on-error-container: #ffdad6;
 
   --font-sans: var(--font-inter);
-  --font-display: var(--font-space-grotesk);
+  --font-display: var(--font-geist);
+  --font-mono: var(--font-mono);
 
   --spacing-xl: 40px;
   --spacing-container-margin: 32px;
@@ -73,11 +74,26 @@ body {
   font-family: var(--font-sans), sans-serif;
 }
 
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
 .glass-panel {
-  background: rgba(18, 18, 18, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 10, 15, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cyan-glow {
+  box-shadow: 0 0 40px rgba(0, 219, 231, 0.05);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(179, 197, 255, 0.3);
 }
 
 .glow-active {

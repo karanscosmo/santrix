@@ -38,46 +38,64 @@ export const WebGLBackground: React.FC = () => {
 
     const fs = `
       precision highp float;
-      varying vec2 v_texCoord;
       uniform float u_time;
       uniform vec2 u_resolution;
+      uniform vec2 u_mouse;
+      varying vec2 v_texCoord;
 
-      float network(vec2 uv, float speed) {
-          vec2 g = uv * 8.0;
-          vec2 id = floor(g);
-          vec2 f = fract(g);
-          
-          float m = 0.0;
-          for(float y=-1.0; y<=1.0; y++) {
-              for(float x=-1.0; x<=1.0; x++) {
-                  vec2 offs = vec2(x, y);
-                  vec2 p = offs + sin(u_time * speed + (id + offs) * 123.4) * 0.4 + 0.5;
-                  float d = length(f - p);
-                  m += smoothstep(0.02, 0.0, d) * (0.5 + 0.5 * sin(u_time + id.x));
-              }
-          }
-          return m;
+      float hash(vec2 p) {
+          p = fract(p * vec2(123.34, 456.21));
+          p += dot(p, p + 45.32);
+          return fract(p.x * p.y);
+      }
+
+      float noise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          float a = hash(i);
+          float b = hash(i + vec2(1.0, 0.0));
+          float c = hash(i + vec2(0.0, 1.0));
+          float d = hash(i + vec2(1.0, 1.0));
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
       }
 
       void main() {
           vec2 uv = v_texCoord;
-          vec2 centered_uv = (uv - 0.5) * (u_resolution.x / u_resolution.y);
+          vec2 p = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
           
-          vec3 color = vec3(0.02, 0.02, 0.05); // Deep base
+          // Deep background color
+          vec3 backgroundColor = vec3(0.02, 0.02, 0.04);
           
-          float n1 = network(uv, 0.5);
-          float n2 = network(uv * 1.5 + 10.0, 0.3);
+          // Flowing data lines
+          float flow = 0.0;
+          for(float i = 1.0; i < 5.0; i++) {
+              flow += 0.05 / abs(p.y + sin(p.x * i + u_time * 0.5) * 0.2 * noise(p + u_time * 0.1));
+          }
           
-          color += n1 * vec3(0.0, 0.4, 1.0) * 0.5;
-          color += n2 * vec3(0.0, 0.8, 1.0) * 0.3;
+          // Agent nodes (shimmering points)
+          float nodes = 0.0;
+          for(float i = 0.0; i < 10.0; i++) {
+              vec2 nodePos = vec2(sin(u_time * 0.2 + i * 1.5), cos(u_time * 0.3 + i * 0.8)) * 0.8;
+              float d = length(p - nodePos);
+              nodes += 0.002 / pow(d, 1.5) * (0.5 + 0.5 * sin(u_time * 2.0 + i));
+          }
           
-          // Add a central glow
-          float pulse = 0.5 + 0.5 * sin(u_time * 0.2);
-          color += (0.05 / length(centered_uv)) * vec3(0.0, 0.2, 0.5) * pulse;
+          // Wolfram pulses (radial glows)
+          float pulses = 0.0;
+          vec2 pulsePos = vec2(0.0);
+          float pulseDist = length(p - pulsePos);
+          pulses = 0.1 * exp(-pulseDist * 2.0) * (0.5 + 0.5 * sin(u_time * 1.5));
           
-          // Scanline effect
-          float scanline = sin(uv.y * 800.0) * 0.02;
-          color -= scanline;
+          vec3 color = backgroundColor;
+          color += flow * vec3(0.0, 0.4, 1.0) * 0.5; // Computational Blue
+          color += nodes * vec3(0.0, 0.95, 1.0);     // Intelligence Cyan
+          color += pulses * vec3(0.87, 0.07, 0.0);   // Wolfram Red
+          
+          // Subtle grid overlay
+          vec2 grid = fract(uv * 40.0 + u_time * 0.02);
+          float gridLine = step(0.98, grid.x) + step(0.98, grid.y);
+          color += gridLine * 0.02;
 
           gl_FragColor = vec4(color, 1.0);
       }
@@ -112,6 +130,19 @@ export const WebGLBackground: React.FC = () => {
 
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uRes = gl.getUniformLocation(prog, "u_resolution");
+    const uMouse = gl.getUniformLocation(prog, "u_mouse");
+
+    const mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+    const handleMouseMove = (event: MouseEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width && rect.height) {
+        const nx = (event.clientX - rect.left) / rect.width;
+        const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+        mouse.x = nx * canvas.width;
+        mouse.y = ny * canvas.height;
+      }
+    };
+    window.addEventListener("mousemove", handleMouseMove);
 
     let animationFrameId: number;
 
@@ -120,6 +151,7 @@ export const WebGLBackground: React.FC = () => {
       gl.viewport(0, 0, canvas.width, canvas.height);
       if (uTime) gl.uniform1f(uTime, t * 0.001);
       if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+      if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       animationFrameId = requestAnimationFrame(render);
     }
@@ -129,9 +161,10 @@ export const WebGLBackground: React.FC = () => {
     return () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block pointer-events-none" />;
 };
 export default WebGLBackground;

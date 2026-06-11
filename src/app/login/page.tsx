@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSecurity } from "@/context/SecurityContext";
+import WebGLBackground from "@/components/WebGLBackground";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,7 +36,6 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
     try {
-      // Simulate Google OAuth
       await login("karan.sharma@sanktrix.ai");
       router.push("/dashboard");
     } catch (err) {
@@ -46,27 +46,21 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-[#e0e2ee] font-sans antialiased overflow-hidden flex flex-col md:flex-row relative">
-      {/* Background Glow */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] animate-pulse-slow"></div>
-        <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-tertiary/10 rounded-full blur-[100px] animate-pulse-slow"></div>
-      </div>
+    <div className="min-h-screen bg-[#050505] text-[#e5e2e1] font-sans antialiased overflow-hidden flex flex-col md:flex-row relative">
+      {/* Background Grid Pattern */}
+      <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
 
       {/* Left Column: Product pitch & Computational theme */}
-      <div className="hidden md:flex md:w-1/2 bg-[#0a0d16] border-r border-white/5 flex-col justify-between p-12 relative z-10 overflow-hidden">
-        {/* Animated matrix background */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none font-mono text-[9px] leading-tight select-none">
-          {Array.from({ length: 40 }).map((_, i) => (
-            <div key={i} className="whitespace-nowrap" style={{ animationDelay: `${i * 0.1}s` }}>
-              {Array.from({ length: 80 }).map(() => Math.random() > 0.5 ? "1" : "0").join(" ")}
-            </div>
-          ))}
+      <div className="hidden md:flex md:w-1/2 bg-[#0a0a0f] border-r border-white/5 flex-col justify-between p-12 relative z-10 overflow-hidden">
+        {/* Animated shader background */}
+        <div className="absolute inset-0 opacity-45 pointer-events-none">
+          <WebGLBackground />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/20 via-[#0a0a0f]/60 to-[#0a0a0f] z-0"></div>
 
-        {/* Top Header */}
-        <Link href="/" className="flex items-center group">
-          <div className="relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/40 p-1">
+        {/* Top Header Logo (Standalone wordmark logo) */}
+        <Link href="/" className="flex items-center group relative z-10">
+          <div className="relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/60 p-1 shadow-[0_0_15px_rgba(86,141,255,0.05)]">
             <img
               src="/Santrix_logo.jpeg"
               className="w-full h-full object-contain filter brightness-110"
@@ -76,51 +70,44 @@ export default function LoginPage() {
         </Link>
 
         {/* Value Proposition */}
-        <div className="my-auto space-y-8 max-w-lg">
-          <h2 className="font-display text-4xl font-extrabold text-white leading-tight tracking-tight">
-            Autonomous Computational Intelligence for the Modern Enterprise.
+        <div className="my-auto space-y-8 max-w-lg relative z-10">
+          <h2 className="font-display text-4xl font-extrabold text-white leading-tight tracking-tight text-glow">
+            Autonomous Computational Intelligence.
           </h2>
-          <p className="text-on-surface-variant text-sm leading-relaxed font-light">
+          <p className="text-on-surface-variant text-base leading-relaxed font-light">
             Sanktrix merges enterprise-wide AI agent coordination with Wolfram’s symbolic computing engine to deliver real-time predictive analytics, simulation sandboxes, and strategic recommendations.
           </p>
 
           {/* Benefits Grid */}
           <div className="grid grid-cols-1 gap-4 pt-4">
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-primary text-lg mt-0.5">verified</span>
+              <span className="material-symbols-outlined text-primary mt-0.5">verified</span>
               <div>
-                <h4 className="font-semibold text-xs text-white uppercase tracking-wider">Enterprise-Grade Security</h4>
-                <p className="text-[11px] text-on-surface-variant">SOC 2 Type II compliant pipelines with full RBAC access controls.</p>
+                <h4 className="font-display font-bold text-xs text-white uppercase tracking-wider">Enterprise-Grade Security</h4>
+                <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed font-light">SOC 2 Type II compliant pipelines with full RBAC access controls.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-[#4edea3] text-lg mt-0.5">functions</span>
+              <span className="material-symbols-outlined text-secondary-fixed-dim mt-0.5">functions</span>
               <div>
-                <h4 className="font-semibold text-xs text-white uppercase tracking-wider">Wolfram Engine Integration</h4>
-                <p className="text-[11px] text-on-surface-variant">Perform exact Monte Carlo calculations, forecasting, and optimization models.</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="material-symbols-outlined text-tertiary text-lg mt-0.5">smart_toy</span>
-              <div>
-                <h4 className="font-semibold text-xs text-white uppercase tracking-wider">Autonomous Agent swarms</h4>
-                <p className="text-[11px] text-on-surface-variant">Deploy custom LLM-based specialists executing complex operational tasks.</p>
+                <h4 className="font-display font-bold text-xs text-white uppercase tracking-wider">Wolfram Engine Integration</h4>
+                <p className="text-[11px] text-on-surface-variant mt-0.5 leading-relaxed font-light">Perform exact Monte Carlo calculations, forecasting, and optimization models.</p>
               </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-[10px] text-on-surface-variant/60 font-mono">
-          SECURE ENCRYPTED NODE // SANKTRIX OS v1.0.4
+        <div className="text-[10px] text-on-surface-variant/60 font-mono relative z-10">
+          SECURE ENCRYPTED NODE // SANKTRIX OS v1.0
         </div>
       </div>
 
       {/* Right Column: Glassmorphic Login Form */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
-        <div className="w-full max-w-[420px] glass-panel p-8 rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(86,141,255,0.05)] relative flex flex-col space-y-6">
+        <div className="w-full max-w-[420px] glass-panel p-8 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] relative flex flex-col space-y-6">
           <div className="flex flex-col items-center text-center">
-            {/* Small responsive logo */}
+            {/* Small responsive logo for mobile */}
             <div className="md:hidden relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/40 p-1 mb-6">
               <img
                 src="/Santrix_logo.jpeg"
@@ -129,13 +116,13 @@ export default function LoginPage() {
               />
             </div>
             <h3 className="font-display text-2xl font-bold text-white tracking-tight">Access Command Center</h3>
-            <p className="text-[11px] text-on-surface-variant mt-1.5 font-light">
-              Enter your corporate credentials to sign in.
+            <p className="text-xs text-on-surface-variant mt-1.5 font-light">
+              Enter your credentials to sign in.
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-950/20 border border-red-900/40 p-3 rounded-lg flex items-center gap-2 text-xs text-[#ffb4ab]">
+            <div className="bg-red-950/20 border border-red-900/40 p-3 rounded flex items-center gap-2 text-xs text-[#ffb4ab]">
               <span className="material-symbols-outlined text-sm">error</span>
               <span>{error}</span>
             </div>
@@ -143,21 +130,21 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="font-sans text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block">Email Address</label>
+              <label className="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block">Email Address</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="executive@sanktrix.ai"
-                className="w-full bg-[#1c1f28]/60 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-sans"
+                className="w-full bg-[#0a0a0f]/60 border border-white/10 rounded px-4 py-2.5 text-xs text-white placeholder:text-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-mono"
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
-                <label className="font-sans text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block">Password</label>
-                <Link href="/forgot-password" className="text-[10px] text-primary hover:underline font-bold uppercase tracking-wider">
+                <label className="font-mono text-[10px] uppercase font-bold text-on-surface-variant tracking-wider block">Password</label>
+                <Link href="/forgot-password" className="text-[10px] text-primary hover:underline font-bold uppercase tracking-wider font-mono">
                   Forgot?
                 </Link>
               </div>
@@ -167,7 +154,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-[#1c1f28]/60 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white placeholder:text-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                className="w-full bg-[#0a0a0f]/60 border border-white/10 rounded px-4 py-2.5 text-xs text-white placeholder:text-outline-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
               />
             </div>
 
@@ -177,9 +164,9 @@ export default function LoginPage() {
                 <input
                   type="checkbox"
                   defaultChecked
-                  className="rounded border-white/10 bg-[#1c1f28]/60 text-primary focus:ring-primary w-3.5 h-3.5"
+                  className="rounded border-white/10 bg-[#0a0a0f]/60 text-primary focus:ring-primary w-3.5 h-3.5"
                 />
-                <span className="text-[11px] text-on-surface-variant font-medium">Remember session</span>
+                <span className="text-[11px] text-on-surface-variant font-medium font-sans">Remember session</span>
               </label>
             </div>
 
@@ -187,7 +174,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-[#c2d6ff] disabled:bg-primary/50 text-[#001945] font-bold text-xs uppercase tracking-wider py-3 rounded-lg transition-all duration-300 shadow-[0_0_20px_rgba(176,198,255,0.2)] hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-[#c2d6ff] disabled:bg-primary/50 text-[#001945] font-bold text-xs uppercase tracking-wider py-3 rounded transition-all duration-300 shadow-[0_0_20px_rgba(176,198,255,0.2)] hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -203,7 +190,7 @@ export default function LoginPage() {
           {/* Social Sign-in Divider */}
           <div className="relative flex py-2 items-center">
             <div className="flex-grow border-t border-white/5"></div>
-            <span className="flex-shrink mx-3 text-[10px] text-on-surface-variant/40 font-bold uppercase tracking-widest">or</span>
+            <span className="flex-shrink mx-3 text-[10px] text-on-surface-variant/40 font-bold uppercase tracking-widest font-mono">or</span>
             <div className="flex-grow border-t border-white/5"></div>
           </div>
 
@@ -212,9 +199,8 @@ export default function LoginPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full border border-white/10 hover:border-white/20 text-white font-semibold text-xs py-3 rounded-lg bg-white/5 hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center gap-2.5"
+            className="w-full border border-white/10 hover:border-white/20 text-white font-semibold text-xs py-3 rounded bg-white/5 hover:bg-white/10 transition-all cursor-pointer flex items-center justify-center gap-2.5 font-mono"
           >
-            {/* Simple Inline Google Icon */}
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.57 15.02 1 12 1 7.35 1 3.4 3.65 1.48 7.5l3.86 3C6.26 7.54 8.89 5.04 12 5.04z" />
               <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.43h6.43c-.28 1.48-1.11 2.73-2.37 3.58l3.69 2.87c2.16-1.99 3.4-4.91 3.4-8.54z" />
@@ -225,9 +211,9 @@ export default function LoginPage() {
           </button>
 
           {/* Sign Up Link */}
-          <p className="text-center text-xs text-on-surface-variant">
+          <p className="text-center text-xs text-on-surface-variant font-light">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary hover:underline font-bold uppercase tracking-wider text-[10px] ml-1">
+            <Link href="/signup" className="text-primary hover:underline font-bold uppercase tracking-wider text-[10px] ml-1 font-mono">
               Request Access
             </Link>
           </p>
