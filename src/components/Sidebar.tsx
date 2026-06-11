@@ -40,15 +40,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
 
   return (
     <nav className="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-white/5 bg-[#10131b] py-6 px-4 z-50">
-      <div className="mb-8">
+      <div className="mb-8 flex justify-center">
         <Link href="/dashboard" className="flex items-center group">
-          <div className="relative w-full h-12 overflow-hidden border border-white/5 rounded-xl bg-black/40 shadow-[0_0_15px_rgba(86,141,255,0.05)] hover:border-primary/20 transition-all duration-300">
-            <img
-              src="/Santrix_logo.jpeg"
-              className="w-full h-full object-contain filter brightness-110 hover:brightness-125 transition-all duration-300"
-              alt="Sanktrix Logo"
-            />
-          </div>
+          <img
+            src="/branding/sanktrix-logo.png"
+            className="h-9 w-auto object-contain filter brightness-110 hover:brightness-125 transition-all duration-300"
+            alt="Sanktrix Logo"
+          />
         </Link>
       </div>
 

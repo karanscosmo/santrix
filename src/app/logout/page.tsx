@@ -10,14 +10,12 @@ export default function LogoutPage() {
       <div className="fixed inset-0 bg-grid-pattern pointer-events-none z-0"></div>
 
       <div className="w-full max-w-[420px] glass-panel p-10 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] text-center relative z-10 flex flex-col items-center space-y-8 bg-[#0a0a0f]/40">
-        {/* Brand Logo (Standalone wordmark logo) */}
-        <div className="relative w-40 h-12 overflow-hidden border border-white/5 rounded-lg bg-black/60 p-1 shadow-[0_0_15px_rgba(86,141,255,0.05)]">
-          <img
-            src="/Santrix_logo.jpeg"
-            className="w-full h-full object-contain filter brightness-110"
-            alt="Sanktrix Logo"
-          />
-        </div>
+        {/* Brand Logo (Standalone wordmark logo, direct image render) */}
+        <img
+          src="/branding/sanktrix-logo.png"
+          className="h-9 w-auto object-contain brightness-110"
+          alt="Sanktrix Logo"
+        />
 
         {/* Lock Icon */}
         <div className="w-16 h-16 rounded-full bg-[#ffb4ab]/10 border border-[#ffb4ab]/20 flex items-center justify-center text-[#ffb4ab]">

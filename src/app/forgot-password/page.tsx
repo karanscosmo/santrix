@@ -26,10 +26,10 @@ export default function ForgotPasswordPage() {
 
       <div className="w-full max-w-[420px] glass-panel p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(86,141,255,0.05)] relative z-10 flex flex-col space-y-6">
         <div className="flex flex-col items-center text-center">
-          <div className="relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/40 p-1 mb-6">
+          <div className="mb-6">
             <img
-              src="/Santrix_logo.jpeg"
-              className="w-full h-full object-contain filter brightness-110"
+              src="/branding/sanktrix-logo.png"
+              className="h-8 w-auto object-contain brightness-110"
               alt="Sanktrix Logo"
             />
           </div>

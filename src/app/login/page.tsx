@@ -25,7 +25,7 @@ export default function LoginPage() {
       } else {
         setError("Invalid credentials. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setError("An authentication error occurred.");
     } finally {
       setIsLoading(false);
@@ -38,7 +38,7 @@ export default function LoginPage() {
     try {
       await login("karan.sharma@sanktrix.ai");
       router.push("/dashboard");
-    } catch (err) {
+    } catch {
       setError("Failed to sign in with Google.");
     } finally {
       setIsLoading(false);
@@ -53,20 +53,18 @@ export default function LoginPage() {
       {/* Left Column: Product pitch & Computational theme */}
       <div className="hidden md:flex md:w-1/2 bg-[#0a0a0f] border-r border-white/5 flex-col justify-between p-12 relative z-10 overflow-hidden">
         {/* Animated shader background */}
-        <div className="absolute inset-0 opacity-45 pointer-events-none">
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
           <WebGLBackground />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/20 via-[#0a0a0f]/60 to-[#0a0a0f] z-0"></div>
 
-        {/* Top Header Logo (Standalone wordmark logo) */}
+        {/* Top Header Logo (Direct brand logo, no container card) */}
         <Link href="/" className="flex items-center group relative z-10">
-          <div className="relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/60 p-1 shadow-[0_0_15px_rgba(86,141,255,0.05)]">
-            <img
-              src="/Santrix_logo.jpeg"
-              className="w-full h-full object-contain filter brightness-110"
-              alt="Sanktrix Logo"
-            />
-          </div>
+          <img
+            src="/branding/sanktrix-logo.png"
+            className="h-8 w-auto object-contain brightness-110"
+            alt="Sanktrix Logo"
+          />
         </Link>
 
         {/* Value Proposition */}
@@ -107,11 +105,11 @@ export default function LoginPage() {
       <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10">
         <div className="w-full max-w-[420px] glass-panel p-8 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] relative flex flex-col space-y-6">
           <div className="flex flex-col items-center text-center">
-            {/* Small responsive logo for mobile */}
-            <div className="md:hidden relative w-36 h-10 overflow-hidden border border-white/5 rounded-lg bg-black/40 p-1 mb-6">
+            {/* Small responsive logo for mobile, directly rendered */}
+            <div className="md:hidden mb-6">
               <img
-                src="/Santrix_logo.jpeg"
-                className="w-full h-full object-contain filter brightness-110"
+                src="/branding/sanktrix-logo.png"
+                className="h-8 w-auto object-contain brightness-110"
                 alt="Sanktrix Logo"
               />
             </div>

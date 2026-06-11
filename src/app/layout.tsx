@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   title: "Sanktrix - Autonomous Computational OS",
   description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
   icons: {
-    icon: "/Santrix_logo.jpeg",
-    apple: "/Santrix_logo.jpeg",
+    icon: "/branding/sanktrix-logo.png",
+    apple: "/branding/sanktrix-logo.png",
   },
   openGraph: {
     title: "Sanktrix - Autonomous Computational OS",
     description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
-    images: [{ url: "/Santrix_logo.jpeg", width: 800, height: 800, alt: "Sanktrix Logo" }],
+    images: [{ url: "/branding/sanktrix-logo.png", width: 800, height: 800, alt: "Sanktrix Logo" }],
     type: "website",
   },
 };
@@ -52,7 +52,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-background text-on-surface antialiased overflow-hidden">
+      <body className="min-h-full flex flex-col bg-background text-on-surface antialiased">
         <SecurityProvider>{children}</SecurityProvider>
       </body>
     </html>
