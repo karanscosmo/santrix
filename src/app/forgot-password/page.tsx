@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
         <div className="flex flex-col items-center text-center">
           <div className="mb-6">
             <img
-              src="/branding/sanktrix-logo.png"
+              src="/branding/Sanktrix_logo_transparent.png"
               className="h-8 w-auto object-contain brightness-110"
               alt="Sanktrix Logo"
             />

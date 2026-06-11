@@ -14,7 +14,7 @@ export default function Loading() {
         
         {/* Standalone brand logo wordmark with pulse & glow */}
         <img
-          src="/branding/sanktrix-logo.png"
+          src="/branding/Sanktrix_logo_transparent.png"
           className="w-[220px] h-auto object-contain animate-pulse filter drop-shadow-[0_0_30px_rgba(0,219,231,0.25)]"
           alt="Loading Sanktrix"
         />

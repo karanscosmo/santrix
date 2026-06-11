@@ -22,16 +22,17 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://santrix-two.vercel.app"),
   title: "Sanktrix - Autonomous Computational OS",
   description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
   icons: {
-    icon: "/branding/sanktrix-logo.png",
-    apple: "/branding/sanktrix-logo.png",
+    icon: "/branding/Sanktrix_logo_transparent.png",
+    apple: "/branding/Sanktrix_logo_transparent.png",
   },
   openGraph: {
     title: "Sanktrix - Autonomous Computational OS",
     description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
-    images: [{ url: "/branding/sanktrix-logo.png", width: 800, height: 800, alt: "Sanktrix Logo" }],
+    images: [{ url: "/branding/Sanktrix_logo_transparent.png", width: 800, height: 800, alt: "Sanktrix Logo" }],
     type: "website",
   },
 };

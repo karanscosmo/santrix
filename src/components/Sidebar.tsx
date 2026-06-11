@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
       <div className="mb-8 flex justify-center">
         <Link href="/dashboard" className="flex items-center group">
           <img
-            src="/branding/sanktrix-logo.png"
+            src="/branding/Sanktrix_logo_transparent.png"
             className="h-9 w-auto object-contain filter brightness-110 hover:brightness-125 transition-all duration-300"
             alt="Sanktrix Logo"
           />

@@ -58,7 +58,7 @@ export default function LandingPage() {
           {/* Standalone Logo Brand (Direct image render, no card) */}
           <div className="flex items-center justify-center">
             <img
-              src="/branding/sanktrix-logo.png"
+              src="/branding/Sanktrix_logo_transparent.png"
               className="w-[140px] md:w-[200px] h-auto object-contain brightness-110"
               alt="Sanktrix Logo"
             />
@@ -125,7 +125,7 @@ export default function LandingPage() {
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto space-y-8 flex flex-col items-center">
           {/* Giant Logo Centerpiece (Direct image render, no cards around it) */}
           <img
-            src="/branding/sanktrix-logo.png"
+            src="/branding/Sanktrix_logo_transparent.png"
             className="w-[240px] sm:w-[480px] h-auto object-contain opacity-95 filter drop-shadow-[0_0_35px_rgba(179,197,255,0.25)] hover:scale-[1.02] transition-transform duration-500"
             alt="Sanktrix Logo centerpiece"
           />
@@ -708,7 +708,7 @@ export default function LandingPage() {
         <div className="flex flex-col md:flex-row justify-between items-center px-margin-desktop py-12 gap-gutter max-w-[1440px] mx-auto relative z-10 w-full text-xs font-mono text-on-surface-variant">
           {/* Standalone brand logo instead of text */}
           <img
-            src="/branding/sanktrix-logo.png"
+            src="/branding/Sanktrix_logo_transparent.png"
             className="w-[140px] md:w-[180px] h-auto object-contain brightness-110"
             alt="Sanktrix Logo footer"
           />

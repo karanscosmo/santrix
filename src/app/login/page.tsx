@@ -61,7 +61,7 @@ export default function LoginPage() {
         {/* Top Header Logo (Direct brand logo, no container card) */}
         <Link href="/" className="flex items-center group relative z-10">
           <img
-            src="/branding/sanktrix-logo.png"
+            src="/branding/Sanktrix_logo_transparent.png"
             className="h-8 w-auto object-contain brightness-110"
             alt="Sanktrix Logo"
           />
@@ -108,7 +108,7 @@ export default function LoginPage() {
             {/* Global Logo Header */}
             <div className="mb-6">
               <img
-                src="/branding/sanktrix-logo.png"
+                src="/branding/Sanktrix_logo_transparent.png"
                 className="w-[180px] h-auto object-contain brightness-110"
                 alt="Sanktrix Logo"
               />

@@ -12,7 +12,7 @@ export default function LogoutPage() {
       <div className="w-full max-w-[420px] glass-panel p-10 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] text-center relative z-10 flex flex-col items-center space-y-8 bg-[#0a0a0f]/40">
         {/* Brand Logo (Standalone wordmark logo, direct image render) */}
         <img
-          src="/branding/sanktrix-logo.png"
+          src="/branding/Sanktrix_logo_transparent.png"
           className="h-9 w-auto object-contain brightness-110"
           alt="Sanktrix Logo"
         />
