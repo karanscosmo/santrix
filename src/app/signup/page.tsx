@@ -120,16 +120,16 @@ export default function SignupPage() {
       <div className="w-full md:flex-1 md:w-1/2 flex items-center justify-center p-6 md:p-12 relative z-10 shrink-0">
         <div className="w-full max-w-[420px] glass-panel p-8 rounded-xl border border-white/10 shadow-[0_0_50px_rgba(0,219,231,0.03)] relative flex flex-col space-y-5">
           <div className="flex flex-col items-center text-center">
-            {/* Small responsive logo for mobile */}
-            <div className="md:hidden mb-6">
+            {/* Global Logo Header */}
+            <div className="mb-6">
               <img
                 src="/branding/sanktrix-logo.png"
-                className="h-8 w-auto object-contain brightness-110"
+                className="w-[180px] h-auto object-contain brightness-110"
                 alt="Sanktrix Logo"
               />
             </div>
-            <h3 className="font-display text-2xl font-bold text-white tracking-tight">Create Workspace</h3>
-            <p className="text-xs text-on-surface-variant mt-1 font-light">
+            <h3 className="font-display text-2xl font-bold text-white tracking-tight">Create Enterprise Workspace</h3>
+            <p className="text-xs text-on-surface-variant mt-1.5 font-light">
               Register to deploy autonomous enterprise nodes.
             </p>
           </div>
