@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 
 interface Scenario {
   id: string;

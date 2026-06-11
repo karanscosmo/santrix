@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 import WebGLBackground from "@/components/WebGLBackground";
 
 export default function LoginPage() {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SecurityProvider } from "@/context/SecurityContext";
+import { SecurityProvider } from "@/lib/SecurityContext";
 
 const inter = Inter({
   subsets: ["latin"],

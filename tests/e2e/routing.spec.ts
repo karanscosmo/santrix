@@ -36,5 +36,10 @@ test.describe("Sanktrix Platform Navigation & Core Flows", () => {
     await page.click("a:has-text('Settings')");
     await expect(page).toHaveURL(/\/settings/);
     await expect(page.locator("h3:has-text('Alerts Center')")).toBeVisible();
+
+    // Click on Security Gate page
+    await page.click("a:has-text('Security Gate')");
+    await expect(page).toHaveURL(/\/security/);
+    await expect(page.locator("h2:has-text('Security & Governance Center')")).toBeVisible();
   });
 });

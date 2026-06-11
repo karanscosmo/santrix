@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 
 interface NodeData {
   id: string;

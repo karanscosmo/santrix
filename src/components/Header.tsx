@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 
 interface HeaderProps {
   onOpenPalette: () => void;

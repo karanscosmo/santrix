@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 
 interface SidebarProps {
   onOpenPalette: () => void;
@@ -35,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenPalette }) => {
     { name: "Knowledge Hub", href: "/knowledge", icon: "menu_book" },
     { name: "Workflows", href: "/workflows", icon: "account_tree" },
     { name: "Reports", href: "/reports", icon: "assessment" },
+    { name: "Security Gate", href: "/security", icon: "shield" },
     { name: "Settings", href: "/settings", icon: "settings" },
   ];
 

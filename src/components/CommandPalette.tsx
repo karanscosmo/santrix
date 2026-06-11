@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSecurity } from "@/context/SecurityContext";
+import { useSecurity } from "@/lib/SecurityContext";
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -215,6 +215,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       url: "/status",
       category: "Navigation",
       icon: "analytics",
+    },
+    {
+      name: "Security Governance",
+      url: "/security",
+      category: "Navigation",
+      icon: "shield",
     },
     {
       name: "Hackathon Demo Mode",

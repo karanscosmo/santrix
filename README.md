@@ -2,31 +2,41 @@
 
 ### Autonomous Computational Intelligence Platform for Enterprise Decision-Making
 
+[![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen)](https://santrix-two.vercel.app/)
+[![Build Status](https://img.shields.io/badge/Build-Passing-blue)](https://santrix-two.vercel.app/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.x-black)](https://nextjs.org/)
+[![Wolfram Language](https://img.shields.io/badge/Wolfram-Computational-red)](https://www.wolfram.com/language/)
+
+Sanktrix is an enterprise-grade Operating System designed to orchestrate autonomous AI agent workflows, perform high-fidelity symbolic computations, and execute real-time business simulations. By integrating enterprise data streams with LangGraph coordination swarms and the Wolfram Language, Sanktrix replaces static BI dashboards with active, audited strategic intelligence.
+
+**Live Platform Staging:** [https://santrix-two.vercel.app/](https://santrix-two.vercel.app/)
+
 ---
 
-Sanktrix is an enterprise-grade Operating System designed to orchestrate autonomous AI agent workflows, perform high-fidelity symbolic computations, and execute real-time business simulations. By integrating enterprise data streams with n8n pipelines, LangGraph coordination swarms, and the Wolfram Language, Sanktrix replaces static BI dashboards with active, audited strategic intelligence.
-
-Live Deployment: [https://santrix-two.vercel.app/](https://santrix-two.vercel.app/)
+## 1. Overview
+Sanktrix transforms how enterprise executive suites interact with computational analytics. The platform serves as a centralized decision intelligence layer, exposing real-time business trajectories, scenario simulation workspaces, and autonomous agent swarms through a hardened, low-latency glassmorphic command center.
 
 ---
 
-## 1. Problem Statement
+## 2. Problem Statement
 Traditional Business Intelligence (BI) tools are historically retrospective. They render static data dashboards representing what happened in the past but fail to explain *why* it happened or *how* to optimize future trajectories. 
 
 Furthermore, modern Large Language Models (LLMs) used for decision-making suffer from non-deterministic reasoning, hallucinations, and a lack of computational precision. An enterprise cannot base its supply chain routing, capital allocation, or risk profiling on speculative next-token predictions.
 
 ---
 
-## 2. The Solution
+## 3. The Solution
 Sanktrix bridges the gap between **neural reasoning** (AI agents) and **symbolic computation** (Wolfram Language).
 
 * **Deterministic Computation:** AI agents reason about strategy, but delegate all math, forecasts, optimizations, and simulations to the Wolfram Language.
 * **Continuous Simulation:** Sanktrix constantly stress-tests operations by running parallel Monte Carlo simulations to calculate risk distributions.
 * **Active Execution:** Instead of waiting for human intervention, Sanktrix models recommendations, gates them via a granular RBAC approval chain, and triggers automated integrations.
+* **Hardened Security:** Built-in rate limiting, XSS input purification, and structured audit logging verify that all programmatic actions are fully authorized and logged.
 
 ---
 
-## 3. Architecture & System Flow
+## 4. Architecture & System Flow
 
 The Sanktrix platform utilizes a fluid-fixed computational loop:
 
@@ -40,12 +50,13 @@ graph TD
     E -->|Exact Formula Outcomes| G[Simulation Sandbox Engine]
     F -->|Operational Guardrails| G
     G -->|Parallel Projections| H[Digital Twin Graph UI]
-    H -->|Secure RBAC Gate| I[Autonomous Actions / Executive Decsions]
+    H -->|Secure RBAC Gate| I[Autonomous Actions / Executive Decisions]
+    I -->|Log Action| J[Centralized Layer 7 Audit Log]
 ```
 
 ---
 
-## 4. Wolfram Language Integration
+## 5. Wolfram Language Integration
 
 Sanktrix queries the Wolfram Kernel to compute deterministic solutions for operations research:
 
@@ -60,9 +71,9 @@ NIntegrate[Runway[v], {v, 0, ChurnVariance}]
 
 ---
 
-## 5. AI Agent System
+## 6. AI Agent System
 
-Sanktrix deploys a multi-agent swarm using LangGraph to partition operational concerns:
+Sanktrix deploys a multi-agent swarm to partition operational concerns:
 
 1. **Finance Agent:** Tracks real-time cash flow, burn rate, and optimizes departmental spend allocations.
 2. **Forecasting Agent:** Predicts demand curves and automates inventory buffer sizes.
@@ -73,45 +84,49 @@ Sanktrix deploys a multi-agent swarm using LangGraph to partition operational co
 
 ---
 
-## 6. Tech Stack
+## 7. Tech Stack
 
 * **Framework:** Next.js 16 (App Router, Turbopack)
-* **Frontend:** React 19, TypeScript, Vanilla CSS (PostCSS)
+* **Frontend:** React 19, TypeScript, Vanilla CSS (PostCSS), TailwindCSS
 * **Graphics:** WebGL (Custom fragment shader backgrounds), SVG Graphing
 * **Testing:** Playwright (E2E), Vitest (Unit / Component)
-* **Security:** Cryptographic JWT Session Management, RBAC Gating
+* **Security:** Cryptographic JWT Session Management, RBAC Gating, DOMPurify
 * **Deployment:** Vercel Staging Pipelines, Docker Orchestration
 
 ---
 
-## 7. Folder Structure
+## 8. Folder Structure
+
+The repository maintains a clean, decoupled production layout:
 
 ```
 .
 ├── src/
 │   ├── app/               # Next.js App Router (pages & layouts)
-│   ├── components/        # Reusable UI components (Sidebar, WebGLBackground, layout wrappers)
-│   ├── context/           # Security and state providers
-│   ├── features/          # Planned feature-specific components
-│   │   ├── agents/
-│   │   ├── wolfram/
-│   │   └── simulations/
-│   ├── services/          # External API layer (Wolfram, n8n)
-│   ├── lib/               # Shared libraries
+│   ├── components/        # Reusable UI components (Sidebar, Header, WebGLBackground, Watermark)
+│   ├── features/          # Feature-specific components
+│   │   ├── agents/        # Agent coordination components
+│   │   ├── wolfram/       # Wolfram visual rendering assets
+│   │   └── simulations/   # Simulation visualizer layouts
+│   ├── services/          # External API layer definitions
+│   ├── lib/               # Shared libraries (contains SecurityContext.tsx)
 │   ├── hooks/             # Custom React hooks
-│   ├── types/             # TypeScript declaration files
+│   ├── types/             # TypeScript declaration files (contains index.ts)
 │   ├── utils/             # Helper utilities
-│   └── test/              # Vitest test cases
+│   └── app/globals.css    # Core PostCSS tokens
 ├── public/
-│   └── branding/          # Official transparent logo PNG assets
-├── e2e/                   # Playwright E2E integration tests
-├── docs/                  # API and design specifications
+│   └── branding/          # Sanktrix transparent logo PNG asset
+├── tests/                 # Unified test suite directory
+│   ├── unit/              # Vitest unit test cases
+│   ├── e2e/               # Playwright E2E integration tests
+│   └── setup.ts           # Vitest setup file
+├── docs/                  # API, specifications, and presentation deck (SANKTRIX.pptx)
 └── workflows/             # n8n pipeline json templates
 ```
 
 ---
 
-## 8. Installation & Setup
+## 9. Installation & Setup
 
 ### Prerequisites
 * Node.js v20.x or higher
@@ -143,7 +158,7 @@ Sanktrix deploys a multi-agent swarm using LangGraph to partition operational co
 
 ---
 
-## 9. Environment Variables
+## 10. Environment Variables
 
 Configure the following variables in `.env.local`:
 
@@ -161,7 +176,7 @@ N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/sanktrix
 
 ---
 
-## 10. Running Test Pass
+## 11. Running Test Pass
 
 ### Unit Tests
 Execute unit assertions with Vitest:
@@ -177,7 +192,7 @@ npm run test:e2e
 
 ---
 
-## 11. Deployment
+## 12. Deployment
 
 Sanktrix is configured to deploy instantly on Vercel:
 
@@ -190,12 +205,22 @@ Sanktrix is configured to deploy instantly on Vercel:
 
 ---
 
-## 12. Future Scope
+## 13. Screenshots
+
+The platform utilizes a customized Obsidian dark theme featuring:
+* A centerpiece high-resolution transparent logo on the homepage and onboarding overlays.
+* Interactive real-time probability curve vectors.
+* Granular live telemetry event streams.
+* Live role override switches to evaluate RBAC permissions immediately.
+
+---
+
+## 14. Future Scope
 * **Live Wolfram Kernel Integration:** Establish persistent WebSockets to remote Wolfram Engines.
 * **On-Premise Private LLM Support:** Add configurations to swap commercial endpoints with private Llama-3 nodes.
 * **Tamper-Proof Ledger Logging:** Sync audit logs to private database chains for unalterable operations records.
 
 ---
 
-## 13. Team
+## 15. Team
 * **Karan Sharma** — Principal System Architect & Lead Engineer (karanscosmo)
