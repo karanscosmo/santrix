@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sanktrix - Enterprise Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-effect {
+            box-shadow: 0 0 15px rgba(86, 141, 255, 0.3);
+        }
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-element.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .streaming-pulse {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #b0c6ff, transparent);
+            animation: wipe 3s infinite linear;
+        }
+        @keyframes wipe {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+        .card-glass {
+            background: rgba(18, 18, 18, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#10131b",
+                        "surface-container-highest": "#32353e",
+                        "on-tertiary-container": "#00311f",
+                        "tertiary": "#4edea3",
+                        "surface-container-low": "#181b24",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary-fixed": "#001945",
+                        "on-primary": "#002d6f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container": "#1c1f28",
+                        "inverse-primary": "#0058cb",
+                        "surface-container-lowest": "#0b0e16",
+                        "surface": "#10131b",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c2c6d8",
+                        "secondary": "#ffb955",
+                        "surface-container-high": "#272a33",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#424655",
+                        "secondary-container": "#dc9100",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-primary-container": "#002661",
+                        "on-surface": "#e0e2ee",
+                        "background": "#10131b",
+                        "inverse-surface": "#e0e2ee",
+                        "outline": "#8c90a1",
+                        "on-secondary-fixed": "#291800",
+                        "surface-variant": "#32353e",
+                        "surface-tint": "#b0c6ff",
+                        "tertiary-container": "#00a572",
+                        "primary": "#b0c6ff",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-on-surface": "#2d3039",
+                        "primary-container": "#568dff",
+                        "on-tertiary": "#003824",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00429c",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#ffddb4",
+                        "on-secondary-container": "#4f3100",
+                        "surface-bright": "#363942",
+                        "on-background": "#e0e2ee",
+                        "on-secondary": "#452b00",
+                        "on-error-container": "#ffdad6"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "xl": "40px",
+                        "container-margin": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "lg": "24px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "mono-data": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Space Grotesk"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "mono-data": ["13px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-lowest text-on-surface font-body-md antialiased overflow-x-hidden">
+<!-- Global Header for Landing Page -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface-lowest/80 backdrop-blur-xl border-b border-outline-variant h-16 flex justify-between items-center px-lg">
+<div class="flex items-center gap-sm">
+<img src="../Santrix_logo.jpeg" class="w-8 h-8 rounded border border-primary/30 object-cover" alt="Sanktrix Logo"/>
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Sanktrix</span>
+</div>
+<nav class="hidden md:flex gap-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps uppercase" href="#platform">Platform</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps uppercase" href="#architecture">Architecture</a>
+</nav>
+<button onclick="toggleLoginModal()" class="bg-primary text-on-primary px-md py-sm rounded-DEFAULT font-label-caps text-label-caps uppercase hover:bg-primary-container transition-colors">
+            Login
+        </button>
+</header>
+<!-- Hero Section -->
+<section class="relative w-full min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+<!-- WebGL Background Shader -->
+<!-- STITCH_SHADER_START:ANIMATION_1 class="absolute inset-0 w-full h-full z-0 object-cover opacity-60 mix-blend-screen" -->
+<div class="absolute inset-0 w-full h-full z-0 object-cover opacity-60 mix-blend-screen" style="display:block;">
+<canvas id="shader-canvas-ANIMATION_1" style="display:block;width:100%;height:100%"></canvas>
+<script>
+(function() {
+  const canvas = document.getElementById('shader-canvas-ANIMATION_1');
+
+  // Sync the WebGL drawing-buffer size with the CSS-driven layout size.
+  // This fires on initial layout and whenever the element is resized.
+  function syncSize() {
+    const w = canvas.clientWidth  || 1280;
+    const h = canvas.clientHeight || 720;
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width  = w;
+      canvas.height = h;
+    }
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(syncSize).observe(canvas);
+  }
+  syncSize();
+
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+  if (!gl) return;
+  const vs = `attribute vec2 a_position;
+varying vec2 v_texCoord;
+void main() {
+  v_texCoord = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}`;
+  const fs = `precision highp float;
+varying vec2 v_texCoord;
+uniform float u_time;
+uniform vec2 u_resolution;
+
+float network(vec2 uv, float speed) {
+    vec2 g = uv * 8.0;
+    vec2 id = floor(g);
+    vec2 f = fract(g);
+    
+    float m = 0.0;
+    for(float y=-1.0; y<=1.0; y++) {
+        for(float x=-1.0; x<=1.0; x++) {
+            vec2 offs = vec2(x, y);
+            vec2 p = offs + sin(u_time * speed + (id + offs) * 123.4) * 0.4 + 0.5;
+            float d = length(f - p);
+            m += smoothstep(0.02, 0.0, d) * (0.5 + 0.5 * sin(u_time + id.x));
+        }
+    }
+    return m;
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 centered_uv = (uv - 0.5) * (u_resolution.x / u_resolution.y);
+    
+    vec3 color = vec3(0.02, 0.02, 0.05); // Deep base
+    
+    float n1 = network(uv, 0.5);
+    float n2 = network(uv * 1.5 + 10.0, 0.3);
+    
+    color += n1 * vec3(0.0, 0.4, 1.0) * 0.5;
+    color += n2 * vec3(0.0, 0.8, 1.0) * 0.3;
+    
+    // Add a central glow
+    float pulse = 0.5 + 0.5 * sin(u_time * 0.2);
+    color += (0.05 / length(centered_uv)) * vec3(0.0, 0.2, 0.5) * pulse;
+    
+    // Scanline effect
+    float scanline = sin(uv.y * 800.0) * 0.02;
+    color -= scanline;
+
+    gl_FragColor = vec4(color, 1.0);
+}`;
+  function cs(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, cs(gl.VERTEX_SHADER, vs));
+  gl.attachShader(prog, cs(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const pos = gl.getAttribLocation(prog, 'a_position');
+  gl.enableVertexAttribArray(pos);
+  gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+  const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uRes = gl.getUniformLocation(prog, 'u_resolution');
+  const uMouse = gl.getUniformLocation(prog, 'u_mouse');
+
+  // u_mouse is in pixel coordinates matching u_resolution (ShaderToy convention).
+  // Shaders that need normalized coords should use: u_mouse / u_resolution.
+  let mouse = { x: canvas.width / 2, y: canvas.height / 2 };
+  window.addEventListener('mousemove', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width && rect.height) {
+      const nx = (event.clientX - rect.left) / rect.width;
+      const ny = 1.0 - (event.clientY - rect.top) / rect.height;
+      mouse.x = nx * canvas.width;
+      mouse.y = ny * canvas.height;
+    }
+  });
+
+  function render(t) {
+    if (typeof ResizeObserver === 'undefined') syncSize();
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    if (uTime) gl.uniform1f(uTime, t * 0.001);
+    if (uRes) gl.uniform2f(uRes, canvas.width, canvas.height);
+    if (uMouse) gl.uniform2f(uMouse, mouse.x, mouse.y);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    requestAnimationFrame(render);
+  }
+  render(0);
+})();
+</script>
+</div>
+<!-- STITCH_SHADER_END:ANIMATION_1 -->
+<!-- Deep Gradient Overlay -->
+<div class="absolute inset-0 z-0 bg-gradient-to-b from-surface-lowest/30 via-surface-lowest/70 to-surface-lowest"></div>
+<div class="relative z-10 container mx-auto px-container-margin text-center flex flex-col items-center">
+<div class="inline-flex items-center gap-2 px-md py-sm rounded-full border border-primary/30 bg-primary/10 mb-lg reveal-element">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse glow-effect"></div>
+<span class="font-mono-data text-mono-data text-primary">System Status: Optimal Processing</span>
+</div>
+<img src="../Santrix_logo.jpeg" class="w-24 h-24 rounded-xl object-cover border-2 border-primary/40 shadow-[0_0_30px_rgba(86,141,255,0.4)] mb-md reveal-element" style="transition-delay: 50ms;" alt="Sanktrix Logo"/>
+<h1 class="font-display-lg text-display-lg md:text-[80px] lg:text-[100px] leading-none tracking-tighter text-on-surface mb-md reveal-element" style="transition-delay: 100ms;">
+                SANKTRIX
+            </h1>
+<p class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface-variant max-w-3xl mb-xl reveal-element" style="transition-delay: 200ms;">
+                Autonomous Computational Intelligence for Enterprise Decision-Making
+            </p>
+<div class="flex flex-col sm:flex-row gap-md reveal-element" style="transition-delay: 300ms;">
+<button onclick="toggleLoginModal()" class="bg-primary text-on-primary px-xl py-md rounded-DEFAULT font-label-caps text-label-caps uppercase tracking-wider hover:bg-primary-container transition-all glow-effect flex items-center justify-center gap-sm">
+                    Launch Platform
+                    <span class="material-symbols-outlined">rocket_launch</span>
+</button>
+<button onclick="window.location.href='../demo_mode/code.html'" class="border border-outline hover:border-primary text-on-surface hover:text-primary px-xl py-md rounded-DEFAULT font-label-caps text-label-caps uppercase tracking-wider transition-all bg-surface-container/30 backdrop-blur-sm flex items-center justify-center gap-sm">
+                    Watch Demo
+                    <span class="material-symbols-outlined">play_circle</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Features Section -->
+<section class="py-24 relative z-10 bg-surface-lowest" id="platform">
+<div class="container mx-auto px-container-margin">
+<div class="mb-16 reveal-element">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Intelligence Modules</h2>
+<div class="h-1 w-16 bg-primary mb-md"></div>
+<p class="text-on-surface-variant font-body-lg max-w-2xl">High-fidelity computational modules engineered for absolute structural dominance over complex data topographies.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+<!-- Feature 1 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+<span class="font-mono-data text-mono-data text-tertiary bg-tertiary/10 px-2 py-1 rounded">Active</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">AI Agent Teams</h3>
+<p class="font-body-md text-on-surface-variant">Deploy swarms of specialized autonomous agents to research, synthesize, and execute multi-step workflows concurrently.</p>
+</div>
+<!-- Feature 2 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden" style="transition-delay: 100ms;">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">model_training</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Wolfram Simulations</h3>
+<p class="font-body-md text-on-surface-variant">Integrate deep computational mathematics and physics-based models to simulate market trajectories and stress-test strategies.</p>
+</div>
+<!-- Feature 3 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden" style="transition-delay: 200ms;">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">dynamic_feed</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Predictive Intelligence</h3>
+<p class="font-body-md text-on-surface-variant">Harness live macroeconomic and sector-specific datastreams to surface leading indicators ahead of market consensus.</p>
+</div>
+<!-- Feature 4 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden" style="transition-delay: 300ms;">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Enterprise Automation</h3>
+<p class="font-body-md text-on-surface-variant">Translate complex strategic directives into deterministically executed pipelines via internal robotic process automation.</p>
+</div>
+<!-- Feature 5 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden" style="transition-delay: 400ms;">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Realtime Monitoring</h3>
+<p class="font-body-md text-on-surface-variant">Continuous telemetry of competitive landscapes, instantly highlighting anomalous behavior through our bespoke neural heuristics.</p>
+</div>
+<!-- Feature 6 -->
+<div class="card-glass p-lg rounded-xl reveal-element group relative overflow-hidden" style="transition-delay: 500ms;">
+<div class="streaming-pulse group-hover:block hidden"></div>
+<div class="mb-md flex items-center justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-sm">Executive Copilot</h3>
+<p class="font-body-md text-on-surface-variant">A dedicated conversational interface acting as your Chief of Staff, synthesizing all platform data into actionable briefings.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Architecture Flow Section -->
+<section class="py-24 relative z-10 bg-surface-dim border-t border-outline-variant/30" id="architecture">
+<div class="container mx-auto px-container-margin">
+<div class="text-center mb-xl reveal-element">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Systems Architecture</h2>
+<p class="text-on-surface-variant font-body-lg max-w-2xl mx-auto">The deterministic pipeline transforming raw noise into strategic alpha.</p>
+</div>
+<div class="flex flex-col lg:flex-row items-center justify-between gap-lg relative max-w-5xl mx-auto">
+<!-- Connector Line (Desktop) -->
+<div class="hidden lg:block absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 -translate-y-1/2 z-0">
+<div class="h-full bg-primary/50 w-full scale-x-0 origin-left transition-transform duration-1000 ease-out z-0" id="flow-line"></div>
+</div>
+<!-- Step 1 -->
+<div class="card-glass w-full lg:w-1/4 p-md rounded-xl text-center relative z-10 reveal-element">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest border border-outline flex items-center justify-center mx-auto mb-md">
+<span class="material-symbols-outlined text-on-surface">database</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Ingestion</h4>
+<p class="font-body-md text-on-surface-variant text-sm">Raw global datastreams</p>
+</div>
+<span class="material-symbols-outlined lg:hidden text-outline-variant">arrow_downward</span>
+<!-- Step 2 -->
+<div class="card-glass w-full lg:w-1/4 p-md rounded-xl text-center relative z-10 reveal-element" style="transition-delay: 200ms;">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest border border-primary flex items-center justify-center mx-auto mb-md glow-effect">
+<span class="material-symbols-outlined text-primary">support_agent</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Agents</h4>
+<p class="font-body-md text-on-surface-variant text-sm">Parsing &amp; Synthesis</p>
+</div>
+<span class="material-symbols-outlined lg:hidden text-outline-variant">arrow_downward</span>
+<!-- Step 3 -->
+<div class="card-glass w-full lg:w-1/4 p-md rounded-xl text-center relative z-10 reveal-element" style="transition-delay: 400ms;">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest border border-tertiary flex items-center justify-center mx-auto mb-md" style="box-shadow: 0 0 15px rgba(78, 222, 163, 0.2);">
+<span class="material-symbols-outlined text-tertiary">functions</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mb-xs">Computation</h4>
+<p class="font-body-md text-on-surface-variant text-sm">Wolfram evaluation models</p>
+</div>
+<span class="material-symbols-outlined lg:hidden text-outline-variant">arrow_downward</span>
+<!-- Step 4 -->
+<div class="card-glass w-full lg:w-1/4 p-md rounded-xl text-center relative z-10 bg-primary/10 border border-primary reveal-element" style="transition-delay: 600ms;">
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center mx-auto mb-md glow-effect">
+<span class="material-symbols-outlined text-on-primary">dashboard</span>
+</div>
+<h4 class="font-headline-md text-headline-md text-primary mb-xs">Intelligence</h4>
+<p class="font-body-md text-primary-fixed-dim text-sm">Strategic HUD &amp; Alpha</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-lowest border-t border-outline-variant/30 py-xl">
+<div class="container mx-auto px-container-margin flex flex-col md:flex-row items-center justify-between gap-md">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline">terminal</span>
+<span class="font-mono-data text-mono-data text-outline">© 2024 Sanktrix. All rights reserved.</span>
+</div>
+<div class="font-mono-data text-mono-data text-outline flex gap-md">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+<!-- Intersection Observer for Scroll Reveals -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        
+                        // Trigger flow line animation if architecture section is visible
+                        if (entry.target.id === 'architecture' || entry.target.closest('#architecture')) {
+                            const flowLine = document.getElementById('flow-line');
+                            if(flowLine) flowLine.style.transform = 'scaleX(1)';
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-element').forEach(el => {
+                observer.observe(el);
+            });
+        });
+
+        function toggleLoginModal() {
+            const modal = document.getElementById('login-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        function submitLogin() {
+            toggleLoginModal();
+            const loader = document.getElementById('login-loader');
+            loader.classList.remove('hidden');
+            
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                window.location.href = '../overview_dashboard_sanktrix_command_center/code.html';
+            }, 2000);
+        }
+    </script>
+
+    <!-- Login Modal Overlay -->
+    <div id="login-modal" class="fixed inset-0 z-[100] hidden bg-surface-lowest/80 backdrop-blur-xl flex items-center justify-center p-md">
+        <div class="card-glass w-full max-w-md p-lg rounded-xl flex flex-col justify-between border border-primary/20 relative shadow-[0_0_50px_rgba(86,141,255,0.15)]">
+            <div class="flex flex-col items-center text-center mb-md">
+                <img src="../Santrix_logo.jpeg" class="w-16 h-16 rounded-lg object-cover border border-primary/30 mb-sm" alt="Sanktrix Logo"/>
+                <h2 class="font-headline-md text-headline-md text-on-surface" style="font-size: 24px;">Sign In to Sanktrix</h2>
+                <p class="font-mono-data text-xs text-on-surface-variant mt-1">AUTONOMOUS COMPUTATIONAL OS</p>
+            </div>
+            <div class="space-y-md">
+                <div class="space-y-xs">
+                    <label class="font-label-caps text-[10px] text-on-surface-variant block uppercase">Email Address</label>
+                    <input type="email" placeholder="executive@company.com" value="executive@sanktrix.ai" class="w-full bg-surface-container border border-outline-variant/60 rounded px-md py-sm text-sm text-on-surface focus:outline-none focus:border-primary" />
+                </div>
+                <div class="space-y-xs">
+                    <label class="font-label-caps text-[10px] text-on-surface-variant block uppercase">Access Credentials</label>
+                    <input type="password" placeholder="••••••••" value="password123" class="w-full bg-surface-container border border-outline-variant/60 rounded px-md py-sm text-sm text-on-surface focus:outline-none focus:border-primary" />
+                </div>
+                <button onclick="submitLogin()" class="w-full bg-primary text-on-primary font-label-caps text-label-caps py-sm rounded hover:bg-primary-container transition-all flex items-center justify-center gap-sm shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+                    Authenticate
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </button>
+            </div>
+            <button onclick="toggleLoginModal()" class="absolute top-sm right-sm text-on-surface-variant hover:text-on-surface">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Login Loading Overlay -->
+    <div id="login-loader" class="fixed inset-0 z-[150] hidden bg-[#0b0e16]/95 backdrop-blur-xl flex flex-col items-center justify-center">
+        <div class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin shadow-[0_0_15px_rgba(86,141,255,0.3)]"></div>
+        <h3 class="font-headline-md text-headline-md text-on-surface mt-lg">Loading Sanktrix OS...</h3>
+        <p class="font-mono-data text-on-surface-variant text-xs mt-sm">Connecting to Wolfram Computations Server...</p>
+    </div>
+</body></html>

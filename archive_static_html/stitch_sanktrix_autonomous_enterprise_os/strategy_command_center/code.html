@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sanktrix - Strategy Command Center</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#10131b",
+                        "surface-container-highest": "#32353e",
+                        "on-tertiary-container": "#00311f",
+                        "tertiary": "#4edea3",
+                        "surface-container-low": "#181b24",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary-fixed": "#001945",
+                        "on-primary": "#002d6f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container": "#1c1f28",
+                        "inverse-primary": "#0058cb",
+                        "surface-container-lowest": "#0b0e16",
+                        "surface": "#10131b",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c2c6d8",
+                        "secondary": "#ffb955",
+                        "surface-container-high": "#272a33",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#424655",
+                        "secondary-container": "#dc9100",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-primary-container": "#002661",
+                        "on-surface": "#e0e2ee",
+                        "background": "#10131b",
+                        "inverse-surface": "#e0e2ee",
+                        "outline": "#8c90a1",
+                        "on-secondary-fixed": "#291800",
+                        "surface-variant": "#32353e",
+                        "surface-tint": "#b0c6ff",
+                        "tertiary-container": "#00a572",
+                        "primary": "#b0c6ff",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-on-surface": "#2d3039",
+                        "primary-container": "#568dff",
+                        "on-tertiary": "#003824",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00429c",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#ffddb4",
+                        "on-secondary-container": "#4f3100",
+                        "surface-bright": "#363942",
+                        "on-background": "#e0e2ee",
+                        "on-secondary": "#452b00",
+                        "on-error-container": "#ffdad6"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "xl": "40px",
+                        "container-margin": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "lg": "24px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "mono-data": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Space Grotesk"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "mono-data": ["13px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body { background-color: #050505; color: #e0e2ee; }
+        .glass-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-panel-elevated { background: #0A0F1E; backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+        .glow-primary { box-shadow: 0 0 15px rgba(0, 112, 255, 0.3); }
+        .pulse-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 112, 255, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 112, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 112, 255, 0); } }
+        .stream-pulse { position: absolute; top: 0; left: 0; height: 2px; width: 100%; background: linear-gradient(90deg, transparent, #b0c6ff, transparent); animation: stream 3s linear infinite; }
+        @keyframes stream { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .grid-bg { background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-body-md bg-surface-dim overflow-hidden">
+
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex-col h-full py-lg px-md z-50">
+    <div class="mb-xl px-sm flex items-center gap-sm">
+        <img src="../Santrix_logo.jpeg" class="w-10 h-10 rounded object-cover border border-primary/30" alt="Sanktrix Logo"/>
+        <div>
+            <h1 class="font-display-lg text-[20px] font-bold text-primary tracking-tighter uppercase leading-none">SANKTRIX</h1>
+            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Computational OS</p>
+        </div>
+    </div>
+    <button class="btn-command-palette mb-lg w-full bg-primary/10 border border-primary text-primary py-sm px-md rounded flex items-center justify-between font-label-caps text-label-caps hover:bg-primary/20 transition-all glow-primary">
+        <span>AI Command Palette</span>
+        <span class="material-symbols-outlined text-[16px]">keyboard_command_key</span>
+    </button>
+    <nav class="flex-grow overflow-y-auto space-y-xs">
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../overview_dashboard_sanktrix_command_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+            <span class="font-label-caps text-label-caps">Overview</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../executive_copilot_ai_decision_reasoning/code.html">
+            <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            <span class="font-label-caps text-label-caps">Executive Copilot</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../wolfram_computation_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">functions</span>
+            <span class="font-label-caps text-label-caps">Wolfram Center</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-primary font-bold bg-primary-container/10 border-r-2 border-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../strategy_command_center/code.html">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+            <span class="font-label-caps text-label-caps">Strategy Center</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../organization_digital_twin/code.html">
+            <span class="material-symbols-outlined text-[20px]">donut_large</span>
+            <span class="font-label-caps text-label-caps">Digital Twin</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../enterprise_knowledge_graph/code.html">
+            <span class="material-symbols-outlined text-[20px]">hub</span>
+            <span class="font-label-caps text-label-caps">Knowledge Graph</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../agent_observatory/code.html">
+            <span class="material-symbols-outlined text-[20px]">visibility</span>
+            <span class="font-label-caps text-label-caps">Agent Observatory</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../realtime_event_fabric/code.html">
+            <span class="material-symbols-outlined text-[20px]">stream</span>
+            <span class="font-label-caps text-label-caps">Event Fabric</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../executive_boardroom/code.html">
+            <span class="material-symbols-outlined text-[20px]">summarize</span>
+            <span class="font-label-caps text-label-caps">Boardroom</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../business_simulations_strategic_modeling/code.html">
+            <span class="material-symbols-outlined text-[20px]">model_training</span>
+            <span class="font-label-caps text-label-caps">Simulations</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../ai_agents_center_autonomous_workforce/code.html">
+            <span class="material-symbols-outlined text-[20px]">support_agent</span>
+            <span class="font-label-caps text-label-caps">Agents</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../intelligence_feed_realtime_event_log/code.html">
+            <span class="material-symbols-outlined text-[20px]">dynamic_feed</span>
+            <span class="font-label-caps text-label-caps">Intelligence Feed</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../knowledge_hub_semantic_intelligence/code.html">
+            <span class="material-symbols-outlined text-[20px]">menu_book</span>
+            <span class="font-label-caps text-label-caps">Knowledge Hub</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../workflows_visual_orchestration/code.html">
+            <span class="material-symbols-outlined text-[20px]">account_tree</span>
+            <span class="font-label-caps text-label-caps">Workflows</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../reports_data_enterprise_connectivity/code.html">
+            <span class="material-symbols-outlined text-[20px]">assessment</span>
+            <span class="font-label-caps text-label-caps">Reports</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../alerts_settings_system_governance/code.html">
+            <span class="material-symbols-outlined text-[20px]">settings</span>
+            <span class="font-label-caps text-label-caps">Settings</span>
+        </a>
+    </nav>
+    <div class="mt-auto pt-md border-t border-outline-variant">
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="../observability_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">analytics</span>
+            <span class="font-label-caps text-label-caps">System Status</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col h-screen relative bg-[#050505]">
+    <!-- TopNavBar -->
+    <header class="flex justify-between items-center h-16 px-lg fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant shadow-sm">
+        <div class="flex items-center gap-sm">
+            <span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Strategy Command Center</span>
+            <span class="h-4 w-px bg-outline-variant mx-2"></span>
+            <div class="flex items-center gap-2 text-tertiary">
+                <span class="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
+                <span class="font-mono-data text-mono-data text-xs">Autonomous Recommendations: Sync'd</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-md">
+            <button class="btn-command-palette text-on-surface-variant hover:text-primary transition-all">
+                <span class="material-symbols-outlined">terminal</span>
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-all relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+            </button>
+            <a href="../executive_boardroom/code.html" class="bg-primary text-on-primary font-label-caps text-label-caps px-md py-xs rounded hover:bg-primary-container transition-colors shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+                Boardroom Mode
+            </a>
+            <button class="text-on-surface-variant hover:text-primary transition-all">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Content Canvas -->
+    <main class="flex-1 overflow-y-auto mt-16 pb-12 p-lg grid-bg relative">
+        <div class="absolute bottom-12 right-12 opacity-5 pointer-events-none z-0">
+            <img src="../Santrix_logo.jpeg" class="w-48 h-48 filter grayscale" alt="Watermark"/>
+        </div>
+
+        <div class="max-w-7xl mx-auto space-y-md relative z-10">
+            <!-- Strategic Overview Gauges (Scorecard) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-md">
+                <!-- Priority Health -->
+                <div class="glass-panel rounded-xl p-md flex flex-col justify-between">
+                    <span class="font-label-caps text-xs text-on-surface-variant">Strategic Health Index</span>
+                    <h2 class="font-headline-lg text-[32px] text-tertiary font-bold mt-1">94.8%</h2>
+                    <div class="flex items-center gap-sm mt-md font-mono-data text-xs text-tertiary">
+                        <span class="material-symbols-outlined text-sm">trending_up</span>
+                        <span>+2.4% vs last week</span>
+                    </div>
+                </div>
+                <!-- Risk Level -->
+                <div class="glass-panel rounded-xl p-md flex flex-col justify-between">
+                    <span class="font-label-caps text-xs text-on-surface-variant">Active Operations Risk</span>
+                    <h2 class="font-headline-lg text-[32px] text-secondary font-bold mt-1">Elevated</h2>
+                    <div class="flex items-center gap-sm mt-md font-mono-data text-xs text-secondary">
+                        <span class="material-symbols-outlined text-sm">warning</span>
+                        <span>Critical: Marketing Churn</span>
+                    </div>
+                </div>
+                <!-- Opportunities -->
+                <div class="glass-panel rounded-xl p-md flex flex-col justify-between">
+                    <span class="font-label-caps text-xs text-on-surface-variant">Identified Arbitrage</span>
+                    <h2 class="font-headline-lg text-[32px] text-primary font-bold mt-1">$4.2M</h2>
+                    <div class="flex items-center gap-sm mt-md font-mono-data text-xs text-primary">
+                        <span class="material-symbols-outlined text-sm">lightbulb</span>
+                        <span>Optimize Ad Budget</span>
+                    </div>
+                </div>
+                <!-- Compute Optimization -->
+                <div class="glass-panel rounded-xl p-md flex flex-col justify-between">
+                    <span class="font-label-caps text-xs text-on-surface-variant">Wolfram Yield multiplier</span>
+                    <h2 class="font-headline-lg text-[32px] text-tertiary font-bold mt-1">1.48x</h2>
+                    <div class="flex items-center gap-sm mt-md font-mono-data text-xs text-tertiary">
+                        <span class="material-symbols-outlined text-sm">bolt</span>
+                        <span>Autonomous tuning active</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2: AI Strategic Brief & Priority Action list -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-md">
+                <!-- AI Brief -->
+                <div class="lg:col-span-7 glass-panel rounded-xl p-md flex flex-col justify-between relative overflow-hidden h-[450px]">
+                    <div class="stream-pulse"></div>
+                    <div class="border-b border-outline-variant/30 pb-sm flex justify-between items-center mb-sm">
+                        <div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface text-[18px]">AI Executive Briefing</h3>
+                            <p class="font-mono-data text-mono-data text-xs text-on-surface-variant mt-1">REAL-TIME BUSINESS INTERPRETATION</p>
+                        </div>
+                        <span class="material-symbols-outlined text-primary">description</span>
+                    </div>
+                    <div class="flex-grow font-body-lg text-sm text-on-surface-variant leading-relaxed space-y-md overflow-y-auto my-md pr-xs">
+                        <p>
+                            Sanktrix AI agents, operating in coordination with the <strong>Wolfram Computational Layer</strong>, have identified a potential runway optimization opportunity. Current ARR projections sit at <strong>$42.8M</strong> with a monthly cash burn rate of <strong>$1.8M</strong>. 
+                        </p>
+                        <p>
+                            Under baseline parameters, the company maintains a runway of <strong>16.2 months</strong>. However, the simulation indicates that implementing the <em>Marketing Budget Reallocation</em> recommendation will improve capital efficiency by <strong>18%</strong>, extending runway to <strong>18.4 months</strong> while maintaining top-line expansion goals.
+                        </p>
+                        <div class="p-sm rounded bg-secondary-container/10 border border-secondary/20 text-secondary text-xs flex gap-sm">
+                            <span class="material-symbols-outlined text-sm mt-0.5">warning</span>
+                            <span>CRITICAL DIRECTIVE: A 20% increase in Customer Acquisition Cost (CAC) without optimization will trigger margin erosion starting in Q3. Immediate action is suggested.</span>
+                        </div>
+                    </div>
+                    <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+                        <span class="text-xs text-on-surface-variant font-mono-data">Brief compiled: 4m ago</span>
+                        <div class="flex gap-sm">
+                            <button onclick="alert('Exporting executive brief...')" class="border border-outline hover:border-primary text-on-surface hover:text-primary text-xs font-label-caps px-sm py-sm rounded">Export PDF</button>
+                            <a href="../executive_boardroom/code.html" class="bg-primary text-on-primary text-xs font-label-caps px-sm py-sm rounded hover:bg-primary-container transition-all">Send to Boardroom</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Recommendations List -->
+                <div class="lg:col-span-5 glass-panel rounded-xl p-md flex flex-col justify-between h-[450px]">
+                    <div class="border-b border-outline-variant/30 pb-sm mb-sm">
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-[18px]">Top Priorities & Decisions</h3>
+                        <p class="font-mono-data text-mono-data text-xs text-on-surface-variant mt-1">ORDERED BY ACTION PRIORITY AND SCORE</p>
+                    </div>
+
+                    <div class="flex-grow overflow-y-auto space-y-sm my-sm pr-xs">
+                        <!-- Item 1 -->
+                        <div class="bg-surface-container p-sm rounded border border-outline-variant/50 hover:border-primary transition-colors flex gap-sm items-start">
+                            <span class="text-xs bg-error/10 border border-error/30 text-error px-1.5 py-0.5 rounded font-mono-data font-bold">P1</span>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-xs text-on-surface">Optimize Ad Spend Allocation</h4>
+                                    <span class="text-[10px] text-tertiary bg-tertiary/10 px-1 rounded">Score: 94</span>
+                                </div>
+                                <p class="text-[11px] text-on-surface-variant mt-0.5">Shift 22% of budget from display to search based on conversion variance.</p>
+                                <div class="flex justify-between items-center mt-2 text-[10px] font-mono-data text-on-surface-variant">
+                                    <span>Impact: +$1.2M ARR</span>
+                                    <span class="text-tertiary">Run simulation &rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="bg-surface-container p-sm rounded border border-outline-variant/50 hover:border-primary transition-colors flex gap-sm items-start">
+                            <span class="text-xs bg-secondary/10 border border-secondary/30 text-secondary px-1.5 py-0.5 rounded font-mono-data font-bold">P2</span>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-xs text-on-surface">Implement Churn Mitigation Loop</h4>
+                                    <span class="text-[10px] text-tertiary bg-tertiary/10 px-1 rounded">Score: 88</span>
+                                </div>
+                                <p class="text-[11px] text-on-surface-variant mt-0.5">Activate SDR retention workflow for accounts exhibiting drop-off characteristics.</p>
+                                <div class="flex justify-between items-center mt-2 text-[10px] font-mono-data text-on-surface-variant">
+                                    <span>Impact: -4.2% Churn</span>
+                                    <span class="text-tertiary">Run simulation &rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="bg-surface-container p-sm rounded border border-outline-variant/50 hover:border-primary transition-colors flex gap-sm items-start">
+                            <span class="text-xs bg-outline-variant/30 border border-outline-variant/50 text-outline px-1.5 py-0.5 rounded font-mono-data font-bold">P3</span>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center">
+                                    <h4 class="font-bold text-xs text-on-surface">Accelerate Dev Headcount</h4>
+                                    <span class="text-[10px] text-secondary bg-secondary/10 px-1 rounded">Score: 68</span>
+                                </div>
+                                <p class="text-[11px] text-on-surface-variant mt-0.5">Hire 4 Senior React Developers to speed up product delivery timeline.</p>
+                                <div class="flex justify-between items-center mt-2 text-[10px] font-mono-data text-on-surface-variant">
+                                    <span>Impact: -2mo Time to Market</span>
+                                    <span class="text-tertiary">Run simulation &rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center text-xs">
+                        <span class="text-on-surface-variant font-mono-data">Decision Matrix: Auto-Refreshed</span>
+                        <button class="text-primary hover:underline font-label-caps">Advanced Matrix Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Suggested Actions & Interactive Impact Scores -->
+            <div class="glass-panel rounded-xl p-md">
+                <div class="border-b border-outline-variant/30 pb-sm mb-sm flex justify-between items-center">
+                    <div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-[18px]">Decision Simulation & Impact sandbox</h3>
+                        <p class="font-mono-data text-mono-data text-xs text-on-surface-variant mt-1">TOGGLE STRATEGIC PATHWAYS TO FORECAST BUSINESS IMPACTS IN REAL-TIME</p>
+                    </div>
+                    <span class="text-xs text-on-surface-variant font-mono-data bg-surface-container px-2 py-1 rounded">Live Wolfram Model integration</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-md my-md">
+                    <!-- Action Card 1 -->
+                    <div class="bg-surface-container-low p-md rounded-lg border border-outline-variant flex flex-col justify-between h-[180px]">
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono-data text-xs text-primary font-bold">REALLOCATE AD SPEND</span>
+                                <span class="text-[10px] text-tertiary bg-tertiary/10 px-1 rounded">HIGH IMPACT</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-sm">Shifting $150K display advertising budget directly to high-intent intent keyword campaigns.</p>
+                        </div>
+                        <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-on-surface-variant font-mono-data">RUNWAY EXTENSION</span>
+                                <span class="text-xs font-bold text-tertiary font-mono-data">+2.2 Months</span>
+                            </div>
+                            <button onclick="toggleAction(this, 2.2, 1.2)" class="btn-action-simulate bg-primary/20 border border-primary text-primary px-sm py-xs rounded font-label-caps text-xs">Simulate</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Card 2 -->
+                    <div class="bg-surface-container-low p-md rounded-lg border border-outline-variant flex flex-col justify-between h-[180px]">
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono-data text-xs text-primary font-bold">IMPLEMENT CHURN MITIGATION</span>
+                                <span class="text-[10px] text-tertiary bg-tertiary/10 px-1 rounded">HIGH IMPACT</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-sm">Deploy retention agents to optimize pipeline health and reduce account cancellations by 15%.</p>
+                        </div>
+                        <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-on-surface-variant font-mono-data">CASH YIELD DELTA</span>
+                                <span class="text-xs font-bold text-tertiary font-mono-data">+$840K ARR</span>
+                            </div>
+                            <button onclick="toggleAction(this, 1.1, 0.84)" class="btn-action-simulate bg-primary/20 border border-primary text-primary px-sm py-xs rounded font-label-caps text-xs">Simulate</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Card 3 -->
+                    <div class="bg-surface-container-low p-md rounded-lg border border-outline-variant flex flex-col justify-between h-[180px]">
+                        <div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-mono-data text-xs text-primary font-bold">ACCELERATE SALES HIRE</span>
+                                <span class="text-[10px] text-secondary bg-secondary/10 px-1 rounded">MEDIUM IMPACT</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-sm">Onboard 3 Enterprise AEs next month to unlock capacity in the European sales territories.</p>
+                        </div>
+                        <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-on-surface-variant font-mono-data">NET EXPANSION YIELD</span>
+                                <span class="text-xs font-bold text-tertiary font-mono-data">+$1.4M ARR</span>
+                            </div>
+                            <button onclick="toggleAction(this, -0.6, 1.4)" class="btn-action-simulate bg-primary/20 border border-primary text-primary px-sm py-xs rounded font-label-caps text-xs">Simulate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-sm border-t border-outline-variant/30 flex justify-between items-center">
+                    <div class="text-mono-data text-xs text-on-surface-variant">
+                        Simulated Cumulative Runway Impact: <strong class="text-tertiary" id="total-runway-delta">+0.0 Months</strong> | ARR Yield: <strong class="text-primary" id="total-arr-delta">+$0.0M</strong>
+                    </div>
+                    <button onclick="applyStrategicChoices()" class="bg-primary text-on-primary font-label-caps text-label-caps px-lg py-sm rounded hover:bg-primary-container transition-all shadow-[0_0_15px_rgba(0,112,255,0.3)]">
+                        Commit Plan to Execution
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <footer class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] h-8 z-50 bg-surface-container-lowest border-t border-outline-variant flex items-center px-lg overflow-hidden whitespace-nowrap">
+        <span class="font-mono-data text-mono-data text-tertiary mr-auto">Sanktrix Strategy OS Status: SYNCHRONIZED</span>
+        <div class="flex items-center gap-md">
+            <span class="font-mono-data text-mono-data text-on-surface-variant">System Confidence: 94%</span>
+            <span class="w-1 h-1 bg-outline rounded-full"></span>
+            <span class="font-mono-data text-mono-data text-on-surface-variant">Data Scope: Realtime + Historical</span>
+            <span class="w-1 h-1 bg-outline rounded-full"></span>
+            <span class="font-mono-data text-mono-data text-on-surface-variant">Autonomous Directives: Active</span>
+        </div>
+    </footer>
+</div>
+
+<!-- Global AI Command Palette Modal -->
+<div id="command-palette" class="fixed inset-0 z-[100] hidden bg-surface-lowest/80 backdrop-blur-md flex items-center justify-center p-md">
+    <div class="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+        <!-- Search Input -->
+        <div class="p-md border-b border-outline-variant/50 flex items-center gap-md">
+            <span class="material-symbols-outlined text-primary text-xl">terminal</span>
+            <input id="command-input" type="text" placeholder="Type a command or search modules... (e.g. /simulate, /forecast, /run-agent)" 
+                class="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 font-body-lg focus:outline-none focus:ring-0" />
+            <span class="text-xs bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono-data">ESC</span>
+        </div>
+        <!-- Command Lists -->
+        <div id="command-list" class="max-h-[350px] overflow-y-auto p-sm space-y-md">
+            <!-- Group: Action Commands -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Executive Commands</div>
+                <div class="space-y-xs mt-xs">
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Churn Spike">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Churn Spike</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Stress-test user retention</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Burn Rate Crisis">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Burn Rate Crisis</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Simulate cash runway crunch</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/forecast Runway">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                            <span class="font-mono-data">/forecast Runway</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Runway projection with Wolfram</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/run-agent SDR Swarm">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-tertiary text-sm">support_agent</span>
+                            <span class="font-mono-data">/run-agent SDR Swarm</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Activate autonomous lead gen</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/optimize Marketing">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
+                            <span class="font-mono-data">/optimize Marketing</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Wolfram-powered budget allocation</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Group: Navigation -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Go To Section</div>
+                <div class="grid grid-cols-2 gap-xs mt-xs">
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../overview_dashboard_sanktrix_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">dashboard</span>
+                        <span>Overview</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../wolfram_computation_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                        <span>Wolfram Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../strategy_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">verified</span>
+                        <span>Strategy Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../organization_digital_twin/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">donut_large</span>
+                        <span>Digital Twin</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../enterprise_knowledge_graph/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">hub</span>
+                        <span>Knowledge Graph</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../agent_observatory/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
+                        <span>Agent Observatory</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../realtime_event_fabric/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">stream</span>
+                        <span>Event Fabric</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../executive_boardroom/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">summarize</span>
+                        <span>Executive Boardroom</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../observability_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">analytics</span>
+                        <span>System Observability</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../demo_mode/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">play_circle</span>
+                        <span>Hackathon Demo Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let activeRunwayDelta = 0;
+    let activeArrDelta = 0;
+
+    function toggleAction(button, runwayDelta, arrDelta) {
+        if (button.classList.contains('bg-primary/20')) {
+            // Activating
+            button.classList.remove('bg-primary/20', 'text-primary');
+            button.classList.add('bg-tertiary/20', 'text-tertiary', 'border-tertiary');
+            button.innerText = 'Active';
+            activeRunwayDelta += runwayDelta;
+            activeArrDelta += arrDelta;
+        } else {
+            // Deactivating
+            button.classList.remove('bg-tertiary/20', 'text-tertiary', 'border-tertiary');
+            button.classList.add('bg-primary/20', 'text-primary', 'border-primary');
+            button.innerText = 'Simulate';
+            activeRunwayDelta -= runwayDelta;
+            activeArrDelta -= arrDelta;
+        }
+        
+        // Update display
+        const totalRunwayEl = document.getElementById('total-runway-delta');
+        const totalArrEl = document.getElementById('total-arr-delta');
+        
+        totalRunwayEl.innerText = (activeRunwayDelta >= 0 ? '+' : '') + activeRunwayDelta.toFixed(1) + ' Months';
+        totalArrEl.innerText = (activeArrDelta >= 0 ? '+' : '-') + '$' + Math.abs(activeArrDelta).toFixed(2) + 'M';
+        
+        if (activeRunwayDelta >= 0) {
+            totalRunwayEl.className = 'text-tertiary font-mono-data';
+        } else {
+            totalRunwayEl.className = 'text-error font-mono-data';
+        }
+    }
+
+    function applyStrategicChoices() {
+        alert(`Committing plan to execution:\nRunway shift: ${activeRunwayDelta.toFixed(1)} Months\nNet ARR change: $${activeArrDelta.toFixed(2)}M\nTriggering automated workflows via n8n...`);
+    }
+</script>
+
+<script>
+    // Global AI Command Palette JS
+    document.addEventListener('DOMContentLoaded', () => {
+        const palette = document.getElementById('command-palette');
+        const input = document.getElementById('command-input');
+        const commandItems = document.querySelectorAll('.command-item');
+
+        function togglePalette() {
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                filterCommands('');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                togglePalette();
+            }
+            if (e.key === 'Escape' && !palette.classList.contains('hidden')) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.btn-command-palette').forEach(btn => {
+            btn.addEventListener('click', togglePalette);
+        });
+
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value.toLowerCase());
+        });
+
+        function filterCommands(query) {
+            commandItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const action = (item.getAttribute('data-action') || '').toLowerCase();
+                if (text.includes(query) || action.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        commandItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.getAttribute('data-url');
+                const action = item.getAttribute('data-action');
+                palette.classList.add('hidden');
+
+                if (url) {
+                    window.location.href = url;
+                } else if (action) {
+                    if (action.startsWith('/simulate')) {
+                        const scenarioName = action.replace('/simulate ', '');
+                        window.location.href = `../demo_mode/code.html?scenario=${encodeURIComponent(scenarioName)}`;
+                    } else if (action.startsWith('/forecast')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=forecast`;
+                    } else if (action.startsWith('/optimize')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=optimize`;
+                    } else if (action.startsWith('/run-agent')) {
+                        window.location.href = `../ai_agents_center_autonomous_workforce/code.html`;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

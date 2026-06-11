@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Sanktrix - Enterprise Knowledge Graph</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#10131b",
+                        "surface-container-highest": "#32353e",
+                        "on-tertiary-container": "#00311f",
+                        "tertiary": "#4edea3",
+                        "surface-container-low": "#181b24",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary-fixed": "#001945",
+                        "on-primary": "#002d6f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container": "#1c1f28",
+                        "inverse-primary": "#0058cb",
+                        "surface-container-lowest": "#0b0e16",
+                        "surface": "#10131b",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c2c6d8",
+                        "secondary": "#ffb955",
+                        "surface-container-high": "#272a33",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#424655",
+                        "secondary-container": "#dc9100",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-primary-container": "#002661",
+                        "on-surface": "#e0e2ee",
+                        "background": "#10131b",
+                        "inverse-surface": "#e0e2ee",
+                        "outline": "#8c90a1",
+                        "on-secondary-fixed": "#291800",
+                        "surface-variant": "#32353e",
+                        "surface-tint": "#b0c6ff",
+                        "tertiary-container": "#00a572",
+                        "primary": "#b0c6ff",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-on-surface": "#2d3039",
+                        "primary-container": "#568dff",
+                        "on-tertiary": "#003824",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00429c",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#ffddb4",
+                        "on-secondary-container": "#4f3100",
+                        "surface-bright": "#363942",
+                        "on-background": "#e0e2ee",
+                        "on-secondary": "#452b00",
+                        "on-error-container": "#ffdad6"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "xl": "40px",
+                        "container-margin": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "lg": "24px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "mono-data": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Space Grotesk"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "mono-data": ["13px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body { background-color: #050505; color: #e0e2ee; }
+        .glass-panel { background: rgba(18, 18, 18, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-panel-elevated { background: #0A0F1E; backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); }
+        .glow-primary { box-shadow: 0 0 15px rgba(0, 112, 255, 0.3); }
+        .pulse-indicator { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 112, 255, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 112, 255, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 112, 255, 0); } }
+        .stream-pulse { position: absolute; top: 0; left: 0; height: 2px; width: 100%; background: linear-gradient(90deg, transparent, #b0c6ff, transparent); animation: stream 3s linear infinite; }
+        @keyframes stream { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .grid-bg { background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px); background-size: 20px 20px; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-body-md bg-surface-dim overflow-hidden">
+
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex-col h-full py-lg px-md z-50">
+    <div class="mb-xl px-sm flex items-center gap-sm">
+        <img src="../Santrix_logo.jpeg" class="w-10 h-10 rounded object-cover border border-primary/30" alt="Sanktrix Logo"/>
+        <div>
+            <h1 class="font-display-lg text-[20px] font-bold text-primary tracking-tighter uppercase leading-none">SANKTRIX</h1>
+            <p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Computational OS</p>
+        </div>
+    </div>
+    <button class="btn-command-palette mb-lg w-full bg-primary/10 border border-primary text-primary py-sm px-md rounded flex items-center justify-between font-label-caps text-label-caps hover:bg-primary/20 transition-all glow-primary">
+        <span>AI Command Palette</span>
+        <span class="material-symbols-outlined text-[16px]">keyboard_command_key</span>
+    </button>
+    <nav class="flex-grow overflow-y-auto space-y-xs">
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../overview_dashboard_sanktrix_command_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+            <span class="font-label-caps text-label-caps">Overview</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../executive_copilot_ai_decision_reasoning/code.html">
+            <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            <span class="font-label-caps text-label-caps">Executive Copilot</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../wolfram_computation_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">functions</span>
+            <span class="font-label-caps text-label-caps">Wolfram Center</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../strategy_command_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">verified</span>
+            <span class="font-label-caps text-label-caps">Strategy Center</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../organization_digital_twin/code.html">
+            <span class="material-symbols-outlined text-[20px]">donut_large</span>
+            <span class="font-label-caps text-label-caps">Digital Twin</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-primary font-bold bg-primary-container/10 border-r-2 border-primary hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../enterprise_knowledge_graph/code.html">
+            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">hub</span>
+            <span class="font-label-caps text-label-caps">Knowledge Graph</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../agent_observatory/code.html">
+            <span class="material-symbols-outlined text-[20px]">visibility</span>
+            <span class="font-label-caps text-label-caps">Agent Observatory</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../realtime_event_fabric/code.html">
+            <span class="material-symbols-outlined text-[20px]">stream</span>
+            <span class="font-label-caps text-label-caps">Event Fabric</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../executive_boardroom/code.html">
+            <span class="material-symbols-outlined text-[20px]">summarize</span>
+            <span class="font-label-caps text-label-caps">Boardroom</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../business_simulations_strategic_modeling/code.html">
+            <span class="material-symbols-outlined text-[20px]">model_training</span>
+            <span class="font-label-caps text-label-caps">Simulations</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../ai_agents_center_autonomous_workforce/code.html">
+            <span class="material-symbols-outlined text-[20px]">support_agent</span>
+            <span class="font-label-caps text-label-caps">Agents</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../intelligence_feed_realtime_event_log/code.html">
+            <span class="material-symbols-outlined text-[20px]">dynamic_feed</span>
+            <span class="font-label-caps text-label-caps">Intelligence Feed</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../knowledge_hub_semantic_intelligence/code.html">
+            <span class="material-symbols-outlined text-[20px]">menu_book</span>
+            <span class="font-label-caps text-label-caps">Knowledge Hub</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../workflows_visual_orchestration/code.html">
+            <span class="material-symbols-outlined text-[20px]">account_tree</span>
+            <span class="font-label-caps text-label-caps">Workflows</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../reports_data_enterprise_connectivity/code.html">
+            <span class="material-symbols-outlined text-[20px]">assessment</span>
+            <span class="font-label-caps text-label-caps">Reports</span>
+        </a>
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90" href="../alerts_settings_system_governance/code.html">
+            <span class="material-symbols-outlined text-[20px]">settings</span>
+            <span class="font-label-caps text-label-caps">Settings</span>
+        </a>
+    </nav>
+    <div class="mt-auto pt-md border-t border-outline-variant">
+        <a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="../observability_center/code.html">
+            <span class="material-symbols-outlined text-[20px]">analytics</span>
+            <span class="font-label-caps text-label-caps">System Status</span>
+        </a>
+    </div>
+</aside>
+
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col h-screen relative bg-[#050505]">
+    <!-- TopNavBar -->
+    <header class="flex justify-between items-center h-16 px-lg fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant shadow-sm">
+        <div class="flex items-center gap-sm">
+            <span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Enterprise Knowledge Graph</span>
+            <span class="h-4 w-px bg-outline-variant mx-2"></span>
+            <div class="flex items-center gap-2 text-tertiary">
+                <span class="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
+                <span class="font-mono-data text-mono-data text-xs">Vector Index: 4.8M Embeddings Sync'd</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-md">
+            <button class="btn-command-palette text-on-surface-variant hover:text-primary transition-all">
+                <span class="material-symbols-outlined">terminal</span>
+            </button>
+            <button class="text-on-surface-variant hover:text-primary transition-all relative">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+            </button>
+            <a href="../organization_digital_twin/code.html" class="bg-primary text-on-primary font-label-caps text-label-caps px-md py-xs rounded hover:bg-primary-container transition-colors shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+                Digital Twin
+            </a>
+            <button class="text-on-surface-variant hover:text-primary transition-all">
+                <span class="material-symbols-outlined">account_circle</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Content Canvas -->
+    <main class="flex-1 overflow-y-auto mt-16 pb-12 p-lg grid-bg relative">
+        <div class="absolute bottom-12 right-12 opacity-5 pointer-events-none z-0">
+            <img src="../Santrix_logo.jpeg" class="w-48 h-48 filter grayscale" alt="Watermark"/>
+        </div>
+
+        <div class="max-w-7xl mx-auto space-y-md relative z-10">
+            <!-- Row 1: Graph Filter Controls -->
+            <div class="glass-panel p-sm rounded-xl flex flex-wrap gap-md justify-between items-center relative overflow-hidden">
+                <div class="stream-pulse"></div>
+                <div class="flex items-center gap-md flex-grow">
+                    <span class="material-symbols-outlined text-primary text-xl">filter_list</span>
+                    <input id="graph-search" oninput="filterGraphNodes()" type="text" placeholder="Search knowledge nodes (e.g. Q3 ARR, SDR swarm, temporal)..." 
+                           class="bg-surface-container-high border border-outline-variant/60 rounded px-md py-xs text-xs text-on-surface placeholder-on-surface-variant/50 w-full max-w-md focus:outline-none focus:border-primary" />
+                </div>
+                <div class="flex gap-sm font-mono-data text-[10px] text-on-surface-variant">
+                    <button class="bg-primary/20 text-primary border border-primary px-2 py-0.5 rounded">All Nodes</button>
+                    <button class="hover:bg-surface-container px-2 py-0.5 rounded">People</button>
+                    <button class="hover:bg-surface-container px-2 py-0.5 rounded">Workflows</button>
+                    <button class="hover:bg-surface-container px-2 py-0.5 rounded">Reports</button>
+                    <button class="hover:bg-surface-container px-2 py-0.5 rounded">KPIs</button>
+                </div>
+            </div>
+
+            <!-- Row 2: Node Graph & Inspector -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-md">
+                <!-- Node Graph Display -->
+                <div class="lg:col-span-8 glass-panel rounded-xl p-md flex flex-col h-[520px] relative overflow-hidden">
+                    <!-- SVG Connections & Nodes -->
+                    <div class="flex-grow bg-surface-container-lowest/30 rounded border border-outline-variant/30 flex items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-surface-dim to-surface-lowest"></div>
+                        
+                        <!-- Connecting Lines -->
+                        <svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Network edges -->
+                            <line x1="280" y1="230" x2="150" y2="120" stroke="#424655" stroke-opacity="0.6" stroke-width="1.5" />
+                            <line x1="280" y1="230" x2="420" y2="120" stroke="#424655" stroke-opacity="0.6" stroke-width="1.5" />
+                            <line x1="280" y1="230" x2="120" y2="340" stroke="#424655" stroke-opacity="0.6" stroke-width="1.5" />
+                            <line x1="280" y1="230" x2="420" y2="340" stroke="#424655" stroke-opacity="0.6" stroke-width="1.5" />
+                            
+                            <!-- Sub nodes -->
+                            <line x1="150" y1="120" x2="70" y2="80" stroke="#424655" stroke-opacity="0.4" stroke-width="1" />
+                            <line x1="150" y1="120" x2="190" y2="50" stroke="#424655" stroke-opacity="0.4" stroke-width="1" />
+                            <line x1="420" y1="120" x2="480" y2="80" stroke="#424655" stroke-opacity="0.4" stroke-width="1" />
+                        </svg>
+
+                        <!-- Central Node: Executive Copilot -->
+                        <div onclick="inspectNode('central')" id="node-central" class="node-item absolute bg-surface-container border-2 border-primary text-center p-md rounded-full w-32 cursor-pointer hover:border-white transition-all z-10">
+                            <span class="material-symbols-outlined text-primary text-xl">smart_toy</span>
+                            <div class="font-mono-data text-xs mt-1 font-bold">Executive OS</div>
+                            <span class="text-[9px] text-on-surface-variant block uppercase">Core System</span>
+                        </div>
+
+                        <!-- Node: SDR Swarm (Workflow) -->
+                        <div onclick="inspectNode('sdr')" id="node-sdr" class="node-item absolute left-12 top-20 bg-surface-container border border-outline-variant p-sm rounded cursor-pointer hover:border-primary transition-all z-10 w-28 text-center">
+                            <span class="material-symbols-outlined text-tertiary text-sm">support_agent</span>
+                            <div class="font-mono-data text-xs">SDR Swarm</div>
+                            <span class="text-[9px] text-on-surface-variant block uppercase">Workflow</span>
+                        </div>
+
+                        <!-- Node: ARR Dashboard (Report) -->
+                        <div onclick="inspectNode('arr')" id="node-arr" class="node-item absolute right-24 top-20 bg-surface-container border border-outline-variant p-sm rounded cursor-pointer hover:border-primary transition-all z-10 w-32 text-center">
+                            <span class="material-symbols-outlined text-secondary text-sm">assessment</span>
+                            <div class="font-mono-data text-xs">ARR Dashboard</div>
+                            <span class="text-[9px] text-on-surface-variant block uppercase">Report</span>
+                        </div>
+
+                        <!-- Node: Cash Burn Limit (KPI) -->
+                        <div onclick="inspectNode('burn')" id="node-burn" class="node-item absolute left-16 bottom-24 bg-surface-container border border-outline-variant p-sm rounded cursor-pointer hover:border-primary transition-all z-10 w-32 text-center">
+                            <span class="material-symbols-outlined text-error text-sm">trending_down</span>
+                            <div class="font-mono-data text-xs">ARR Net Runway</div>
+                            <span class="text-[9px] text-on-surface-variant block uppercase">KPI Node</span>
+                        </div>
+
+                        <!-- Node: Karan Sharma (Owner) -->
+                        <div onclick="inspectNode('owner')" id="node-owner" class="node-item absolute right-24 bottom-24 bg-surface-container border border-outline-variant p-sm rounded cursor-pointer hover:border-primary transition-all z-10 w-32 text-center">
+                            <span class="material-symbols-outlined text-primary text-sm">person</span>
+                            <div class="font-mono-data text-xs">Karan Sharma</div>
+                            <span class="text-[9px] text-on-surface-variant block uppercase">People Node</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relationship Inspector -->
+                <div class="lg:col-span-4 glass-panel rounded-xl p-md flex flex-col justify-between h-[520px]">
+                    <div class="border-b border-outline-variant/30 pb-sm mb-sm">
+                        <h3 class="font-headline-md text-headline-md text-on-surface text-[18px]">Relationship Inspector</h3>
+                        <p class="font-mono-data text-mono-data text-xs text-on-surface-variant mt-1">SEMANTIC GRAPH PATHWAY TELEMETRY</p>
+                    </div>
+
+                    <div class="flex-grow space-y-md my-md overflow-y-auto pr-xs" id="inspect-content">
+                        <!-- Default node inspector content -->
+                        <div class="bg-surface-container p-sm rounded border border-outline-variant">
+                            <span class="font-label-caps text-[10px] text-primary block">ENTITY TYPE: CORE SYSTEM</span>
+                            <h4 class="font-bold text-sm text-on-surface mt-1">Sanktrix Executive OS</h4>
+                            <p class="text-[11px] text-on-surface-variant mt-1">The primary orchestration kernel executing autonomous processes.</p>
+                        </div>
+                        <div class="space-y-xs">
+                            <span class="font-label-caps text-[10px] text-on-surface-variant">Connected Entities</span>
+                            <ul class="text-xs space-y-1 text-on-surface font-mono-data">
+                                <li class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-tertiary rounded-full"></span> SDR Swarm (Workflow dependency)</li>
+                                <li class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-secondary rounded-full"></span> ARR Dashboard (Generates report input)</li>
+                                <li class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Karan Sharma (Owner / Sign-off authority)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="pt-sm border-t border-outline-variant/30">
+                        <button onclick="alert('Regenerating vector mapping nodes...')" class="w-full bg-primary text-on-primary font-label-caps text-xs text-center py-sm rounded hover:bg-primary-container transition-all">Re-Index Vector Embeddings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BottomNavBar -->
+    <footer class="fixed bottom-0 right-0 w-full md:w-[calc(100%-16rem)] h-8 z-50 bg-surface-container-lowest border-t border-outline-variant flex items-center px-lg overflow-hidden whitespace-nowrap">
+        <span class="font-mono-data text-mono-data text-tertiary mr-auto">Knowledge Graph State: CONVERGED</span>
+        <div class="flex items-center gap-md">
+            <span class="font-mono-data text-mono-data text-on-surface-variant">Database: Pinecone + Postgres</span>
+            <span class="w-1 h-1 bg-outline rounded-full"></span>
+            <span class="font-mono-data text-mono-data text-on-surface-variant">Vector Latency: 4ms</span>
+        </div>
+    </footer>
+</div>
+
+<!-- Global AI Command Palette Modal -->
+<div id="command-palette" class="fixed inset-0 z-[100] hidden bg-surface-lowest/80 backdrop-blur-md flex items-center justify-center p-md">
+    <div class="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+        <!-- Search Input -->
+        <div class="p-md border-b border-outline-variant/50 flex items-center gap-md">
+            <span class="material-symbols-outlined text-primary text-xl">terminal</span>
+            <input id="command-input" type="text" placeholder="Type a command or search modules... (e.g. /simulate, /forecast, /run-agent)" 
+                class="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 font-body-lg focus:outline-none focus:ring-0" />
+            <span class="text-xs bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono-data">ESC</span>
+        </div>
+        <!-- Command Lists -->
+        <div id="command-list" class="max-h-[350px] overflow-y-auto p-sm space-y-md">
+            <!-- Group: Action Commands -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Executive Commands</div>
+                <div class="space-y-xs mt-xs">
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Churn Spike">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Churn Spike</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Stress-test user retention</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Burn Rate Crisis">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Burn Rate Crisis</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Simulate cash runway crunch</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/forecast Runway">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                            <span class="font-mono-data">/forecast Runway</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Runway projection with Wolfram</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/run-agent SDR Swarm">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-tertiary text-sm">support_agent</span>
+                            <span class="font-mono-data">/run-agent SDR Swarm</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Activate autonomous lead gen</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/optimize Marketing">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
+                            <span class="font-mono-data">/optimize Marketing</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Wolfram-powered budget allocation</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Group: Navigation -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Go To Section</div>
+                <div class="grid grid-cols-2 gap-xs mt-xs">
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../overview_dashboard_sanktrix_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">dashboard</span>
+                        <span>Overview</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../wolfram_computation_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                        <span>Wolfram Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../strategy_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">verified</span>
+                        <span>Strategy Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../organization_digital_twin/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">donut_large</span>
+                        <span>Digital Twin</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../enterprise_knowledge_graph/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">hub</span>
+                        <span>Knowledge Graph</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../agent_observatory/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
+                        <span>Agent Observatory</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../realtime_event_fabric/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">stream</span>
+                        <span>Event Fabric</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../executive_boardroom/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">summarize</span>
+                        <span>Executive Boardroom</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../observability_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">analytics</span>
+                        <span>System Observability</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../demo_mode/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">play_circle</span>
+                        <span>Hackathon Demo Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const graphNodes = {
+        'central': { type: 'CORE SYSTEM', title: 'Sanktrix Executive OS', desc: 'Primary orchestration kernel executing multi-agent processes and symbolic math pipelines.', links: ['SDR Swarm (Workflow)', 'ARR Dashboard (Report)', 'Karan Sharma (Owner)'] },
+        'sdr': { type: 'WORKFLOW', title: 'SDR Swarm', desc: 'Autonomous sales development workflow. Auto-calls contacts, crafts outreach, tracks ARR bookings.', links: ['Executive OS (Dependent)', 'Karan Sharma (Supervisor)'] },
+        'arr': { type: 'REPORT', title: 'ARR Dashboard', desc: 'Realtime ARR monitoring report compiling SaaS MRR variables from Stripe and Salesforce API links.', links: ['Executive OS (Input)', 'ARR Net Runway (KPI Node)'] },
+        'burn': { type: 'KPI NODE', title: 'ARR Net Runway', desc: 'Key performance metric indicating months of remaining runway. Connected to ClickHouse mathematical projection databases.', links: ['ARR Dashboard (Input)'] },
+        'owner': { type: 'PEOPLE NODE', title: 'Karan Sharma', desc: 'Founder & CEO. Primary strategic authority with root permissions over multi-agent workflows and execution triggers.', links: ['Executive OS (Orchestrates)', 'SDR Swarm (Supervises)'] }
+    };
+
+    function inspectNode(id) {
+        const data = graphNodes[id];
+        const container = document.getElementById('inspect-content');
+        
+        let linkHTML = '';
+        data.links.forEach(l => {
+            linkHTML += `<li class="flex items-center gap-1"><span class="w-1.5 h-1.5 bg-primary rounded-full"></span> ${l}</li>`;
+        });
+
+        container.innerHTML = `
+            <div class="bg-surface-container p-sm rounded border border-outline-variant">
+                <span class="font-label-caps text-[10px] text-primary block">ENTITY TYPE: ${data.type}</span>
+                <h4 class="font-bold text-sm text-on-surface mt-1">${data.title}</h4>
+                <p class="text-[11px] text-on-surface-variant mt-1">${data.desc}</p>
+            </div>
+            <div class="space-y-xs">
+                <span class="font-label-caps text-[10px] text-on-surface-variant block">Connected Entities</span>
+                <ul class="text-xs space-y-1 text-on-surface font-mono-data">
+                    ${linkHTML}
+                </ul>
+            </div>
+        `;
+    }
+
+    function filterGraphNodes() {
+        const val = document.getElementById('graph-search').value.toLowerCase();
+        const nodes = ['node-central', 'node-sdr', 'node-arr', 'node-burn', 'node-owner'];
+        
+        nodes.forEach(n => {
+            const el = document.getElementById(n);
+            if (el.innerText.toLowerCase().includes(val)) {
+                el.style.opacity = '1';
+                el.style.transform = 'scale(1)';
+            } else {
+                el.style.opacity = '0.2';
+                el.style.transform = 'scale(0.9)';
+            }
+        });
+    }
+</script>
+
+<script>
+    // Global AI Command Palette JS
+    document.addEventListener('DOMContentLoaded', () => {
+        const palette = document.getElementById('command-palette');
+        const input = document.getElementById('command-input');
+        const commandItems = document.querySelectorAll('.command-item');
+
+        function togglePalette() {
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                filterCommands('');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                togglePalette();
+            }
+            if (e.key === 'Escape' && !palette.classList.contains('hidden')) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.btn-command-palette').forEach(btn => {
+            btn.addEventListener('click', togglePalette);
+        });
+
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value.toLowerCase());
+        });
+
+        function filterCommands(query) {
+            commandItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const action = (item.getAttribute('data-action') || '').toLowerCase();
+                if (text.includes(query) || action.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        commandItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.getAttribute('data-url');
+                const action = item.getAttribute('data-action');
+                palette.classList.add('hidden');
+
+                if (url) {
+                    window.location.href = url;
+                } else if (action) {
+                    if (action.startsWith('/simulate')) {
+                        const scenarioName = action.replace('/simulate ', '');
+                        window.location.href = `../demo_mode/code.html?scenario=${encodeURIComponent(scenarioName)}`;
+                    } else if (action.startsWith('/forecast')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=forecast`;
+                    } else if (action.startsWith('/optimize')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=optimize`;
+                    } else if (action.startsWith('/run-agent')) {
+                        window.location.href = `../ai_agents_center_autonomous_workforce/code.html`;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sanktrix - Overview Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#10131b",
+                        "surface-container-highest": "#32353e",
+                        "on-tertiary-container": "#00311f",
+                        "tertiary": "#4edea3",
+                        "surface-container-low": "#181b24",
+                        "tertiary-fixed": "#6ffbbe",
+                        "on-primary-fixed": "#001945",
+                        "on-primary": "#002d6f",
+                        "on-tertiary-fixed-variant": "#005236",
+                        "surface-container": "#1c1f28",
+                        "inverse-primary": "#0058cb",
+                        "surface-container-lowest": "#0b0e16",
+                        "surface": "#10131b",
+                        "primary-fixed-dim": "#b0c6ff",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c2c6d8",
+                        "secondary": "#ffb955",
+                        "surface-container-high": "#272a33",
+                        "primary-fixed": "#d9e2ff",
+                        "outline-variant": "#424655",
+                        "secondary-container": "#dc9100",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb955",
+                        "on-primary-container": "#002661",
+                        "on-surface": "#e0e2ee",
+                        "background": "#10131b",
+                        "inverse-surface": "#e0e2ee",
+                        "outline": "#8c90a1",
+                        "on-secondary-fixed": "#291800",
+                        "surface-variant": "#32353e",
+                        "surface-tint": "#b0c6ff",
+                        "tertiary-container": "#00a572",
+                        "primary": "#b0c6ff",
+                        "on-tertiary-fixed": "#002113",
+                        "inverse-on-surface": "#2d3039",
+                        "primary-container": "#568dff",
+                        "on-tertiary": "#003824",
+                        "on-secondary-fixed-variant": "#633f00",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#00429c",
+                        "tertiary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#ffddb4",
+                        "on-secondary-container": "#4f3100",
+                        "surface-bright": "#363942",
+                        "on-background": "#e0e2ee",
+                        "on-secondary": "#452b00",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "40px",
+                        "container-margin": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "gutter": "16px",
+                        "base": "4px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "mono-data": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-lg-mobile": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "mono-data": ["13px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { background-color: #050505; color: #e0e2ee; }
+        .glass-panel { background: #121212; border: 1px solid rgba(255,255,255,0.08); }
+        .pulse-active { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(176, 198, 255, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(176, 198, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(176, 198, 255, 0); }
+        }
+        .stream-line {
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, #b0c6ff, transparent);
+            background-size: 200% 100%;
+            animation: stream 2s linear infinite;
+        }
+        @keyframes stream { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex font-body-md overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low py-lg px-md z-50">
+<div class="mb-xl">
+<div class="flex items-center gap-sm">
+<img src="../Santrix_logo.jpeg" class="w-10 h-10 rounded object-cover border border-primary/30" alt="Sanktrix Logo"/>
+<div>
+<h1 class="font-display-lg text-[20px] font-bold text-primary tracking-tighter uppercase leading-none">SANKTRIX</h1>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Computational OS</p>
+</div>
+</div>
+</div>
+<button class="btn-command-palette w-full bg-primary text-on-primary font-label-caps text-label-caps py-sm px-md rounded mb-xl hover:bg-primary-container transition-colors glow-btn shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+            AI Command Palette
+        </button>
+<div class="flex-grow overflow-y-auto space-y-xs">
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-primary font-bold bg-primary-container/10 border-r-2 border-primary scale-95 active:scale-90 transition-transform" href="../overview_dashboard_sanktrix_command_center/code.html">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-caps text-label-caps">Overview</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../executive_copilot_ai_decision_reasoning/code.html">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+<span class="font-label-caps text-label-caps">Executive Copilot</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../wolfram_computation_center/code.html">
+<span class="material-symbols-outlined text-[20px]">functions</span>
+<span class="font-label-caps text-label-caps">Wolfram Center</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../strategy_command_center/code.html">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+<span class="font-label-caps text-label-caps">Strategy Center</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../organization_digital_twin/code.html">
+<span class="material-symbols-outlined text-[20px]">donut_large</span>
+<span class="font-label-caps text-label-caps">Digital Twin</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../enterprise_knowledge_graph/code.html">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="font-label-caps text-label-caps">Knowledge Graph</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../agent_observatory/code.html">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+<span class="font-label-caps text-label-caps">Agent Observatory</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../realtime_event_fabric/code.html">
+<span class="material-symbols-outlined text-[20px]">stream</span>
+<span class="font-label-caps text-label-caps">Event Fabric</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../executive_boardroom/code.html">
+<span class="material-symbols-outlined text-[20px]">summarize</span>
+<span class="font-label-caps text-label-caps">Boardroom</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../business_simulations_strategic_modeling/code.html">
+<span class="material-symbols-outlined text-[20px]">model_training</span>
+<span class="font-label-caps text-label-caps">Simulations</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../ai_agents_center_autonomous_workforce/code.html">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+<span class="font-label-caps text-label-caps">Agents</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../intelligence_feed_realtime_event_log/code.html">
+<span class="material-symbols-outlined text-[20px]">dynamic_feed</span>
+<span class="font-label-caps text-label-caps">Intelligence Feed</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../knowledge_hub_semantic_intelligence/code.html">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+<span class="font-label-caps text-label-caps">Knowledge Hub</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../workflows_visual_orchestration/code.html">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="font-label-caps text-label-caps">Workflows</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../reports_data_enterprise_connectivity/code.html">
+<span class="material-symbols-outlined text-[20px]">assessment</span>
+<span class="font-label-caps text-label-caps">Reports</span>
+</a>
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../alerts_settings_system_governance/code.html">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</div>
+<div class="mt-auto pt-md border-t border-outline-variant">
+<a class="flex items-center gap-md px-sm py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="../observability_center/code.html">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-label-caps text-label-caps">System Status</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col h-screen relative bg-[#050505]">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-16 px-lg fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant shadow-sm focus-within:ring-1 focus-within:ring-primary">
+<div class="flex items-center gap-md w-1/3">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-[#121212] border border-outline-variant rounded pl-xl pr-sm py-xs text-mono-data font-mono-data text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all placeholder-on-surface-variant/50" placeholder="Search operations..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-lg">
+<div class="flex items-center gap-md">
+<button class="btn-command-palette text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-all relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</div>
+<button class="btn-command-palette bg-primary text-on-primary font-label-caps text-label-caps px-md py-xs rounded hover:bg-primary-container transition-colors shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+                    AI Command
+                </button>
+<button class="text-on-surface-variant hover:text-primary transition-all">
+<img alt="Executive User Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A futuristic professional portrait, softly lit from the side with neon blue accents, against a pure obsidian dark background. High contrast, sharp focus, cinematic corporate intelligence aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhpbsFfTYDxF8SyOrnGEDdfvnYrcbkB7E32VU0EcQ0h4d3ja8RHD-pknFJJ0UkJgdccJIN2nOCwAB5gKdWqxpFFA4CDZZRGexiJ8UycSQ_r6s0207_o3XnN5t7-cDDQA_vkNm1ZEKXc51l94QCX18E-zQQuIIiZOKDlB5HZXPE44C0VAQZvO1jdc7L9kyUfQfLrH-GFfA9U8tFL0bRmZRNA0cYXGKF8Me60NECzaTsk4Jxik8lFVUwHcmrDi-XLkB_dzkBsDLzeVv_"/>
+</button>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<main class="flex-1 overflow-y-auto mt-16 pb-8 p-lg relative">
+<div class="absolute bottom-12 right-12 opacity-5 pointer-events-none z-0">
+  <img src="../Santrix_logo.jpeg" class="w-48 h-48 filter grayscale" alt="Watermark"/>
+</div>
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md h-full pb-8">
+<!-- Revenue Forecast Card (Col Span 8) -->
+<div class="glass-panel col-span-1 md:col-span-8 rounded-xl p-md relative overflow-hidden flex flex-col h-[400px]">
+<div class="stream-line"></div>
+<div class="flex justify-between items-start mb-md border-b border-outline-variant/50 pb-sm">
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Revenue Forecast</h2>
+<p class="font-mono-data text-mono-data text-on-surface-variant mt-1">PROBABILITY BANDS OVER 12 MONTHS</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary pulse-active"></span>
+<span class="font-label-caps text-label-caps text-primary">LIVE MODEL</span>
+</div>
+</div>
+<div class="flex-1 w-full bg-surface-container-low/30 rounded border border-outline-variant/30 flex items-end justify-center relative overflow-hidden">
+<div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+<!-- Placeholder for Chart -->
+<div class="w-full h-full flex items-end px-md gap-1">
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/40 h-[30%] rounded-t border-t border-primary/50"></div>
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/40 h-[45%] rounded-t border-t border-primary/50"></div>
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/50 h-[35%] rounded-t border-t border-primary/50"></div>
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/60 h-[50%] rounded-t border-t border-primary/50"></div>
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/50 h-[65%] rounded-t border-t border-primary/50"></div>
+<div class="flex-1 bg-gradient-to-t from-primary/10 to-primary/70 h-[80%] rounded-t border-t border-primary/80 relative">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-surface border border-outline-variant px-2 py-1 rounded font-mono-data text-mono-data text-on-surface whitespace-nowrap">$4.2M</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Risk Score Card (Col Span 4) -->
+<div class="glass-panel col-span-1 md:col-span-4 rounded-xl p-md flex flex-col h-[400px]">
+<div class="flex justify-between items-start mb-md border-b border-outline-variant/50 pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">Risk Score</h2>
+<span class="material-symbols-outlined text-secondary">warning</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center relative">
+<!-- Heat Gauge Mockup -->
+<div class="w-48 h-48 rounded-full border-8 border-surface-container-high relative flex items-center justify-center">
+<div class="absolute inset-0 rounded-full border-8 border-secondary border-t-transparent border-r-transparent rotate-45" style="filter: drop-shadow(0 0 10px rgba(255, 185, 85, 0.4));"></div>
+<div class="text-center">
+<span class="font-display-lg text-display-lg text-secondary block">68</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">ELEVATED</span>
+</div>
+</div>
+<div class="w-full mt-lg space-y-sm">
+<div class="flex justify-between text-mono-data font-mono-data">
+<span class="text-on-surface-variant">Market Volatility</span>
+<span class="text-error">High</span>
+</div>
+<div class="flex justify-between text-mono-data font-mono-data">
+<span class="text-on-surface-variant">Supply Chain</span>
+<span class="text-secondary">Med</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Operational Health & Productivity (Col Span 8) -->
+<div class="col-span-1 md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-md h-[300px]">
+<!-- Operational Health -->
+<div class="glass-panel rounded-xl p-md flex flex-col">
+<div class="flex justify-between items-start mb-md border-b border-outline-variant/50 pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">Op Health</h2>
+<span class="font-mono-data text-mono-data text-tertiary bg-tertiary/10 px-2 py-1 rounded">98.2%</span>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div class="space-y-sm">
+<div class="flex justify-between items-center">
+<span class="font-mono-data text-mono-data text-on-surface-variant">Node Cluster Alpha</span>
+<div class="w-24 h-1 bg-surface-container-high rounded overflow-hidden">
+<div class="w-[95%] h-full bg-tertiary"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-mono-data text-mono-data text-on-surface-variant">Node Cluster Beta</span>
+<div class="w-24 h-1 bg-surface-container-high rounded overflow-hidden">
+<div class="w-[88%] h-full bg-tertiary"></div>
+</div>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-mono-data text-mono-data text-on-surface-variant">Database Shard 1</span>
+<div class="w-24 h-1 bg-surface-container-high rounded overflow-hidden">
+<div class="w-[99%] h-full bg-tertiary"></div>
+</div>
+</div>
+</div>
+<div class="mt-4 p-sm bg-surface-container rounded border border-outline-variant/50 flex items-center gap-sm">
+<span class="material-symbols-outlined text-tertiary text-sm">check_circle</span>
+<span class="font-mono-data text-mono-data text-on-surface">All systems operating within nominal parameters.</span>
+</div>
+</div>
+</div>
+<!-- Productivity Index -->
+<div class="glass-panel rounded-xl p-md flex flex-col">
+<div class="flex justify-between items-start mb-md border-b border-outline-variant/50 pb-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface">Productivity</h2>
+<span class="material-symbols-outlined text-primary">trending_up</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center">
+<div class="text-center mb-md">
+<span class="font-display-lg text-display-lg text-primary block">1.42</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">INDEX MULTIPLIER</span>
+</div>
+<div class="w-full flex justify-between px-md">
+<div class="text-center">
+<span class="block font-mono-data text-mono-data text-on-surface-variant">AGENTS</span>
+<span class="block font-label-caps text-label-caps text-on-surface">+12%</span>
+</div>
+<div class="text-center border-l border-r border-outline-variant/50 px-md">
+<span class="block font-mono-data text-mono-data text-on-surface-variant">HUMANS</span>
+<span class="block font-label-caps text-label-caps text-on-surface">+4%</span>
+</div>
+<div class="text-center">
+<span class="block font-mono-data text-mono-data text-on-surface-variant">HYBRID</span>
+<span class="block font-label-caps text-label-caps text-tertiary">+28%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Real-time Feed (Col Span 4) -->
+<div class="glass-panel col-span-1 md:col-span-4 rounded-xl flex flex-col h-[300px]">
+<div class="p-md border-b border-outline-variant/50 flex justify-between items-center bg-[#0A0F1E]/50 rounded-t-xl">
+<h2 class="font-headline-md text-headline-md text-on-surface flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-primary pulse-active"></span>
+                            Live Intelligence
+                        </h2>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-sm">
+<!-- Feed Items -->
+<div class="bg-surface-container p-sm rounded border border-outline-variant/50 flex gap-sm items-start">
+<span class="material-symbols-outlined text-primary text-sm mt-1">smart_toy</span>
+<div>
+<p class="font-mono-data text-mono-data text-on-surface">Forecasting Agent running</p>
+<p class="font-mono-data text-mono-data text-on-surface-variant text-[10px]">Just now • Q3 Projections</p>
+</div>
+</div>
+<div class="bg-surface-container p-sm rounded border border-outline-variant/50 flex gap-sm items-start border-l-2 border-l-tertiary">
+<span class="material-symbols-outlined text-tertiary text-sm mt-1">verified</span>
+<div>
+<p class="font-mono-data text-mono-data text-on-surface">Risk Simulation completed</p>
+<p class="font-mono-data text-mono-data text-on-surface-variant text-[10px]">2m ago • Variance minimal</p>
+</div>
+</div>
+<div class="bg-surface-container p-sm rounded border border-error/50 flex gap-sm items-start border-l-2 border-l-error">
+<span class="material-symbols-outlined text-error text-sm mt-1">error</span>
+<div>
+<p class="font-mono-data text-mono-data text-on-surface">Burn Rate anomaly detected</p>
+<p class="font-mono-data text-mono-data text-on-surface-variant text-[10px]">15m ago • Dept: Marketing</p>
+</div>
+</div>
+<div class="bg-surface-container p-sm rounded border border-outline-variant/50 flex gap-sm items-start">
+<span class="material-symbols-outlined text-primary text-sm mt-1">sync</span>
+<div>
+<p class="font-mono-data text-mono-data text-on-surface">Data Lake sync complete</p>
+<p class="font-mono-data text-mono-data text-on-surface-variant text-[10px]">1h ago • 2.4TB processed</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</footer>
+</div>
+
+<!-- Global AI Command Palette Modal -->
+<div id="command-palette" class="fixed inset-0 z-[100] hidden bg-surface-lowest/80 backdrop-blur-md flex items-center justify-center p-md">
+    <div class="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+        <!-- Search Input -->
+        <div class="p-md border-b border-outline-variant/50 flex items-center gap-md">
+            <span class="material-symbols-outlined text-primary text-xl">terminal</span>
+            <input id="command-input" type="text" placeholder="Type a command or search modules... (e.g. /simulate, /forecast, /run-agent)" 
+                class="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 font-body-lg focus:outline-none focus:ring-0" />
+            <span class="text-xs bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono-data">ESC</span>
+        </div>
+        <!-- Command Lists -->
+        <div id="command-list" class="max-h-[350px] overflow-y-auto p-sm space-y-md">
+            <!-- Group: Action Commands -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Executive Commands</div>
+                <div class="space-y-xs mt-xs">
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Churn Spike">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Churn Spike</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Stress-test user retention</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Burn Rate Crisis">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Burn Rate Crisis</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Simulate cash runway crunch</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/forecast Runway">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                            <span class="font-mono-data">/forecast Runway</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Runway projection with Wolfram</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/run-agent SDR Swarm">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-tertiary text-sm">support_agent</span>
+                            <span class="font-mono-data">/run-agent SDR Swarm</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Activate autonomous lead gen</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/optimize Marketing">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
+                            <span class="font-mono-data">/optimize Marketing</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Wolfram-powered budget allocation</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Group: Navigation -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Go To Section</div>
+                <div class="grid grid-cols-2 gap-xs mt-xs">
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../overview_dashboard_sanktrix_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">dashboard</span>
+                        <span>Overview</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../wolfram_computation_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                        <span>Wolfram Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../strategy_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">verified</span>
+                        <span>Strategy Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../organization_digital_twin/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">donut_large</span>
+                        <span>Digital Twin</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../enterprise_knowledge_graph/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">hub</span>
+                        <span>Knowledge Graph</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../agent_observatory/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
+                        <span>Agent Observatory</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../realtime_event_fabric/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">stream</span>
+                        <span>Event Fabric</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../executive_boardroom/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">summarize</span>
+                        <span>Executive Boardroom</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../observability_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">analytics</span>
+                        <span>System Observability</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../demo_mode/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">play_circle</span>
+                        <span>Hackathon Demo Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global AI Command Palette JS
+    document.addEventListener('DOMContentLoaded', () => {
+        const palette = document.getElementById('command-palette');
+        const input = document.getElementById('command-input');
+        const commandItems = document.querySelectorAll('.command-item');
+
+        function togglePalette() {
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                filterCommands('');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                togglePalette();
+            }
+            if (e.key === 'Escape' && !palette.classList.contains('hidden')) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.btn-command-palette').forEach(btn => {
+            btn.addEventListener('click', togglePalette);
+        });
+
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value.toLowerCase());
+        });
+
+        function filterCommands(query) {
+            commandItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const action = (item.getAttribute('data-action') || '').toLowerCase();
+                if (text.includes(query) || action.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        commandItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.getAttribute('data-url');
+                const action = item.getAttribute('data-action');
+                palette.classList.add('hidden');
+
+                if (url) {
+                    window.location.href = url;
+                } else if (action) {
+                    if (action.startsWith('/simulate')) {
+                        const scenarioName = action.replace('/simulate ', '');
+                        window.location.href = `../demo_mode/code.html?scenario=${encodeURIComponent(scenarioName)}`;
+                    } else if (action.startsWith('/forecast')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=forecast`;
+                    } else if (action.startsWith('/optimize')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=optimize`;
+                    } else if (action.startsWith('/run-agent')) {
+                        window.location.href = `../ai_agents_center_autonomous_workforce/code.html`;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body></html>

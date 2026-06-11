@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  sanktrix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sanktrix_os
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_RATE_LIMIT_MAX_REQUESTS=10
+    restart: always

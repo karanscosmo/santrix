@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sanktrix - Executive Copilot</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#10131b",
+                      "surface-container-highest": "#32353e",
+                      "on-tertiary-container": "#00311f",
+                      "tertiary": "#4edea3",
+                      "surface-container-low": "#181b24",
+                      "tertiary-fixed": "#6ffbbe",
+                      "on-primary-fixed": "#001945",
+                      "on-primary": "#002d6f",
+                      "on-tertiary-fixed-variant": "#005236",
+                      "surface-container": "#1c1f28",
+                      "inverse-primary": "#0058cb",
+                      "surface-container-lowest": "#0b0e16",
+                      "surface": "#10131b",
+                      "primary-fixed-dim": "#b0c6ff",
+                      "on-error": "#690005",
+                      "on-surface-variant": "#c2c6d8",
+                      "secondary": "#ffb955",
+                      "surface-container-high": "#272a33",
+                      "primary-fixed": "#d9e2ff",
+                      "outline-variant": "#424655",
+                      "secondary-container": "#dc9100",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#ffb955",
+                      "on-primary-container": "#002661",
+                      "on-surface": "#e0e2ee",
+                      "background": "#10131b",
+                      "inverse-surface": "#e0e2ee",
+                      "outline": "#8c90a1",
+                      "on-secondary-fixed": "#291800",
+                      "surface-variant": "#32353e",
+                      "surface-tint": "#b0c6ff",
+                      "tertiary-container": "#00a572",
+                      "primary": "#b0c6ff",
+                      "on-tertiary-fixed": "#002113",
+                      "inverse-on-surface": "#2d3039",
+                      "primary-container": "#568dff",
+                      "on-tertiary": "#003824",
+                      "on-secondary-fixed-variant": "#633f00",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed-variant": "#00429c",
+                      "tertiary-fixed-dim": "#4edea3",
+                      "secondary-fixed": "#ffddb4",
+                      "on-secondary-container": "#4f3100",
+                      "surface-bright": "#363942",
+                      "on-background": "#e0e2ee",
+                      "on-secondary": "#452b00",
+                      "on-error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "40px",
+                      "container-margin": "32px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "gutter": "16px",
+                      "base": "4px",
+                      "lg": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Space Grotesk"],
+                      "headline-lg": ["Space Grotesk"],
+                      "mono-data": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "headline-lg-mobile": ["Space Grotesk"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Space Grotesk"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "mono-data": ["13px", {"lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "500"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Custom scrollbar for deep UI feel */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #32353e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #424655; }
+        
+        /* Utility classes for specific glow/animations not easily done with just tailwind arbitrarily */
+        .glass-panel {
+            background-color: rgba(28, 31, 40, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(66, 70, 85, 0.4);
+        }
+        .ai-pulse-indicator {
+            box-shadow: 0 0 10px rgba(176, 198, 255, 0.4);
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 5px rgba(176, 198, 255, 0.2); }
+            to { box-shadow: 0 0 15px rgba(176, 198, 255, 0.6); }
+        }
+        .streaming-line {
+            background: linear-gradient(90deg, transparent, #b0c6ff, transparent);
+            background-size: 200% 100%;
+            animation: Wipestart 2s ease-in-out infinite;
+        }
+        @keyframes Wipestart {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+    </style>
+</head>
+<body class="bg-surface-dim text-on-surface font-body-md antialiased overflow-hidden selection:bg-primary-container selection:text-on-primary-container flex h-screen">
+<!-- SideNavBar (from JSON) -->
+<nav class="h-screen w-64 fixed left-0 top-0 border-r border-outline-variant bg-surface-container-low flex flex-col h-full py-lg px-md z-50">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-sm">
+<img src="../Santrix_logo.jpeg" class="w-10 h-10 rounded object-cover border border-primary/30" alt="Sanktrix Logo"/>
+<div>
+<h1 class="font-display-lg text-[20px] font-bold text-primary tracking-tighter uppercase leading-none">SANKTRIX</h1>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Computational OS</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="btn-command-palette mb-xl w-full py-md px-md rounded-DEFAULT bg-primary/10 border border-primary text-primary font-label-caps text-label-caps flex items-center justify-center gap-sm hover:bg-primary/20 transition-colors duration-200">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+            AI Command Palette
+        </button>
+<!-- Tabs -->
+<ul class="flex flex-col gap-xs flex-grow overflow-y-auto">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant font-medium hover:bg-surface-container-highest transition-colors duration-200 scale-95 active:scale-90 transition-transform" href="../overview_dashboard_sanktrix_command_center/code.html">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Overview</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-primary font-bold bg-primary-container/10 border-r-2 border-primary hover:bg-surface-container-highest transition-colors duration-200 scale-95 active:scale-90 transition-transform" href="../executive_copilot_ai_decision_reasoning/code.html">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-label-caps text-label-caps">Executive Copilot</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../wolfram_computation_center/code.html">
+<span class="material-symbols-outlined">functions</span>
+<span class="font-label-caps text-label-caps">Wolfram Center</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../strategy_command_center/code.html">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-label-caps text-label-caps">Strategy Center</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../organization_digital_twin/code.html">
+<span class="material-symbols-outlined">donut_large</span>
+<span class="font-label-caps text-label-caps">Digital Twin</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../enterprise_knowledge_graph/code.html">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-label-caps text-label-caps">Knowledge Graph</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../agent_observatory/code.html">
+<span class="material-symbols-outlined">visibility</span>
+<span class="font-label-caps text-label-caps">Agent Observatory</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../realtime_event_fabric/code.html">
+<span class="material-symbols-outlined">stream</span>
+<span class="font-label-caps text-label-caps">Event Fabric</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../executive_boardroom/code.html">
+<span class="material-symbols-outlined">summarize</span>
+<span class="font-label-caps text-label-caps">Boardroom</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../business_simulations_strategic_modeling/code.html">
+<span class="material-symbols-outlined">model_training</span>
+<span class="font-label-caps text-label-caps">Simulations</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../ai_agents_center_autonomous_workforce/code.html">
+<span class="material-symbols-outlined">support_agent</span>
+<span class="font-label-caps text-label-caps">Agents</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../intelligence_feed_realtime_event_log/code.html">
+<span class="material-symbols-outlined">dynamic_feed</span>
+<span class="font-label-caps text-label-caps">Intelligence Feed</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../knowledge_hub_semantic_intelligence/code.html">
+<span class="material-symbols-outlined">menu_book</span>
+<span class="font-label-caps text-label-caps">Knowledge Hub</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../workflows_visual_orchestration/code.html">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-label-caps text-label-caps">Workflows</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../reports_data_enterprise_connectivity/code.html">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-caps text-label-caps">Reports</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors scale-95 active:scale-90 transition-transform" href="../alerts_settings_system_governance/code.html">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-caps text-label-caps">Settings</span>
+</a>
+</li>
+</ul>
+<!-- Footer -->
+<div class="mt-auto pt-md border-t border-outline-variant">
+<a class="flex items-center gap-md px-md py-sm rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-highest transition-colors duration-200" href="../observability_center/code.html">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">System Status</span>
+</a>
+</div>
+</nav>
+<!-- TopNavBar (from JSON) -->
+<header class="fixed top-0 right-0 w-[calc(100%-16rem)] z-40 bg-surface-container/80 backdrop-blur-xl border-b border-outline-variant shadow-sm flex justify-between items-center h-16 px-lg ml-64">
+<!-- Brand/Context -->
+<div class="flex items-center gap-sm">
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">Executive Copilot</span>
+<span class="h-4 w-px bg-outline-variant mx-2"></span>
+<div class="flex items-center gap-2 text-tertiary">
+<span class="w-2 h-2 rounded-full bg-tertiary ai-pulse-indicator"></span>
+<span class="font-mono-data text-mono-data">Engine Online</span>
+</div>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-md">
+<button class="btn-command-palette w-10 h-10 rounded-DEFAULT flex items-center justify-center text-on-surface-variant hover:text-primary transition-all hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+<button class="w-10 h-10 rounded-DEFAULT flex items-center justify-center text-on-surface-variant hover:text-primary transition-all hover:bg-surface-container-highest">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-8 w-px bg-outline-variant mx-sm"></div>
+<button class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant focus-within:ring-1 focus-within:ring-primary flex items-center justify-center bg-surface-container-highest">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Workspace Area -->
+<main class="ml-64 pt-16 flex-1 flex w-full h-full relative">
+<div class="absolute bottom-12 right-12 opacity-5 pointer-events-none z-0">
+  <img src="../Santrix_logo.jpeg" class="w-48 h-48 filter grayscale" alt="Watermark"/>
+</div>
+<!-- Central Chat Interface -->
+<section class="flex-1 flex flex-col relative">
+<!-- Scrollable Conversation Area -->
+<div class="flex-1 overflow-y-auto p-lg pb-32 flex flex-col gap-xl">
+<!-- Date/Time Marker -->
+<div class="flex justify-center">
+<span class="font-mono-data text-[10px] text-outline px-sm py-xs border border-outline-variant rounded-full bg-surface-container-low">SESSION // 14:02:45 UTC</span>
+</div>
+<!-- User Query -->
+<div class="self-end max-w-[80%]">
+<div class="glass-panel p-md rounded-xl rounded-tr-none border border-outline-variant/30 text-on-surface">
+<div class="flex items-center gap-sm mb-sm text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-[14px]">account_circle</span>
+<span class="font-label-caps text-[10px]">EXECUTIVE_USER</span>
+</div>
+<p class="font-headline-md text-[18px] font-medium leading-relaxed">
+                            Predict next quarter revenue under 25% CAC increase
+                        </p>
+</div>
+</div>
+<!-- AI Response Chain -->
+<div class="self-start w-full max-w-4xl flex flex-col gap-md">
+<!-- Status/Header -->
+<div class="flex items-center gap-md text-primary">
+<div class="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center ai-pulse-indicator relative overflow-hidden">
+<span class="material-symbols-outlined text-[16px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps tracking-widest uppercase">Sanktrix Engine</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Processing complete // 1.2s</span>
+</div>
+</div>
+<!-- AI Container -->
+<div class="glass-panel rounded-xl overflow-hidden relative border border-primary/20">
+<!-- Streaming decorative top line -->
+<div class="h-[2px] w-full absolute top-0 left-0 streaming-line"></div>
+<div class="p-lg flex flex-col gap-lg">
+<!-- Executive Summary -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-[14px]">subject</span>
+                                    Executive Summary
+                                </h3>
+<p class="font-body-lg text-body-lg text-on-surface leading-relaxed text-on-surface">
+                                    Simulating a 25% increase in Customer Acquisition Cost (CAC) projects a short-term margin compression, but maintains overall revenue trajectory within acceptable bounds. Projected Q3 Revenue sits at <span class="text-primary font-mono-data">$42.8M</span>, representing a <span class="text-tertiary font-mono-data px-1 py-0.5 rounded bg-tertiary/10 border border-tertiary/20">+4.2%</span> QoQ growth despite headwinds.
+                                </p>
+</div>
+<!-- Structural Layout: Bento Grid for Data -->
+<div class="grid grid-cols-3 gap-md">
+<!-- Data Card 1 -->
+<div class="bg-surface-container p-md border border-outline-variant rounded-lg flex flex-col gap-sm">
+<span class="font-label-caps text-[10px] text-on-surface-variant">Proj. Q3 Revenue</span>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">$42.8M</span>
+<div class="flex items-center gap-sm font-mono-data text-mono-data text-tertiary mt-auto">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                        +4.2% QoQ
+                                    </div>
+</div>
+<!-- Data Card 2 -->
+<div class="bg-surface-container p-md border border-outline-variant rounded-lg flex flex-col gap-sm">
+<span class="font-label-caps text-[10px] text-on-surface-variant">Simulated CAC</span>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">$1,245</span>
+<div class="flex items-center gap-sm font-mono-data text-mono-data text-error mt-auto">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>
+                                        +25% Target Limit
+                                    </div>
+</div>
+<!-- Data Card 3 -->
+<div class="bg-surface-container p-md border border-outline-variant rounded-lg flex flex-col gap-sm">
+<span class="font-label-caps text-[10px] text-on-surface-variant">Impacted Margin</span>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface">68.4%</span>
+<div class="flex items-center gap-sm font-mono-data text-mono-data text-secondary mt-auto">
+<span class="material-symbols-outlined text-[14px]">trending_down</span>
+                                        -210 bps
+                                    </div>
+</div>
+</div>
+<!-- Risk Assessment Card -->
+<div class="bg-secondary-container/10 border border-secondary/30 rounded-lg p-md">
+<h3 class="font-label-caps text-label-caps text-secondary mb-sm flex items-center gap-sm">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                    Risk Assessment: Moderate
+                                </h3>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                                    The primary vulnerability lies in the enterprise segment, where extended sales cycles combined with higher CAC could depress Q4 pipeline health if conversion rates drop below 18%.
+                                </p>
+</div>
+<!-- Recommended Actions -->
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-md flex items-center gap-sm">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                                    Recommended Actions
+                                </h3>
+<div class="flex gap-md">
+<button class="flex-1 py-sm px-md rounded-DEFAULT border border-primary/50 text-primary font-label-caps text-[11px] hover:bg-primary/10 transition flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[14px]">query_stats</span>
+                                        Run Sensitivity Analysis
+                                    </button>
+<button onclick="window.location.href='../executive_boardroom/code.html'" class="flex-1 py-sm px-md rounded-DEFAULT border border-outline-variant text-on-surface-variant font-label-caps text-[11px] hover:bg-surface-container-highest transition flex items-center justify-center gap-sm">
+<span class="material-symbols-outlined text-[14px]">summarize</span>
+                                        Generate Board Report
+                                    </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area (Fixed Bottom within central col) -->
+<div class="absolute bottom-0 left-0 w-full p-lg bg-gradient-to-t from-surface-dim via-surface-dim to-transparent pt-xl">
+<div class="max-w-4xl mx-auto relative glass-panel rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all">
+<textarea class="w-full bg-transparent border-none text-on-surface font-body-lg text-body-lg placeholder-on-surface-variant/50 focus:ring-0 resize-none py-md pl-lg pr-24" placeholder="Ask Copilot a follow-up query..." rows="1"></textarea>
+<div class="absolute right-sm top-1/2 -translate-y-1/2 flex items-center gap-sm">
+<button class="w-8 h-8 rounded-DEFAULT text-on-surface-variant hover:text-primary hover:bg-surface-container flex items-center justify-center transition-colors">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+</button>
+<button class="w-8 h-8 rounded-DEFAULT bg-primary text-on-primary hover:bg-primary/90 flex items-center justify-center transition-colors shadow-[0_0_15px_rgba(176,198,255,0.3)]">
+<span class="material-symbols-outlined text-[18px]">arrow_upward</span>
+</button>
+</div>
+</div>
+<div class="flex justify-center mt-sm">
+<span class="font-mono-data text-[10px] text-on-surface-variant/50">AI models can make mistakes. Verify critical business data.</span>
+</div>
+</div>
+</section>
+<!-- Right Side Panel: Context & History -->
+<aside class="w-80 border-l border-outline-variant bg-surface-container-low flex flex-col">
+<!-- Tabs Header -->
+<div class="flex border-b border-outline-variant font-label-caps text-label-caps">
+<button class="flex-1 py-md border-b-2 border-primary text-primary font-bold bg-primary-container/5">
+                    History
+                </button>
+<button class="flex-1 py-md text-on-surface-variant hover:text-on-surface hover:bg-surface-container-highest transition-colors">
+                    Saved Insights
+                </button>
+</div>
+<!-- List Content -->
+<div class="flex-1 overflow-y-auto p-md flex flex-col gap-xs">
+<h4 class="font-mono-data text-[10px] text-outline mt-sm mb-xs px-sm">TODAY</h4>
+<!-- History Item 1 -->
+<button class="w-full text-left p-sm rounded-DEFAULT hover:bg-surface-container-highest transition-colors group flex items-start gap-sm">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">chat_bubble</span>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-md text-[13px] text-on-surface truncate">Predict next quarter revenue under...</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">14:02 UTC</span>
+</div>
+</button>
+<!-- History Item 2 -->
+<button class="w-full text-left p-sm rounded-DEFAULT hover:bg-surface-container-highest transition-colors group flex items-start gap-sm">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">chat_bubble</span>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-md text-[13px] text-on-surface truncate">Analyze competitor pricing shift</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">09:15 UTC</span>
+</div>
+</button>
+<h4 class="font-mono-data text-[10px] text-outline mt-md mb-xs px-sm">YESTERDAY</h4>
+<!-- History Item 3 -->
+<button class="w-full text-left p-sm rounded-DEFAULT hover:bg-surface-container-highest transition-colors group flex items-start gap-sm">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">chat_bubble</span>
+<div class="flex flex-col overflow-hidden">
+<span class="font-body-md text-[13px] text-on-surface truncate">Supply chain risk report Q2</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">16:45 UTC</span>
+</div>
+</button>
+</div>
+<!-- System Metrics Mini -->
+<div class="p-md border-t border-outline-variant bg-surface-container-lowest">
+<div class="flex items-center justify-between font-mono-data text-[10px] text-on-surface-variant mb-sm">
+<span>LLM Context Window</span>
+<span class="text-tertiary">45%</span>
+</div>
+<div class="w-full h-1 bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full bg-tertiary w-[45%]"></div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+
+<!-- Global AI Command Palette Modal -->
+<div id="command-palette" class="fixed inset-0 z-[100] hidden bg-surface-lowest/80 backdrop-blur-md flex items-center justify-center p-md">
+    <div class="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+        <!-- Search Input -->
+        <div class="p-md border-b border-outline-variant/50 flex items-center gap-md">
+            <span class="material-symbols-outlined text-primary text-xl">terminal</span>
+            <input id="command-input" type="text" placeholder="Type a command or search modules... (e.g. /simulate, /forecast, /run-agent)" 
+                class="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 font-body-lg focus:outline-none focus:ring-0" />
+            <span class="text-xs bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono-data">ESC</span>
+        </div>
+        <!-- Command Lists -->
+        <div id="command-list" class="max-h-[350px] overflow-y-auto p-sm space-y-md">
+            <!-- Group: Action Commands -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Executive Commands</div>
+                <div class="space-y-xs mt-xs">
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Churn Spike">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Churn Spike</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Stress-test user retention</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/simulate Burn Rate Crisis">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-secondary text-sm">play_arrow</span>
+                            <span class="font-mono-data">/simulate Burn Rate Crisis</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Simulate cash runway crunch</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/forecast Runway">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                            <span class="font-mono-data">/forecast Runway</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Runway projection with Wolfram</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/run-agent SDR Swarm">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-tertiary text-sm">support_agent</span>
+                            <span class="font-mono-data">/run-agent SDR Swarm</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Activate autonomous lead gen</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                    <button class="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group" data-action="/optimize Marketing">
+                        <span class="flex items-center gap-md">
+                            <span class="material-symbols-outlined text-primary text-sm">bar_chart</span>
+                            <span class="font-mono-data">/optimize Marketing</span>
+                            <span class="text-xs text-on-surface-variant group-hover:text-primary">Wolfram-powered budget allocation</span>
+                        </span>
+                        <span class="text-xs text-on-surface-variant font-mono-data">Enter</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Group: Navigation -->
+            <div>
+                <div class="px-md py-xs font-mono-data text-[10px] text-outline uppercase tracking-wider">Go To Section</div>
+                <div class="grid grid-cols-2 gap-xs mt-xs">
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../overview_dashboard_sanktrix_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">dashboard</span>
+                        <span>Overview</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../wolfram_computation_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">functions</span>
+                        <span>Wolfram Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../strategy_command_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">verified</span>
+                        <span>Strategy Center</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../organization_digital_twin/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">donut_large</span>
+                        <span>Digital Twin</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../enterprise_knowledge_graph/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">hub</span>
+                        <span>Knowledge Graph</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../agent_observatory/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">visibility</span>
+                        <span>Agent Observatory</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../realtime_event_fabric/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">stream</span>
+                        <span>Event Fabric</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../executive_boardroom/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">summarize</span>
+                        <span>Executive Boardroom</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../observability_center/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">analytics</span>
+                        <span>System Observability</span>
+                    </button>
+                    <button class="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-sm" data-url="../demo_mode/code.html">
+                        <span class="material-symbols-outlined text-primary text-sm">play_circle</span>
+                        <span>Hackathon Demo Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global AI Command Palette JS
+    document.addEventListener('DOMContentLoaded', () => {
+        const palette = document.getElementById('command-palette');
+        const input = document.getElementById('command-input');
+        const commandItems = document.querySelectorAll('.command-item');
+
+        function togglePalette() {
+            if (palette.classList.contains('hidden')) {
+                palette.classList.remove('hidden');
+                input.focus();
+                input.value = '';
+                filterCommands('');
+            } else {
+                palette.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                togglePalette();
+            }
+            if (e.key === 'Escape' && !palette.classList.contains('hidden')) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        document.querySelectorAll('.btn-command-palette').forEach(btn => {
+            btn.addEventListener('click', togglePalette);
+        });
+
+        palette.addEventListener('click', (e) => {
+            if (e.target === palette) {
+                palette.classList.add('hidden');
+            }
+        });
+
+        input.addEventListener('input', (e) => {
+            filterCommands(e.target.value.toLowerCase());
+        });
+
+        function filterCommands(query) {
+            commandItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                const action = (item.getAttribute('data-action') || '').toLowerCase();
+                if (text.includes(query) || action.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        commandItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const url = item.getAttribute('data-url');
+                const action = item.getAttribute('data-action');
+                palette.classList.add('hidden');
+
+                if (url) {
+                    window.location.href = url;
+                } else if (action) {
+                    if (action.startsWith('/simulate')) {
+                        const scenarioName = action.replace('/simulate ', '');
+                        window.location.href = `../demo_mode/code.html?scenario=${encodeURIComponent(scenarioName)}`;
+                    } else if (action.startsWith('/forecast')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=forecast`;
+                    } else if (action.startsWith('/optimize')) {
+                        window.location.href = `../wolfram_computation_center/code.html?action=optimize`;
+                    } else if (action.startsWith('/run-agent')) {
+                        window.location.href = `../ai_agents_center_autonomous_workforce/code.html`;
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body></html>

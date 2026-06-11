@@ -1,0 +1,260 @@
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useSecurity } from "@/context/SecurityContext";
+
+interface CommandPaletteProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+interface CommandItem {
+  name: string;
+  action?: string;
+  url?: string;
+  category: "Executive" | "Navigation";
+  icon: string;
+  description?: string;
+}
+
+export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
+  const router = useRouter();
+  const { addAuditLog, rateLimitCheck } = useSecurity();
+  const [search, setSearch] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+      setSearch("");
+    }
+  }, [isOpen]);
+
+  const handleCommandClick = (item: CommandItem) => {
+    onClose();
+
+    if (!rateLimitCheck()) {
+      alert("Rate limit exceeded. Try again in a minute.");
+      return;
+    }
+
+    if (item.url) {
+      addAuditLog("navigation.palette", `Navigated to ${item.name} from command palette`, "SUCCESS");
+      router.push(item.url);
+    } else if (item.action) {
+      addAuditLog("simulation.trigger", `Triggered command: ${item.action}`, "SUCCESS");
+      if (item.action.startsWith("/simulate")) {
+        const scenario = item.action.replace("/simulate ", "");
+        router.push(`/demo?scenario=${encodeURIComponent(scenario)}`);
+      } else if (item.action.startsWith("/forecast")) {
+        router.push("/wolfram?action=forecast");
+      } else if (item.action.startsWith("/optimize")) {
+        router.push("/wolfram?action=optimize");
+      } else if (item.action.startsWith("/run-agent")) {
+        router.push("/agents");
+      }
+    }
+  };
+
+  const commands: CommandItem[] = [
+    {
+      name: "/simulate Churn Spike",
+      action: "/simulate Churn Spike",
+      category: "Executive",
+      icon: "play_arrow",
+      description: "Stress-test user retention model",
+    },
+    {
+      name: "/simulate Burn Rate Crisis",
+      action: "/simulate Burn Rate Crisis",
+      category: "Executive",
+      icon: "play_arrow",
+      description: "Simulate cash runway crunch under market stress",
+    },
+    {
+      name: "/forecast Runway",
+      action: "/forecast Runway",
+      category: "Executive",
+      icon: "functions",
+      description: "Runway projection using Wolfram Cloud integration",
+    },
+    {
+      name: "/run-agent SDR Swarm",
+      action: "/run-agent SDR Swarm",
+      category: "Executive",
+      icon: "support_agent",
+      description: "Activate autonomous lead generation workforce",
+    },
+    {
+      name: "/optimize Marketing",
+      action: "/optimize Marketing",
+      category: "Executive",
+      icon: "bar_chart",
+      description: "Wolfram-powered budget allocation optimization",
+    },
+    {
+      name: "Overview Dashboard",
+      url: "/dashboard",
+      category: "Navigation",
+      icon: "dashboard",
+    },
+    {
+      name: "Wolfram Computation Center",
+      url: "/wolfram",
+      category: "Navigation",
+      icon: "functions",
+    },
+    {
+      name: "Strategy Command Center",
+      url: "/strategy",
+      category: "Navigation",
+      icon: "verified",
+    },
+    {
+      name: "Organization Digital Twin",
+      url: "/twin",
+      category: "Navigation",
+      icon: "donut_large",
+    },
+    {
+      name: "Enterprise Knowledge Graph",
+      url: "/graph",
+      category: "Navigation",
+      icon: "hub",
+    },
+    {
+      name: "Agent Observatory",
+      url: "/observatory",
+      category: "Navigation",
+      icon: "visibility",
+    },
+    {
+      name: "Realtime Event Fabric",
+      url: "/fabric",
+      category: "Navigation",
+      icon: "stream",
+    },
+    {
+      name: "Executive Boardroom",
+      url: "/boardroom",
+      category: "Navigation",
+      icon: "summarize",
+    },
+    {
+      name: "System Observability Center",
+      url: "/status",
+      category: "Navigation",
+      icon: "analytics",
+    },
+    {
+      name: "Hackathon Demo Mode",
+      url: "/demo",
+      category: "Navigation",
+      icon: "play_circle",
+    },
+  ];
+
+  const filteredCommands = commands.filter((cmd) => {
+    const searchLower = search.toLowerCase();
+    return (
+      cmd.name.toLowerCase().includes(searchLower) ||
+      (cmd.description && cmd.description.toLowerCase().includes(searchLower))
+    );
+  });
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      className="fixed inset-0 z-[100] bg-surface-container-lowest/80 backdrop-blur-md flex items-center justify-center p-md"
+    >
+      <div className="glass-panel w-full max-w-2xl rounded-xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.15)] flex flex-col border border-primary/20">
+        {/* Search Field */}
+        <div className="p-md border-b border-outline-variant/50 flex items-center gap-md bg-[#090b10]">
+          <span className="material-symbols-outlined text-primary text-xl">terminal</span>
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Type a command or search modules... (e.g. /simulate, /forecast)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 bg-transparent border-none text-on-surface placeholder-on-surface-variant/50 text-sm focus:outline-none focus:ring-0 outline-none"
+          />
+          <span className="text-[10px] bg-surface-container-highest px-2 py-1 rounded text-on-surface-variant font-mono">
+            ESC
+          </span>
+        </div>
+
+        {/* Command Search Results */}
+        <div className="max-h-[350px] overflow-y-auto p-sm space-y-md">
+          {/* Executive Commands Section */}
+          {filteredCommands.some((c) => c.category === "Executive") && (
+            <div>
+              <div className="px-md py-xs font-mono text-[10px] text-outline uppercase tracking-wider">
+                Executive Commands
+              </div>
+              <div className="space-y-xs mt-xs">
+                {filteredCommands
+                  .filter((c) => c.category === "Executive")
+                  .map((cmd) => (
+                    <button
+                      key={cmd.name}
+                      onClick={() => handleCommandClick(cmd)}
+                      className="command-item w-full text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center justify-between text-on-surface group cursor-pointer"
+                    >
+                      <span className="flex items-center gap-md">
+                        <span className="material-symbols-outlined text-secondary text-sm">
+                          {cmd.icon}
+                        </span>
+                        <span className="font-mono text-xs">{cmd.name}</span>
+                        <span className="text-[10px] text-on-surface-variant group-hover:text-primary transition-colors">
+                          {cmd.description}
+                        </span>
+                      </span>
+                      <span className="text-[10px] text-on-surface-variant font-mono">
+                        Enter
+                      </span>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Section */}
+          {filteredCommands.some((c) => c.category === "Navigation") && (
+            <div>
+              <div className="px-md py-xs font-mono text-[10px] text-outline uppercase tracking-wider">
+                Go To Section
+              </div>
+              <div className="grid grid-cols-2 gap-xs mt-xs">
+                {filteredCommands
+                  .filter((c) => c.category === "Navigation")
+                  .map((cmd) => (
+                    <button
+                      key={cmd.name}
+                      onClick={() => handleCommandClick(cmd)}
+                      className="command-item text-left px-md py-sm rounded hover:bg-primary-container/10 flex items-center gap-md text-on-surface-variant hover:text-on-surface text-xs cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-primary text-sm">
+                        {cmd.icon}
+                      </span>
+                      <span>{cmd.name}</span>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {filteredCommands.length === 0 && (
+            <div className="text-center p-xl text-on-surface-variant text-xs font-mono">
+              No matching computational command found.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+export default CommandPalette;
