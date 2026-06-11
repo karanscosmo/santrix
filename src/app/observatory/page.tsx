@@ -5,16 +5,19 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { useSecurity } from "@/lib/SecurityContext";
 
 interface TraceDetail {
+  id: string;
   run: string;
   input: string;
-  status: string;
-  statusColor: string;
+  status: "Success" | "Running" | "Idle" | "Blocked";
   latency: string;
   time: string;
   cot: Array<{ type: "thought" | "success" | "process"; label: string; text: string }>;
   memory: Array<{ key: string; val: string }>;
   tokens: string;
-  id: string;
+  cost: string;
+  health: number;
+  progress: number;
+  reasoningDepth: number;
 }
 
 export default function AgentObservatoryPage() {
@@ -24,10 +27,9 @@ export default function AgentObservatoryPage() {
   const traces: Record<string, TraceDetail> = {
     "trace-1": {
       id: "trace_89a741f",
-      run: "MarketingOptimization",
+      run: "MarketingOptimizer Swarm",
       input: '{ budget_realloc: "$150,000", shift_from: "display", shift_to: "search" }',
       status: "Success",
-      statusColor: "text-tertiary",
       latency: "842ms",
       time: "Just now",
       cot: [
@@ -58,13 +60,16 @@ export default function AgentObservatoryPage() {
         { key: "crewai.agent.role", val: "Strategic Allocations Analyst" },
       ],
       tokens: "Input: 4,096 | Output: 1,024",
+      cost: "$12.42/hr",
+      health: 98,
+      progress: 100,
+      reasoningDepth: 4,
     },
     "trace-2": {
       id: "trace_84a123a",
-      run: "ChurnMonteCarlo",
+      run: "ChurnMonteCarlo Swarm",
       input: '{ run_samples: 50000, target_metric: "RunwayFactor", parameter_churn: "+20%" }',
-      status: "Success",
-      statusColor: "text-tertiary",
+      status: "Idle",
       latency: "14ms",
       time: "2m ago",
       cot: [
@@ -86,13 +91,16 @@ export default function AgentObservatoryPage() {
         { key: "confidence_intervals.alpha", val: "0.95" },
       ],
       tokens: "Input: 1,512 | Output: 512",
+      cost: "$4.10/hr",
+      health: 99,
+      progress: 100,
+      reasoningDepth: 3,
     },
     "trace-3": {
       id: "trace_78d90fa",
-      run: "LeadGenerationSDR",
+      run: "LeadGenerationSDR Swarm",
       input: '{ query: "SaaS Enterprise Prospects in EU", email_frequency: "daily" }',
       status: "Running",
-      statusColor: "text-secondary",
       latency: "1.2s",
       time: "5m ago",
       cot: [
@@ -118,6 +126,10 @@ export default function AgentObservatoryPage() {
         { key: "crewai.lead_evaluator", val: "Active" },
       ],
       tokens: "Input: 8,192 | Output: 2,048",
+      cost: "$18.50/hr",
+      health: 95,
+      progress: 68,
+      reasoningDepth: 3,
     },
   };
 
@@ -130,165 +142,183 @@ export default function AgentObservatoryPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-md">
+      {/* 1. Page Header matching visual hierarchy guidelines */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+        <div>
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
+            Agent Observatory
+          </h1>
+          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
+            Agent Operations Center | Active agent status, memory, and reasoning traces.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Indicators */}
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
+            Active Swarms: 18 Swarms
+          </div>
+          <button
+            onClick={() => alert("Diagnostic Swarm check launched successfully.")}
+            className="btn-action btn-primary text-[10px] py-2"
+          >
+            Diagnostic Swarm
+          </button>
+        </div>
+      </header>
+
+      {/* 2. Top Overview Row */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: "Total Agent Calls", val: "12,482", color: "text-[#8ab4f8]" },
+          { label: "Average Latency", val: "840ms", color: "text-[#4edea3]" },
+          { label: "OpenAI Tokens Spent", val: "4.2M", color: "text-[#8ab4f8]" },
+          { label: "Observatory Status", val: "NOMINAL", color: "text-[#4edea3]" },
+        ].map((item, idx) => (
+          <div key={idx} className="card-layer p-4">
+            <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest block">{item.label}</span>
+            <span className={`font-display text-lg font-bold block mt-2 ${item.color}`}>{item.val}</span>
+          </div>
+        ))}
+      </section>
+
+      {/* 3. Main Split View Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
         
-        {/* Observatory telemetry header */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
-          <div className="glass-panel p-md rounded-xl hover:border-white/10 transition-colors">
-            <span className="font-sans text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider block">
-              Total Agent Calls
-            </span>
-            <h3 className="font-mono text-2xl text-primary font-bold mt-1.5">12,482</h3>
-          </div>
-          <div className="glass-panel p-md rounded-xl hover:border-white/10 transition-colors">
-            <span className="font-sans text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider block">
-              Average Latency
-            </span>
-            <h3 className="font-mono text-2xl text-tertiary font-bold mt-1.5">840ms</h3>
-          </div>
-          <div className="glass-panel p-md rounded-xl hover:border-white/10 transition-colors">
-            <span className="font-sans text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider block">
-              OpenAI Tokens Spent
-            </span>
-            <h3 className="font-mono text-2xl text-secondary-fixed-dim font-bold mt-1.5">4.2M</h3>
-          </div>
-          <div className="glass-panel p-md rounded-xl hover:border-white/10 transition-colors">
-            <span className="font-sans text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider block">
-              Observatory Status
-            </span>
-            <h3 className="font-mono text-2xl text-tertiary font-bold mt-1.5 uppercase">Nominal</h3>
-          </div>
-        </div>
-
-        {/* Row 2: Run traces (Left) & Agent Reasoner (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md pb-8">
-          
-          {/* Run Traces Panel */}
-          <div className="lg:col-span-5 glass-panel rounded-xl p-md flex flex-col h-[540px] justify-between">
+        {/* Left: Agent Swarm Cards (Col 5) */}
+        <section className="lg:col-span-5 panel-layer p-5 flex flex-col h-[560px]">
+          <div className="border-b border-white/[0.04] pb-3 mb-4 flex justify-between items-center">
             <div>
-              <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
-                <div>
-                  <h3 className="font-display text-headline-md text-on-surface text-[18px]">Agent Run Traces</h3>
-                  <p className="font-mono text-xs text-on-surface-variant mt-1">LANGSMITH PIPELINE LOGGER</p>
-                </div>
-                <span className="text-[10px] font-mono text-outline font-bold tracking-wider uppercase">LIVE LOGGER</span>
-              </div>
-
-              <div className="overflow-y-auto space-y-sm my-md pr-xs max-h-[380px]">
-                {Object.entries(traces).map(([key, t]) => {
-                  const isActive = selectedTraceId === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => handleSelectTrace(key)}
-                      className={`w-full text-left cursor-pointer border p-md rounded-xl flex flex-col gap-1.5 transition-all ${
-                        isActive
-                          ? "bg-primary/5 border-primary shadow-[0_0_15px_rgba(0,219,231,0.05)] text-white"
-                          : "bg-[#050505]/40 border-white/5 hover:border-white/15 text-on-surface-variant"
-                      }`}
-                    >
-                      <div className="flex justify-between text-xs font-mono font-bold">
-                        <span className="text-white">run: {t.run}</span>
-                        <span className={t.statusColor}>{t.latency}</span>
-                      </div>
-                      <p className="text-[10px] font-light font-sans truncate">{t.input}</p>
-                      <span className="text-[9px] font-mono text-on-surface-variant/75 uppercase tracking-wider mt-0.5 block">
-                        ID: {t.id} • {t.time}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="pt-md border-t border-outline-variant/30 flex justify-between items-center text-xs mt-md">
-              <span className="text-on-surface-variant/75 font-mono">Filter: Runs with error (0)</span>
-              <button
-                onClick={() => alert("Redirecting to advanced logs link...")}
-                className="text-primary hover:text-primary-container font-semibold uppercase text-[10px] cursor-pointer transition-colors"
-              >
-                Advanced Link
-              </button>
+              <h3 className="font-display text-sm font-bold text-white tracking-wide">Agent swarm metrics</h3>
+              <p className="font-mono text-[9px] text-gray-500 mt-0.5">LANGSMITH TELEMETRY REGISTRY</p>
             </div>
           </div>
 
-          {/* Agent Reasoning & Memory traces */}
-          <div className="lg:col-span-7 glass-panel rounded-xl p-md flex flex-col h-[540px] justify-between relative overflow-hidden">
-            <div className="stream-pulse"></div>
-            <div>
-              <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
-                <div>
-                  <h3 className="font-display text-headline-md text-on-surface text-[18px]">
-                    Chain-of-Thought &amp; Memory Workspace
-                  </h3>
-                  <p className="font-mono text-xs text-on-surface-variant mt-1">INTERNAL AGENT LOGIC AND CONTEXT</p>
-                </div>
-                <span className="material-symbols-outlined text-outline">psychology</span>
-              </div>
-
-              <div className="overflow-y-auto space-y-md pr-xs font-mono text-xs max-h-[380px]">
-                <div className="space-y-sm">
-                  <span className="font-sans text-[10px] text-primary block font-bold uppercase tracking-wider">
-                    RUN DETAILS: {activeTrace.run}
-                  </span>
-                  <div className="bg-[#050505]/40 p-md rounded-xl border border-white/5 flex flex-col gap-1">
-                    <span className="text-on-surface-variant font-bold uppercase text-[9px] tracking-wider">INPUT PRESET</span>
-                    <span className="text-white font-light">{activeTrace.input}</span>
+          <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-thin">
+            {Object.entries(traces).map(([key, t]) => {
+              const isActive = selectedTraceId === key;
+              const isRunning = t.status === "Running";
+              return (
+                <button
+                  key={key}
+                  onClick={() => handleSelectTrace(key)}
+                  className={`w-full text-left cursor-pointer border p-4 rounded-[18px] flex flex-col gap-3 transition-all ${
+                    isActive
+                      ? "bg-[#8ab4f8]/5 border-[#8ab4f8]/30 shadow-[0_0_15px_rgba(138,180,248,0.1)] text-white"
+                      : "bg-[#050505]/40 border-white/[0.04] hover:border-white/[0.15] text-gray-400"
+                  }`}
+                >
+                  {/* Top line: Status, Name, Pulse animation */}
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs font-bold text-white font-mono">{t.run}</span>
+                    <div className="flex items-center gap-1.5 font-mono text-[9px] font-bold">
+                      <span className={`w-1.5 h-1.5 rounded-full ${isRunning ? "bg-[#4edea3] animate-pulse" : "bg-gray-500"}`}></span>
+                      <span className={isRunning ? "text-[#4edea3]" : "text-gray-500"}>{t.status.toUpperCase()}</span>
+                    </div>
                   </div>
+
+                  {/* Task progress bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[8px] font-mono text-gray-500">
+                      <span>TASK PROGRESS</span>
+                      <span>{t.progress}%</span>
+                    </div>
+                    <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
+                      <div className="h-full bg-[#8ab4f8] rounded-full" style={{ width: `${t.progress}%` }}></div>
+                    </div>
+                  </div>
+
+                  {/* Bottom metrics grid: tokens, health, cost, reasoning depth */}
+                  <div className="grid grid-cols-2 gap-2 text-[9px] font-mono text-gray-400 pt-2 border-t border-white/[0.03]">
+                    <div>
+                      <span className="text-gray-500 text-[8px] block">HEALTH / COST</span>
+                      <span className="text-white font-bold">{t.health}% • {t.cost}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 text-[8px] block">REASONING DEPTH</span>
+                      <span className="text-[#8ab4f8] font-bold">Thought {t.reasoningDepth}</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Right: Agent Reasoning Workspace (Col 7) */}
+        <section className="lg:col-span-7 panel-layer p-5 flex flex-col h-[560px] justify-between relative overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#8ab4f8]/30 to-transparent"></div>
+          
+          <div>
+            <div className="border-b border-white/[0.04] pb-3 mb-4 flex justify-between items-center">
+              <div>
+                <h3 className="font-display text-sm font-bold text-white tracking-wide">
+                  Chain-of-Thought Logic Workspace
+                </h3>
+                <p className="font-mono text-[9px] text-gray-500 mt-0.5">INTERNAL TRACES AND LOCAL VECTOR CACHE</p>
+              </div>
+              <span className="material-symbols-outlined text-[#8ab4f8]">psychology</span>
+            </div>
+
+            <div className="overflow-y-auto space-y-4 pr-1 font-mono text-[10px] max-h-[390px] scrollbar-thin">
+              {/* input preset */}
+              <div className="space-y-1">
+                <span className="text-gray-500 text-[8px] font-bold uppercase tracking-wider block">INPUT PARAMS</span>
+                <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03] text-white font-light">
+                  {activeTrace.input}
                 </div>
+              </div>
 
-                <div className="space-y-xs">
-                  <span className="text-xs text-on-surface-variant font-bold uppercase text-[9px] tracking-wider block mb-1">REASONING CHAIN (CoT)</span>
-                  <div className="bg-[#050505]/60 border border-white/5 rounded-xl p-md space-y-2.5 text-[11px]">
-                    {activeTrace.cot.map((step, sIdx) => {
-                      const labelColor =
-                        step.type === "success"
-                          ? "text-tertiary"
-                          : step.type === "process"
-                          ? "text-secondary"
-                          : "text-primary";
-
-                      return (
-                        <div key={sIdx} className="leading-relaxed flex items-start gap-1 font-light">
-                          <span className="text-primary/45 shrink-0">&raquo;</span>
-                          <div>
-                            <strong className={`${labelColor} font-bold`}>{step.label}:</strong>{" "}
-                            <span className="text-on-surface-variant">{step.text}</span>
-                          </div>
+              {/* CoT steps */}
+              <div className="space-y-1">
+                <span className="text-gray-500 text-[8px] font-bold uppercase tracking-wider block">REASONING CHAIN</span>
+                <div className="bg-[#050505]/60 border border-white/[0.03] rounded-[12px] p-3.5 space-y-2.5 text-[10px] text-gray-300">
+                  {activeTrace.cot.map((step, sIdx) => {
+                    let labelColor = "text-[#8ab4f8]";
+                    if (step.type === "success") labelColor = "text-[#4edea3]";
+                    if (step.type === "process") labelColor = "text-amber-400";
+                    return (
+                      <div key={sIdx} className="leading-relaxed flex items-start gap-1 font-light">
+                        <span className="text-gray-600 shrink-0">&raquo;</span>
+                        <div>
+                          <strong className={`${labelColor} font-bold`}>{step.label}:</strong>{" "}
+                          <span>{step.text}</span>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="space-y-xs">
-                  <span className="text-xs text-on-surface-variant font-bold uppercase text-[9px] tracking-wider block mb-1">
-                    MEMORY VALUES (Short Term Cache)
-                  </span>
-                  <div className="bg-[#050505]/40 p-md rounded-xl border border-white/5 text-[11px] text-on-surface-variant/80 space-y-1.5 font-light leading-relaxed">
-                    {activeTrace.memory.map((mem, mIdx) => (
-                      <div key={mIdx} className="flex gap-2">
-                        <strong className="text-white shrink-0">{mem.key}:</strong> 
-                        <span className="truncate">{mem.val}</span>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Cache Memory */}
+              <div className="space-y-1">
+                <span className="text-gray-500 text-[8px] font-bold uppercase tracking-wider block">
+                  VECTOR EMBEDDINGS CACHE
+                </span>
+                <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03] space-y-1.5 text-[10px] text-gray-400">
+                  {activeTrace.memory.map((mem, mIdx) => (
+                    <div key={mIdx} className="flex gap-2">
+                      <strong className="text-white shrink-0">{mem.key}:</strong> 
+                      <span className="truncate">{mem.val}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-
-            <div className="pt-md border-t border-outline-variant/30 flex justify-between items-center text-xs mt-md">
-              <span className="text-on-surface-variant font-mono">Tokens Used: {activeTrace.tokens}</span>
-              <button
-                onClick={() => alert("Displaying active flow visualization model...")}
-                className="bg-primary text-on-primary font-semibold text-xs tracking-wider uppercase px-4 py-2 rounded-lg hover:bg-primary-container transition-all cursor-pointer glow-button"
-              >
-                View Flow Graph
-              </button>
-            </div>
           </div>
-          
-        </div>
+
+          {/* Bottom trace actions */}
+          <div className="pt-4 border-t border-white/[0.04] flex justify-between items-center text-[10px] font-mono">
+            <span className="text-gray-500">TOKENS: {activeTrace.tokens}</span>
+            <button
+              onClick={() => alert("Displaying SVG schema visualization model...")}
+              className="btn-action btn-primary text-[10px] py-2"
+            >
+              Visualize Flow Path
+            </button>
+          </div>
+        </section>
+
       </div>
     </DashboardLayout>
   );

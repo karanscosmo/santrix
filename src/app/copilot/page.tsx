@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSecurity } from "@/lib/SecurityContext";
 
@@ -13,9 +14,13 @@ interface Message {
   metrics?: { label: string; value: string; trend: string; isPositive: boolean; trendType: "up" | "down" }[];
   risk?: { level: string; desc: string };
   actions?: { label: string; action: string; icon: string }[];
+  agentsUsed?: string[];
+  sources?: string[];
+  confidence?: string;
 }
 
 export default function ExecutiveCopilot() {
+  const router = useRouter();
   const { addAuditLog, checkPermission, rateLimitCheck, sanitizeInput } = useSecurity();
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -43,10 +48,20 @@ export default function ExecutiveCopilot() {
         { label: "Run Sensitivity Analysis", action: "/forecast Runway", icon: "query_stats" },
         { label: "Generate Board Report", action: "/boardroom", icon: "summarize" },
       ],
+      agentsUsed: ["Wolfram Engine Solver", "Finance Anomaly Swarm", "Risk Modeling Twin"],
+      sources: ["Stripe Telemetry Sync", "Pinecone Vector Indexes", "Enterprise Forecast DB"],
+      confidence: "94.2%",
     },
   ]);
   const [inputVal, setInputVal] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [activeSessionId, setActiveSessionId] = useState("session_1");
+
+  const sessions = [
+    { id: "session_1", title: "Predict runway cash burn", time: "14:02 UTC" },
+    { id: "session_2", title: "Compare SDR Swarm efficiency", time: "09:15 UTC" },
+    { id: "session_3", title: "Q3 Headcount Allocation", time: "Yesterday" },
+  ];
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +95,9 @@ export default function ExecutiveCopilot() {
       let replyText = "I have evaluated the request against current Wolfram datasets and organizational context.";
       let metrics: Message["metrics"] = [];
       let risk: Message["risk"] = undefined;
+      let agentsUsed = ["Decision Router Agent", "Wolfram Engine Solver"];
+      let sources = ["Enterprise Vector Store"];
+      let confidence = "92.5%";
 
       const query = sanitized.toLowerCase();
       if (query.includes("burn") || query.includes("runway") || query.includes("cash")) {
@@ -90,12 +108,18 @@ export default function ExecutiveCopilot() {
           { label: "Burn Rate", value: "$340K/mo", trend: "-5.4% change", isPositive: true, trendType: "down" },
         ];
         risk = { level: "Low", desc: "Current cash reserves are sufficient to sustain operations through Q3 2027 without external funding." };
+        agentsUsed = ["Finance Anomaly Swarm", "Wolfram Engine Solver", "Risk Modeling Twin"];
+        sources = ["ClickHouse Financial DB", "Stripe API Sync"];
+        confidence = "95.8%";
       } else if (query.includes("hiring") || query.includes("headcount")) {
         replyText = "Operational Twin analysis indicates hiring bottleneck in Product Engineering. Restructuring budget to add 5 senior engineers accelerates project milestone delivery by 14 days.";
         metrics = [
           { label: "Milestone Speedup", value: "14 Days", trend: "+8% efficiency", isPositive: true, trendType: "up" },
           { label: "Incremental Cost", value: "$65K/mo", trend: "Fully funded", isPositive: true, trendType: "up" },
         ];
+        agentsUsed = ["Headcount Planner Swarm", "Product Roadmap twin"];
+        sources = ["Workday HR Index", "Jira Timeline Analytics"];
+        confidence = "91.2%";
       }
 
       const sanktrixMsg: Message = {
@@ -106,118 +130,162 @@ export default function ExecutiveCopilot() {
         summary: "Executive Insight",
         metrics: metrics.length > 0 ? metrics : undefined,
         risk: risk,
+        agentsUsed,
+        sources,
+        confidence,
       };
 
       setMessages(prev => [...prev, sanktrixMsg]);
     }, 1500);
   };
 
+  // Get metadata from the latest Sanktrix message to populate live context panel
+  const latestSanktrixMsg = [...messages].reverse().find(m => m.sender === "SANKTRIX");
+
   return (
     <DashboardLayout>
-      <div className="flex h-[calc(100vh-8rem)] relative">
-        {/* Central Chat Interface */}
-        <section className="flex-1 flex flex-col relative pr-6">
-          {/* Scrollable Conversation Area */}
-          <div className="flex-1 overflow-y-auto pb-32 flex flex-col gap-6">
-            {/* Session Marker */}
-            <div className="flex justify-center">
-              <span className="font-mono text-[9px] text-[#b0c6ff] bg-[#b0c6ff]/10 border border-primary/20 px-3 py-1 rounded-full uppercase tracking-wider">
-                COGNITIVE SESSION // SECURE
-              </span>
-            </div>
+      {/* 1. Page Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+        <div>
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
+            Executive Copilot
+          </h1>
+          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
+            Interactive decision solver integrating symbolic AI swarms.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] animate-pulse"></span>
+            Agent Sync: Active
+          </div>
+          <button 
+            onClick={() => {
+              setMessages([
+                {
+                  id: `msg_${Date.now()}`,
+                  sender: "SANKTRIX",
+                  timestamp: "Now",
+                  text: "New session started. How can I assist you with enterprise decisions today?",
+                  agentsUsed: ["Router Agent"],
+                  sources: [],
+                  confidence: "100%",
+                }
+              ]);
+            }}
+            className="btn-action btn-secondary text-[10px] py-2"
+          >
+            New Session
+          </button>
+        </div>
+      </header>
 
-            {/* Message History */}
+      {/* 2. Overhauled 3-Column Workspace */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-14rem)] min-h-[500px]">
+        
+        {/* Left Column: Conversation Sessions List (Col 2.5) */}
+        <aside className="lg:col-span-3 card-layer p-4 flex flex-col gap-3 h-full bg-[#07080c]/40">
+          <div className="border-b border-white/[0.04] pb-2 flex justify-between items-center">
+            <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest font-bold">Sessions</span>
+            <span className="material-symbols-outlined text-gray-500 text-sm">history</span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto space-y-1 pr-1 scrollbar-thin">
+            {sessions.map(s => {
+              const isActive = activeSessionId === s.id;
+              return (
+                <button
+                  key={s.id}
+                  onClick={() => {
+                    setActiveSessionId(s.id);
+                    setInputVal(s.title);
+                  }}
+                  className={`w-full text-left p-2.5 rounded-[10px] transition-all flex items-start gap-2.5 cursor-pointer ${
+                    isActive 
+                      ? "bg-[#8ab4f8]/5 border border-[#8ab4f8]/20 text-[#8ab4f8]" 
+                      : "hover:bg-white/[0.02] text-gray-400"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[15px] mt-0.5 shrink-0">chat_bubble</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium truncate text-white">{s.title}</p>
+                    <span className="font-mono text-[8px] text-gray-500">{s.time}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="pt-2 border-t border-white/[0.04] text-[9px] font-mono text-gray-500 flex justify-between items-center">
+            <span>SECURE GATEWAY</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
+          </div>
+        </aside>
+
+        {/* Center Column: Reasoning Workspace (Col 6) */}
+        <section className="lg:col-span-6 card-layer p-4 flex flex-col justify-between h-full relative overflow-hidden bg-[#0d0e12]/30">
+          
+          {/* Scrollable Conversation Stream */}
+          <div className="flex-1 overflow-y-auto space-y-6 pr-1 pb-24 scrollbar-thin">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex flex-col gap-2 ${
-                  msg.sender === "USER" ? "self-end max-w-[80%]" : "self-start w-full max-w-4xl"
+                  msg.sender === "USER" ? "items-end" : "items-start"
                 }`}
               >
                 {msg.sender === "USER" ? (
-                  <div className="glass-panel p-4 rounded-2xl rounded-tr-none border border-white/5 text-white">
-                    <div className="flex items-center gap-2 mb-2 text-on-surface-variant opacity-70">
-                      <span className="material-symbols-outlined text-sm">account_circle</span>
-                      <span className="font-sans text-[9px] uppercase font-bold tracking-wider">EXECUTIVE_USER</span>
-                    </div>
-                    <p className="font-display text-[15px] font-semibold leading-relaxed">{msg.text}</p>
+                  <div className="bg-[#8ab4f8]/10 border border-[#8ab4f8]/20 p-3.5 rounded-[16px] rounded-tr-none text-white max-w-[85%]">
+                    <p className="text-xs leading-relaxed">{msg.text}</p>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-3">
-                    {/* Header */}
-                    <div className="flex items-center gap-3 text-primary">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center relative overflow-hidden">
-                        <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <div className="w-full space-y-3">
+                    {/* Bot Title Header */}
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-full bg-[#8ab4f8]/10 border border-[#8ab4f8]/30 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[13px] text-[#8ab4f8]" style={{ fontVariationSettings: "'FILL' 1" }}>
                           smart_toy
                         </span>
                       </div>
-                      <div className="flex flex-col">
-                        <span className="font-sans text-[10px] uppercase font-bold tracking-widest text-white">Sanktrix Engine</span>
-                        <span className="font-mono text-[9px] text-on-surface-variant">Response Synchronized</span>
-                      </div>
+                      <span className="font-mono text-[9px] text-gray-400 uppercase font-bold tracking-wider">
+                        Sanktrix Engine // Core
+                      </span>
                     </div>
 
-                    {/* Response Card */}
-                    <div className="glass-panel rounded-2xl overflow-hidden relative border border-primary/20 p-6 flex flex-col gap-6">
-                      <div className="h-[2px] w-full absolute top-0 left-0 bg-primary/20 stream-pulse"></div>
+                    {/* Chat Content Card */}
+                    <div className="bg-[#050505]/40 border border-white/[0.04] p-4 rounded-[16px] space-y-4">
+                      {msg.summary && (
+                        <div className="flex items-center gap-1.5 border-b border-white/[0.03] pb-2 font-mono text-[9px] text-[#8ab4f8] uppercase font-bold tracking-wider">
+                          <span className="material-symbols-outlined text-[12px]">subject</span>
+                          {msg.summary}
+                        </div>
+                      )}
                       
-                      <div>
-                        {msg.summary && (
-                          <h3 className="font-sans text-[10px] uppercase font-bold text-primary mb-1 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">subject</span>
-                            {msg.summary}
-                          </h3>
-                        )}
-                        <p className="text-sm leading-relaxed text-[#e0e2ee]">{msg.text}</p>
-                      </div>
+                      <p className="text-xs leading-relaxed text-gray-200 font-sans">{msg.text}</p>
 
-                      {/* Dynamic Metrics grids */}
+                      {/* Display inline KPI Grid if available */}
                       {msg.metrics && (
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-2">
                           {msg.metrics.map((m, idx) => (
-                            <div key={idx} className="bg-[#050505]/40 p-3 border border-white/5 rounded-xl flex flex-col gap-1">
-                              <span className="font-sans text-[9px] uppercase font-bold text-on-surface-variant">{m.label}</span>
-                              <span className="font-display text-base font-bold text-white">{m.value}</span>
-                              <div className={`flex items-center gap-1 font-mono text-[9px] mt-auto ${m.isPositive ? "text-tertiary" : "text-[#ffb4ab]"}`}>
-                                <span className="material-symbols-outlined text-xs">
-                                  {m.trendType === "up" ? "trending_up" : "trending_down"}
-                                </span>
+                            <div key={idx} className="bg-[#07080c]/50 p-2.5 border border-white/[0.03] rounded-[10px]">
+                              <span className="block text-[8px] font-mono uppercase tracking-wider text-gray-500">{m.label}</span>
+                              <span className="block text-xs font-bold text-white mt-0.5">{m.value}</span>
+                              <span className={`block text-[8px] font-mono font-bold mt-1 ${m.isPositive ? "text-[#4edea3]" : "text-red-400"}`}>
                                 {m.trend}
-                              </div>
+                              </span>
                             </div>
                           ))}
                         </div>
                       )}
 
-                      {/* Risk Assessment Popovers */}
+                      {/* Display inline Risk Assessment if available */}
                       {msg.risk && (
-                        <div className="bg-[#ffb955]/10 border border-[#ffb955]/20 rounded-xl p-4">
-                          <h3 className="font-sans text-[10px] uppercase font-bold text-[#ffb955] mb-1.5 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">warning</span>
-                            Risk Assessment: {msg.risk.level}
-                          </h3>
-                          <p className="text-xs text-on-surface-variant leading-relaxed">{msg.risk.desc}</p>
-                        </div>
-                      )}
-
-                      {/* Recommendations Buttons */}
-                      {msg.actions && (
-                        <div>
-                          <h3 className="font-sans text-[10px] uppercase font-bold text-on-surface-variant mb-3 flex items-center gap-2">
-                            <span className="material-symbols-outlined text-sm">check_circle</span>
-                            Recommended Actions
-                          </h3>
-                          <div className="flex gap-4">
-                            {msg.actions.map((act, idx) => (
-                              <button
-                                key={idx}
-                                className="flex-1 py-2 px-4 rounded-lg border border-primary/40 text-primary font-sans text-[10px] uppercase font-bold hover:bg-primary/10 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                              >
-                                <span className="material-symbols-outlined text-xs">{act.icon}</span>
-                                {act.label}
-                              </button>
-                            ))}
+                        <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-[10px] space-y-1">
+                          <div className="flex items-center gap-1.5 font-mono text-[9px] text-amber-500 uppercase font-bold">
+                            <span className="material-symbols-outlined text-[12px]">warning</span>
+                            Risk Analysis: {msg.risk.level}
                           </div>
+                          <p className="text-[10px] text-gray-400 leading-normal">{msg.risk.desc}</p>
                         </div>
                       )}
                     </div>
@@ -227,86 +295,96 @@ export default function ExecutiveCopilot() {
             ))}
 
             {isTyping && (
-              <div className="flex items-center gap-2 text-on-surface-variant font-mono text-xs">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-100"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-bounce delay-200"></span>
-                <span>Sanktrix compiling agent observations...</span>
+              <div className="flex items-center gap-2 text-gray-500 font-mono text-[10px] bg-[#050505]/20 p-2.5 rounded-[10px] w-max">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] animate-bounce"></span>
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] animate-bounce delay-100"></span>
+                <span>Resolving symbolic algorithms...</span>
               </div>
             )}
           </div>
 
-          {/* Input Area */}
-          <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-[#050505] via-[#050505] to-transparent pt-8">
-            <form onSubmit={handleSendMessage} className="max-w-4xl mx-auto relative glass-panel rounded-xl overflow-hidden border border-white/5 focus-within:ring-1 focus-within:ring-primary focus-within:border-primary transition-all bg-[#0d0e12]">
-              <textarea
+          {/* Bottom Chat Input Form wrapper */}
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0d0e12] via-[#0d0e12]/95 to-transparent p-4 pt-10">
+            <form onSubmit={handleSendMessage} className="relative bg-[#07080c] border border-white/[0.06] rounded-[12px] overflow-hidden focus-within:border-[#8ab4f8]/50 transition-colors">
+              <input
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendMessage(e)}
-                className="w-full bg-transparent border-none text-white text-sm placeholder-on-surface-variant/50 focus:ring-0 resize-none py-4 pl-6 pr-24 outline-none"
-                placeholder="Ask Copilot a follow-up query... (e.g. Predict runway cash burn)"
-                rows={1}
+                className="w-full bg-transparent border-none text-white text-xs placeholder-gray-500 py-3 pl-4 pr-16 outline-none focus:ring-0"
+                placeholder="Ask Copilot a decision request..."
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                <button
-                  type="submit"
-                  className="w-8 h-8 rounded bg-primary text-[#001945] hover:bg-[#c2d6ff] flex items-center justify-center transition-colors shadow-[0_0_15px_rgba(176,198,255,0.2)] cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px] font-bold">arrow_upward</span>
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="absolute right-2 top-1.5 bg-[#8ab4f8] hover:bg-[#a8c7fa] text-[#001945] w-7 h-7 rounded-[8px] flex items-center justify-center cursor-pointer transition-colors shadow-sm"
+              >
+                <span className="material-symbols-outlined text-[16px] font-bold">arrow_upward</span>
+              </button>
             </form>
-            <div className="text-center mt-2 pb-2">
-              <span className="font-mono text-[9px] text-on-surface-variant/50">
-                Sanktrix uses deterministic computational solvers. Verify key metrics before committing actions.
-              </span>
-            </div>
           </div>
         </section>
 
-        {/* Right Side Panel: History */}
-        <aside className="w-80 border-l border-white/5 bg-[#10131b]/60 flex flex-col rounded-xl overflow-hidden">
-          <div className="flex border-b border-white/5 font-sans text-xs">
-            <button className="flex-1 py-3 border-b-2 border-primary text-primary font-bold bg-primary/5">
-              History
-            </button>
-            <button className="flex-grow py-3 text-on-surface-variant hover:text-white transition-colors">
-              Insights
-            </button>
+        {/* Right Column: Live Context Panel (Col 3) */}
+        <aside className="lg:col-span-3 card-layer p-4 flex flex-col gap-4 h-full bg-[#07080c]/40 overflow-y-auto scrollbar-thin">
+          <div className="border-b border-white/[0.04] pb-2">
+            <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest font-bold block">Live Context Panel</span>
           </div>
-          <div className="flex-grow overflow-y-auto p-4 flex flex-col gap-1.5">
-            <h4 className="font-mono text-[9px] text-outline mt-2 mb-1 px-2 uppercase tracking-widest font-bold">TODAY</h4>
-            <button
-              onClick={() => setInputVal("Predict runway cash burn")}
-              className="w-full text-left p-2 rounded-lg hover:bg-white/5 transition-colors group flex items-start gap-2.5 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">chat_bubble</span>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-xs text-white truncate">Predict runway cash burn</span>
-                <span className="font-mono text-[9px] text-on-surface-variant">14:02 UTC</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setInputVal("Compare SDR Swarm efficiency")}
-              className="w-full text-left p-2 rounded-lg hover:bg-white/5 transition-colors group flex items-start gap-2.5 cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">chat_bubble</span>
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-xs text-white truncate">Compare SDR Swarm efficiency</span>
-                <span className="font-mono text-[9px] text-on-surface-variant">09:15 UTC</span>
-              </div>
-            </button>
-          </div>
-          <div className="p-4 border-t border-white/5 bg-[#050505]/40">
-            <div className="flex items-center justify-between font-mono text-[9px] text-on-surface-variant mb-1.5">
-              <span>Token Context Window</span>
-              <span className="text-tertiary font-bold">45%</span>
-            </div>
-            <div className="w-full h-1 bg-[#1c1f28] rounded-full overflow-hidden">
-              <div className="h-full bg-[#4edea3] w-[45%]"></div>
+
+          {/* 1. Confidence Level */}
+          <div className="space-y-1.5">
+            <span className="font-mono text-[8px] text-gray-500 uppercase tracking-wider block">Decision Confidence</span>
+            <div className="bg-[#050505]/40 border border-white/[0.03] p-3 rounded-[12px] flex items-center justify-between">
+              <span className="text-lg font-bold text-white">{latestSanktrixMsg?.confidence || "94.2%"}</span>
+              <span className="font-mono text-[9px] bg-[#4edea3]/10 text-[#4edea3] px-2 py-0.5 rounded font-bold uppercase tracking-wider">
+                High Trust
+              </span>
             </div>
           </div>
+
+          {/* 2. Agents Swarm Executed */}
+          <div className="space-y-1.5">
+            <span className="font-mono text-[8px] text-gray-500 uppercase tracking-wider block">Agents Utilized</span>
+            <div className="space-y-1">
+              {(latestSanktrixMsg?.agentsUsed || ["Finance Anomaly Swarm", "Wolfram Engine Solver"]).map((agent, i) => (
+                <div key={i} className="flex items-center gap-2 bg-[#050505]/30 border border-white/[0.03] p-2 rounded-[10px] text-[10px]">
+                  <span className="material-symbols-outlined text-[#8ab4f8] text-[14px]">support_agent</span>
+                  <span className="font-medium text-gray-300 truncate">{agent}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Knowledge Base Sources */}
+          <div className="space-y-1.5">
+            <span className="font-mono text-[8px] text-gray-500 uppercase tracking-wider block">Sources Referenced</span>
+            <div className="space-y-1">
+              {(latestSanktrixMsg?.sources || ["Stripe Telemetry Sync", "Pinecone Vector Indexes"]).map((source, i) => (
+                <div key={i} className="flex items-center gap-2 bg-[#050505]/30 border border-white/[0.03] p-2 rounded-[10px] text-[10px]">
+                  <span className="material-symbols-outlined text-[#4edea3] text-[14px]">link</span>
+                  <span className="font-mono text-[9px] text-gray-400 truncate">{source}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Action Recommendation Shortcuts */}
+          {latestSanktrixMsg?.actions && (
+            <div className="space-y-2 mt-auto border-t border-white/[0.04] pt-3">
+              <span className="font-mono text-[8px] text-gray-500 uppercase tracking-wider block">Recommended Actions</span>
+              <div className="space-y-1.5">
+                {latestSanktrixMsg.actions.map((act, i) => (
+                  <button
+                    key={i}
+                    onClick={() => router.push(act.action)}
+                    className="w-full py-2 bg-[#8ab4f8]/5 hover:bg-[#8ab4f8]/10 border border-[#8ab4f8]/20 rounded-[10px] text-[#8ab4f8] text-[10px] font-mono font-bold flex items-center justify-center gap-2 cursor-pointer transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[13px]">{act.icon}</span>
+                    {act.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </aside>
+
       </div>
     </DashboardLayout>
   );

@@ -13,7 +13,7 @@ interface CommandItem {
   name: string;
   action?: string;
   url?: string;
-  category: "Executive" | "Navigation";
+  category: "Executive Command" | "Navigation" | "Knowledge Hub & Search";
   icon: string;
   description?: string;
 }
@@ -46,7 +46,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       addAuditLog("command.trigger", `Triggered command: ${item.action}`, "SUCCESS");
       if (item.action.startsWith("/simulate")) {
         const scenario = item.action.replace("/simulate ", "");
-        router.push(`/demo?scenario=${encodeURIComponent(scenario)}`);
+        router.push(`/simulations?scenario=${encodeURIComponent(scenario)}`);
       } else if (item.action.startsWith("/forecast")) {
         router.push("/wolfram?action=forecast");
       } else if (item.action.startsWith("/optimize")) {
@@ -67,100 +67,86 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     {
       name: "/simulate Churn Spike",
       action: "/simulate Churn Spike",
-      category: "Executive",
-      icon: "play_arrow",
-      description: "Stress-test user retention model",
+      category: "Executive Command",
+      icon: "model_training",
+      description: "Stress-test customer churn modeling matrices",
     },
     {
       name: "/simulate Burn Rate Crisis",
       action: "/simulate Burn Rate Crisis",
-      category: "Executive",
-      icon: "play_arrow",
-      description: "Simulate cash runway crunch under market stress",
+      category: "Executive Command",
+      icon: "trending_down",
+      description: "Monte Carlo runway simulations under marketing compression",
     },
     {
       name: "/simulate Market Expansion",
       action: "/simulate Market Expansion",
-      category: "Executive",
-      icon: "play_arrow",
-      description: "Run growth simulations on international segments",
+      category: "Executive Command",
+      icon: "query_stats",
+      description: "Forecast cash yield during EMEA expansion",
     },
     {
       name: "/forecast Runway",
       action: "/forecast Runway",
-      category: "Executive",
+      category: "Executive Command",
       icon: "functions",
-      description: "Runway projection using Wolfram Cloud integration",
+      description: "Wolfram Kernel symbolic runway computation",
     },
     {
       name: "/optimize Marketing",
       action: "/optimize Marketing",
-      category: "Executive",
-      icon: "bar_chart",
-      description: "Wolfram-powered budget allocation optimization",
+      category: "Executive Command",
+      icon: "payments",
+      description: "Optimize digital marketing allocations via linear solvers",
     },
     {
       name: "/workflow CAC_EXCESS_TRIGGER",
       action: "/workflow CAC_EXCESS_TRIGGER",
-      category: "Executive",
+      category: "Executive Command",
       icon: "account_tree",
-      description: "View active CAC anomaly mitigation pipeline",
-    },
-    {
-      name: "/workflow LEAD_ROUTING_SYNC",
-      action: "/workflow LEAD_ROUTING_SYNC",
-      category: "Executive",
-      icon: "account_tree",
-      description: "Check CRM routing workflow synchronization logs",
-    },
-    {
-      name: "/report Q3 Board Briefing",
-      action: "/report Q3 Board Briefing",
-      category: "Executive",
-      icon: "assessment",
-      description: "Open synthesized executive brief for stakeholders",
-    },
-    {
-      name: "/report Financial Forecast Audit",
-      action: "/report Financial Forecast Audit",
-      category: "Executive",
-      icon: "assessment",
-      description: "View detailed cash and ARR projections audit",
+      description: "Inspect n8n anomaly mitigation workflow",
     },
     {
       name: "/agent Finance Optimizer",
       action: "/agent Finance Optimizer",
-      category: "Executive",
+      category: "Executive Command",
       icon: "support_agent",
-      description: "Review active financial scaling operations status",
-    },
-    {
-      name: "/agent Strategy Agent",
-      action: "/agent Strategy Agent",
-      category: "Executive",
-      icon: "support_agent",
-      description: "Trigger autonomous competitive landscape scanner",
+      description: "Check active financial agent status",
     },
     {
       name: "/agent SDR Swarm",
       action: "/agent SDR Swarm",
-      category: "Executive",
+      category: "Executive Command",
       icon: "support_agent",
-      description: "Check active workforce lead gen telemetry",
+      description: "SDR outbound telemetry dashboard",
     },
     {
-      name: "/document Security Compliance Audit",
-      action: "/document Security Compliance Audit",
-      category: "Executive",
+      name: "/document Security compliance audit",
+      action: "/document Security compliance audit",
+      category: "Knowledge Hub & Search",
       icon: "menu_book",
-      description: "Inspect active governance audit reports",
+      description: "Search corporate policies and compliance audits",
     },
     {
-      name: "/document Semantic Hub Index",
-      action: "/document Semantic Hub Index",
-      category: "Executive",
-      icon: "menu_book",
-      description: "View compiled vectors in knowledge storage base",
+      name: "Search people: Karan Sharma (Owner)",
+      url: "/settings",
+      category: "Knowledge Hub & Search",
+      icon: "person",
+      description: "Founder & CEO, Administrator privileges",
+    },
+    {
+      name: "Search Risks: Marketing CAC Anomaly",
+      url: "/twin",
+      category: "Knowledge Hub & Search",
+      icon: "warning",
+      description: "Twin propagation details for marketing nodes",
+    },
+    {
+      name: "Search Reports: Board Briefing Q3",
+      url: "/reports",
+      category: "Knowledge Hub & Search",
+      icon: "assessment",
+      description: "Generated business context report",
     },
     {
       name: "Overview Dashboard",
@@ -169,13 +155,19 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       icon: "dashboard",
     },
     {
-      name: "Wolfram Computation Center",
+      name: "Executive Copilot",
+      url: "/copilot",
+      category: "Navigation",
+      icon: "smart_toy",
+    },
+    {
+      name: "Wolfram Center",
       url: "/wolfram",
       category: "Navigation",
       icon: "functions",
     },
     {
-      name: "Strategy Command Center",
+      name: "Strategy Command",
       url: "/strategy",
       category: "Navigation",
       icon: "verified",
@@ -223,10 +215,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       icon: "shield",
     },
     {
-      name: "Hackathon Demo Mode",
-      url: "/demo",
+      name: "Hackathon Scenario Lab",
+      url: "/simulations",
       category: "Navigation",
-      icon: "play_circle",
+      icon: "model_training",
     },
   ];
 
@@ -243,53 +235,87 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
   return (
     <div
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="fixed inset-0 z-[100] bg-[#050505]/80 backdrop-blur-md flex items-center justify-center p-4"
+      className="fixed inset-0 z-[100] bg-[#050505]/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
     >
-      <div className="glass-panel w-full max-w-2xl rounded-2xl overflow-hidden shadow-[0_0_50px_rgba(86,141,255,0.2)] flex flex-col border border-primary/20">
+      {/* 18px Card Radius applied below */}
+      <div className="w-full max-w-2xl bg-[#0a0b0e]/95 backdrop-blur-2xl rounded-[18px] overflow-hidden shadow-[0_12px_60px_rgba(0,0,0,0.85),0_0_40px_rgba(138,180,248,0.1)] flex flex-col border border-white/[0.04] max-h-[500px]">
         {/* Search Field */}
-        <div className="p-4 border-b border-white/5 flex items-center gap-3 bg-[#090b10]">
-          <span className="material-symbols-outlined text-primary text-xl">terminal</span>
+        <div className="p-4 border-b border-white/[0.04] flex items-center gap-3 bg-[#0d0f14]/50">
+          <span className="material-symbols-outlined text-[#8ab4f8] text-lg">terminal</span>
           <input
             ref={inputRef}
             type="text"
-            placeholder="Type a command or search modules... (e.g. /simulate, /forecast)"
+            placeholder="Ask Sanktrix anything... (e.g. /simulate, risks, people, report)"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent border-none text-white placeholder-on-surface-variant/50 text-sm focus:outline-none focus:ring-0 outline-none"
+            className="flex-1 bg-transparent border-none text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-0 outline-none"
           />
-          <span className="text-[10px] bg-white/5 border border-white/10 px-2 py-0.5 rounded text-on-surface-variant font-mono">
+          <span className="text-[9px] bg-white/[0.03] border border-white/[0.06] px-2 py-0.5 rounded text-gray-500 font-mono">
             ESC
           </span>
         </div>
 
         {/* Command Search Results */}
-        <div className="max-h-[350px] overflow-y-auto p-2 space-y-4">
+        <div className="flex-1 overflow-y-auto p-2 space-y-4 scrollbar-thin">
           {/* Executive Commands Section */}
-          {filteredCommands.some((c) => c.category === "Executive") && (
+          {filteredCommands.some((c) => c.category === "Executive Command") && (
             <div>
-              <div className="px-4 py-1 font-mono text-[9px] text-[#ffb955] uppercase tracking-widest font-bold">
-                Executive Commands
+              <div className="px-4 py-1 font-mono text-[9px] text-amber-500 uppercase tracking-widest font-bold">
+                Executive Action Commands
               </div>
-              <div className="space-y-1 mt-1">
+              <div className="space-y-0.5 mt-1">
                 {filteredCommands
-                  .filter((c) => c.category === "Executive")
+                  .filter((c) => c.category === "Executive Command")
                   .map((cmd) => (
                     <button
                       key={cmd.name}
                       onClick={() => handleCommandClick(cmd)}
-                      className="command-item w-full text-left px-4 py-2 rounded-lg hover:bg-white/5 flex items-center justify-between text-white group cursor-pointer"
+                      className="w-full text-left px-4 py-2 rounded-[10px] hover:bg-white/[0.03] flex items-center justify-between text-white group cursor-pointer transition-colors"
                     >
-                      <span className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-[#ffb955] text-sm">
+                      <span className="flex items-center gap-3 truncate">
+                        <span className="material-symbols-outlined text-amber-500 text-sm shrink-0">
                           {cmd.icon}
                         </span>
-                        <span className="font-mono text-xs text-primary">{cmd.name}</span>
-                        <span className="text-[10px] text-on-surface-variant group-hover:text-primary transition-colors pl-3">
+                        <span className="font-mono text-xs text-[#8ab4f8] shrink-0">{cmd.name}</span>
+                        <span className="text-[10px] text-gray-500 group-hover:text-gray-300 transition-colors pl-3 truncate">
                           {cmd.description}
                         </span>
                       </span>
-                      <span className="text-[9px] text-on-surface-variant font-mono bg-white/5 px-1.5 py-0.5 rounded">
-                        Enter
+                      <span className="text-[9px] text-gray-500 font-mono bg-white/[0.03] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        ↵ Enter
+                      </span>
+                    </button>
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Knowledge Hub & Search Results */}
+          {filteredCommands.some((c) => c.category === "Knowledge Hub & Search") && (
+            <div>
+              <div className="px-4 py-1 font-mono text-[9px] text-[#4edea3] uppercase tracking-widest font-bold">
+                Knowledge Graph &amp; Search Entities
+              </div>
+              <div className="space-y-0.5 mt-1">
+                {filteredCommands
+                  .filter((c) => c.category === "Knowledge Hub & Search")
+                  .map((cmd) => (
+                    <button
+                      key={cmd.name}
+                      onClick={() => handleCommandClick(cmd)}
+                      className="w-full text-left px-4 py-2 rounded-[10px] hover:bg-white/[0.03] flex items-center justify-between text-white group cursor-pointer transition-colors"
+                    >
+                      <span className="flex items-center gap-3 truncate">
+                        <span className="material-symbols-outlined text-[#4edea3] text-sm shrink-0">
+                          {cmd.icon}
+                        </span>
+                        <span className="text-xs text-white truncate">{cmd.name}</span>
+                        <span className="text-[10px] text-gray-500 group-hover:text-gray-300 transition-colors pl-3 truncate">
+                          {cmd.description}
+                        </span>
+                      </span>
+                      <span className="text-[9px] text-gray-500 font-mono bg-white/[0.03] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        ↵ Enter
                       </span>
                     </button>
                   ))}
@@ -300,8 +326,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           {/* Navigation Section */}
           {filteredCommands.some((c) => c.category === "Navigation") && (
             <div>
-              <div className="px-4 py-1 font-mono text-[9px] text-primary uppercase tracking-widest font-bold">
-                Go To Section
+              <div className="px-4 py-1 font-mono text-[9px] text-gray-500 uppercase tracking-widest font-bold">
+                Go To Platform View
               </div>
               <div className="grid grid-cols-2 gap-1 mt-1">
                 {filteredCommands
@@ -310,12 +336,12 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
                     <button
                       key={cmd.name}
                       onClick={() => handleCommandClick(cmd)}
-                      className="command-item text-left px-4 py-2 rounded-lg hover:bg-white/5 flex items-center gap-3 text-on-surface-variant hover:text-white text-xs cursor-pointer"
+                      className="text-left px-4 py-2 rounded-[10px] hover:bg-white/[0.03] flex items-center gap-3 text-gray-400 hover:text-white text-xs cursor-pointer transition-colors"
                     >
-                      <span className="material-symbols-outlined text-primary text-sm">
+                      <span className="material-symbols-outlined text-[#8ab4f8] text-sm">
                         {cmd.icon}
                       </span>
-                      <span>{cmd.name}</span>
+                      <span className="font-sans font-medium">{cmd.name}</span>
                     </button>
                   ))}
               </div>
@@ -323,8 +349,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
           )}
 
           {filteredCommands.length === 0 && (
-            <div className="text-center py-12 text-on-surface-variant text-xs font-mono">
-              No matching computational command found.
+            <div className="text-center py-12 text-gray-500 text-xs font-mono">
+              No matching computational elements found.
             </div>
           )}
         </div>
@@ -332,4 +358,5 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
     </div>
   );
 };
+
 export default CommandPalette;

@@ -36,253 +36,197 @@ export default function SecurityPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-md">
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md border-b border-outline-variant pb-md mb-xl">
-          <div>
-            <h2 className="font-display text-3xl text-on-surface font-bold flex items-center gap-sm">
-              Security &amp; Governance Center
-              <span className="w-2.5 h-2.5 bg-error rounded-full pulse-indicator inline-block"></span>
-            </h2>
-            <p className="font-mono text-xs text-on-surface-variant mt-xs">
-              Monitor active identity contexts, inspect cryptographically signed logs, and enforce runtime guardrails.
-            </p>
-          </div>
-          <div className="flex gap-sm font-mono text-xs bg-surface-container/30 px-md py-sm rounded-lg border border-outline-variant/30">
-            <span className="text-tertiary">Node: santrix-node-01</span>
-            <span className="text-on-surface-variant/55">•</span>
-            <span className="text-primary">Status: SECURE</span>
+      {/* 1. Page Header matching visual hierarchy guidelines */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+        <div>
+          <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white flex items-center gap-2">
+            Security &amp; Governance Center
+            <span className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></span>
+          </h2>
+          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
+            Monitor active identity contexts, inspect cryptographically signed logs, and enforce runtime guardrails.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Status Indicator */}
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
+            IP: santrix-node-01 • SECURE
           </div>
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-md">
-          {/* Left Column: Audit Logs & RBAC Matrix */}
-          <div className="xl:col-span-8 space-y-md">
-            
-            {/* Real-time Centralized Layer 7 Audit Logs */}
-            <div className="glass-panel rounded-xl p-md flex flex-col h-[400px]">
-              <div className="flex justify-between items-center mb-md border-b border-outline-variant/30 pb-sm">
-                <h3 className="font-display text-base text-on-surface font-semibold uppercase tracking-wider flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-tertiary">assignment_turned_in</span>
-                  Layer 7 Governance Logs
-                </h3>
-                <span className="w-1.5 h-1.5 bg-tertiary rounded-full animate-ping"></span>
-              </div>
-              <div className="flex-1 overflow-y-auto font-mono text-[10px] space-y-2 pr-xs select-all">
-                {auditLogs.map((log) => (
-                  <div key={log.id} className="p-sm bg-surface-container-lowest/30 rounded border border-outline-variant/35 text-on-surface-variant flex gap-sm items-start hover:border-primary/25 transition-all">
-                    <span className={`px-2 py-0.5 rounded font-bold text-[8px] mt-0.5 ${
-                      log.status === "SUCCESS" ? "text-tertiary bg-tertiary/10" : "text-error bg-error/10"
-                    }`}>
-                      {log.status}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-on-surface truncate"><strong className="text-primary">{log.action}</strong>: {log.details}</p>
-                      <div className="flex justify-between text-[8px] text-on-surface-variant/60 mt-1">
-                        <span>ACTOR: {log.userEmail} ({log.role})</span>
-                        <span>{new Date(log.timestamp).toLocaleTimeString()} • IP: {log.ipAddress}</span>
-                      </div>
+      {/* 2. Grid split layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+        
+        {/* Left Column (Col 8) */}
+        <div className="xl:col-span-8 space-y-6">
+          
+          {/* Layer 7 Governance Logs */}
+          <div className="panel-layer p-5 flex flex-col h-[400px]">
+            <div className="flex justify-between items-center mb-4 border-b border-white/[0.04] pb-3">
+              <h3 className="font-display text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm text-[#8ab4f8]">assignment_turned_in</span>
+                Layer 7 Governance Logs
+              </h3>
+              <span className="w-1.5 h-1.5 bg-[#4edea3] rounded-full animate-ping"></span>
+            </div>
+
+            <div className="flex-1 overflow-y-auto font-mono text-[10px] space-y-2 pr-1 scrollbar-thin">
+              {auditLogs.map((log) => (
+                <div key={log.id} className="p-3 bg-[#050505]/40 rounded-[12px] border border-white/[0.03] text-gray-400 flex gap-3 items-start hover:border-[#8ab4f8]/20 transition-colors">
+                  <span className={`px-2 py-0.5 rounded font-bold text-[8px] mt-0.5 shrink-0 ${
+                    log.status === "SUCCESS" ? "text-[#4edea3] bg-[#4edea3]/10" : "text-red-400 bg-red-400/10"
+                  }`}>
+                    {log.status}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-xs truncate">
+                      <strong className="text-[#8ab4f8] font-bold">{log.action}</strong>: {log.details}
+                    </p>
+                    <div className="flex justify-between text-[8px] text-gray-500 mt-1">
+                      <span>ACTOR: {log.userEmail} ({log.role})</span>
+                      <span>{new Date(log.timestamp).toLocaleTimeString()} • IP: {log.ipAddress}</span>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
-
-            {/* Role-Based Access Control (RBAC) Matrix */}
-            <div className="glass-panel rounded-xl p-md">
-              <div className="mb-md border-b border-outline-variant/30 pb-sm">
-                <h3 className="font-display text-base text-on-surface font-semibold uppercase tracking-wider flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-primary">policy</span>
-                  Access Control Policy Matrix (RBAC)
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left font-mono text-xs text-on-surface-variant">
-                  <thead>
-                    <tr className="border-b border-outline-variant/30 text-on-surface text-[10px] uppercase font-bold">
-                      <th className="p-sm">Policy Target</th>
-                      <th className="p-sm text-center">Admin</th>
-                      <th className="p-sm text-center">Exec</th>
-                      <th className="p-sm text-center">Analyst</th>
-                      <th className="p-sm text-center">Viewer</th>
-                      <th className="p-sm hidden md:table-cell">Description</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20">
-                    {rbacRules.map((rule) => (
-                      <tr key={rule.action} className="hover:bg-surface-container-highest/20 transition-colors">
-                        <td className="p-sm font-bold text-white">{rule.action}</td>
-                        <td className="p-sm text-center">
-                          <span className={`material-symbols-outlined text-sm ${rule.admin ? "text-tertiary" : "text-error/40"}`}>
-                            {rule.admin ? "check_circle" : "cancel"}
-                          </span>
-                        </td>
-                        <td className="p-sm text-center">
-                          <span className={`material-symbols-outlined text-sm ${rule.exec ? "text-tertiary" : "text-error/40"}`}>
-                            {rule.exec ? "check_circle" : "cancel"}
-                          </span>
-                        </td>
-                        <td className="p-sm text-center">
-                          <span className={`material-symbols-outlined text-sm ${rule.analyst ? "text-tertiary" : "text-error/40"}`}>
-                            {rule.analyst ? "check_circle" : "cancel"}
-                          </span>
-                        </td>
-                        <td className="p-sm text-center">
-                          <span className={`material-symbols-outlined text-sm ${rule.viewer ? "text-tertiary" : "text-error/40"}`}>
-                            {rule.viewer ? "check_circle" : "cancel"}
-                          </span>
-                        </td>
-                        <td className="p-sm hidden md:table-cell text-on-surface-variant/80 text-[11px] font-sans">
-                          {rule.desc}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
           </div>
 
-          {/* Right Column: Governance Controls & Active Toggles */}
-          <div className="xl:col-span-4 space-y-md">
-            
-            {/* Active Session Role Overrider */}
-            <div className="glass-panel rounded-xl p-md border-2 border-primary/20">
-              <h3 className="font-display text-md text-on-surface mb-xs font-bold text-[16px] text-primary flex items-center gap-sm">
-                <span className="material-symbols-outlined text-sm">shield</span> Runtime Identity Override
+          {/* Access Control Policy Matrix (RBAC) */}
+          <div className="panel-layer p-5">
+            <div className="mb-4 border-b border-white/[0.04] pb-3">
+              <h3 className="font-display text-sm font-bold text-white tracking-wide flex items-center gap-2">
+                <span className="material-symbols-outlined text-sm text-[#8ab4f8]">policy</span>
+                Access Control Policy Matrix (RBAC)
               </h3>
-              <p className="font-sans text-xs text-on-surface-variant mb-md leading-relaxed">
-                Dynamically switch roles in this simulation sandbox to test permissions of other users.
-              </p>
-              
-              <div className="bg-surface-container p-sm rounded-xl border border-outline-variant">
-                <label className="block font-sans text-[10px] text-on-surface-variant uppercase font-semibold mb-1">
-                  Active User Role Scope
-                </label>
-                <select
-                  value={currentUser.role}
-                  onChange={(e) => {
-                    const nextRole = e.target.value as UserRole;
-                    setRole(nextRole);
-                    addAuditLog("user.role_override", `Manually overrode local session role scope to '${nextRole}'`, "SUCCESS");
-                  }}
-                  className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-tertiary font-bold focus:border-primary outline-none"
-                >
-                  <option value="Admin">Admin (Full System Permissions)</option>
-                  <option value="Executive">Executive (Simulate Models, Scoped API Keys)</option>
-                  <option value="Analyst">Analyst (Trigger Telemetry, restricted boardroom)</option>
-                  <option value="Viewer">Viewer (Read-Only access limiters)</option>
-                </select>
-                <div className="mt-sm flex items-center justify-between text-[10px] text-on-surface-variant font-mono">
-                  <span>Actor Node: {currentUser.id}</span>
-                  <span>Scope: {currentUser.role === "Admin" ? "Full Access" : "Scoped Actions"}</span>
-                </div>
-              </div>
             </div>
-
-            {/* Security Policy Flags */}
-            <div className="glass-panel rounded-xl p-md space-y-md">
-              <div className="border-b border-outline-variant/30 pb-sm">
-                <h3 className="font-display text-base text-on-surface font-semibold uppercase tracking-wider flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm text-secondary-fixed-dim">gavel</span>
-                  Runtime Governance Guards
-                </h3>
-              </div>
-              <div className="space-y-md">
-                
-                {/* Policy 1 */}
-                <div className="flex justify-between items-start gap-md">
-                  <div>
-                    <span className="block font-sans text-xs font-bold text-white">AI Direct Asset Trading</span>
-                    <span className="block font-sans text-[10px] text-on-surface-variant mt-0.5 leading-relaxed">
-                      Allow autonomous intelligence agents to trigger programmatic asset reallocations.
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleTogglePolicy("AI_DIRECT_TRADES", allowAiTrades, setAllowAiTrades)}
-                    className={`w-10 h-6 rounded-full relative border transition-all cursor-pointer shrink-0 mt-1 ${
-                      allowAiTrades ? "bg-primary/20 border-primary" : "bg-surface-container-highest border-outline-variant"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full absolute top-0.5 transition-all ${
-                        allowAiTrades ? "bg-primary right-0.5 glow-button" : "bg-on-surface-variant left-0.5"
-                      }`}
-                    ></div>
-                  </button>
-                </div>
-
-                {/* Policy 2 */}
-                <div className="flex justify-between items-start gap-md">
-                  <div>
-                    <span className="block font-sans text-xs font-bold text-white">Hardware 2FA Policies</span>
-                    <span className="block font-sans text-[10px] text-on-surface-variant mt-0.5 leading-relaxed">
-                      Require physical security keys (YubiKey) for all core database mutations.
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleTogglePolicy("YUBIKEY_MUTATIONS", require2FA, setRequire2FA)}
-                    className={`w-10 h-6 rounded-full relative border transition-all cursor-pointer shrink-0 mt-1 ${
-                      require2FA ? "bg-primary/20 border-primary" : "bg-surface-container-highest border-outline-variant"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full absolute top-0.5 transition-all ${
-                        require2FA ? "bg-primary right-0.5 glow-button" : "bg-on-surface-variant left-0.5"
-                      }`}
-                    ></div>
-                  </button>
-                </div>
-
-                {/* Policy 3 */}
-                <div className="flex justify-between items-start gap-md">
-                  <div>
-                    <span className="block font-sans text-xs font-bold text-white">Corporate IP Whitelisting</span>
-                    <span className="block font-sans text-[10px] text-on-surface-variant mt-0.5 leading-relaxed">
-                      Restrict platform mutations exclusively to registered enterprise CIDR blocks.
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleTogglePolicy("IP_WHITELIST", ipRestrictedMode, setIpRestrictedMode)}
-                    className={`w-10 h-6 rounded-full relative border transition-all cursor-pointer shrink-0 mt-1 ${
-                      ipRestrictedMode ? "bg-primary/20 border-primary" : "bg-surface-container-highest border-outline-variant"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full absolute top-0.5 transition-all ${
-                        ipRestrictedMode ? "bg-primary right-0.5 glow-button" : "bg-on-surface-variant left-0.5"
-                      }`}
-                    ></div>
-                  </button>
-                </div>
-
-                {/* Policy 4 */}
-                <div className="flex justify-between items-start gap-md">
-                  <div>
-                    <span className="block font-sans text-xs font-bold text-white">XSS Ingestion Sanitization Logs</span>
-                    <span className="block font-sans text-[10px] text-on-surface-variant mt-0.5 leading-relaxed">
-                      Record all DOMPurify input filter triggers in centralized system status feed.
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleTogglePolicy("DOMPURIFY_LOGS", dataSanitizationLog, setDataSanitizationLog)}
-                    className={`w-10 h-6 rounded-full relative border transition-all cursor-pointer shrink-0 mt-1 ${
-                      dataSanitizationLog ? "bg-primary/20 border-primary" : "bg-surface-container-highest border-outline-variant"
-                    }`}
-                  >
-                    <div
-                      className={`w-4 h-4 rounded-full absolute top-0.5 transition-all ${
-                        dataSanitizationLog ? "bg-primary right-0.5 glow-button" : "bg-on-surface-variant left-0.5"
-                      }`}
-                    ></div>
-                  </button>
-                </div>
-
-              </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left font-mono text-[11px] text-gray-400">
+                <thead>
+                  <tr className="border-b border-white/[0.04] text-gray-500 text-[9px] uppercase font-bold">
+                    <th className="p-2.5">POLICY TARGET</th>
+                    <th className="p-2.5 text-center">ADMIN</th>
+                    <th className="p-2.5 text-center">EXEC</th>
+                    <th className="p-2.5 text-center">ANALYST</th>
+                    <th className="p-2.5 text-center">VIEWER</th>
+                    <th className="p-2.5 hidden md:table-cell">DESCRIPTION</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.02]">
+                  {rbacRules.map((rule) => (
+                    <tr key={rule.action} className="hover:bg-white/[0.01] transition-colors">
+                      <td className="p-2.5 font-bold text-white">{rule.action}</td>
+                      <td className="p-2.5 text-center">
+                        <span className={`material-symbols-outlined text-sm ${rule.admin ? "text-[#4edea3]" : "text-red-400/40"}`}>
+                          {rule.admin ? "check_circle" : "cancel"}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-center">
+                        <span className={`material-symbols-outlined text-sm ${rule.exec ? "text-[#4edea3]" : "text-red-400/40"}`}>
+                          {rule.exec ? "check_circle" : "cancel"}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-center">
+                        <span className={`material-symbols-outlined text-sm ${rule.analyst ? "text-[#4edea3]" : "text-red-400/40"}`}>
+                          {rule.analyst ? "check_circle" : "cancel"}
+                        </span>
+                      </td>
+                      <td className="p-2.5 text-center">
+                        <span className={`material-symbols-outlined text-sm ${rule.viewer ? "text-[#4edea3]" : "text-red-400/40"}`}>
+                          {rule.viewer ? "check_circle" : "cancel"}
+                        </span>
+                      </td>
+                      <td className="p-2.5 hidden md:table-cell text-gray-400 font-sans text-xs font-light">
+                        {rule.desc}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-
           </div>
+
+        </div>
+
+        {/* Right Column (Col 4) */}
+        <div className="xl:col-span-4 space-y-6">
+          
+          {/* Runtime Role Switcher */}
+          <div className="card-layer p-5 border border-[#8ab4f8]/20 bg-[#0d0f14]/50">
+            <h3 className="font-display text-sm text-white mb-2 font-bold flex items-center gap-2 text-[#8ab4f8]">
+              <span className="material-symbols-outlined text-sm">shield</span> Runtime Identity Override
+            </h3>
+            <p className="font-sans text-[11px] text-gray-400 mb-4 leading-relaxed font-light">
+              Dynamically switch roles in this simulation sandbox to test permissions of other users.
+            </p>
+            
+            <div className="bg-[#050505]/40 p-3.5 rounded-[12px] border border-white/[0.04]">
+              <label className="block font-sans text-[9px] text-gray-500 uppercase font-bold mb-1.5">
+                Active User Role Scope
+              </label>
+              <select
+                value={currentUser.role}
+                onChange={(e) => {
+                  const nextRole = e.target.value as UserRole;
+                  setRole(nextRole);
+                  addAuditLog("user.role_override", `Manually overrode local session role scope to '${nextRole}'`, "SUCCESS");
+                }}
+                className="w-full bg-[#050505] border border-white/[0.06] rounded-[10px] p-2 font-mono text-xs text-amber-500 font-bold focus:border-[#8ab4f8] outline-none"
+              >
+                <option value="Admin">Admin (Full System Permissions)</option>
+                <option value="Executive">Executive (Simulate Models, Scoped API Keys)</option>
+                <option value="Analyst">Analyst (Trigger Telemetry, restricted boardroom)</option>
+                <option value="Viewer">Viewer (Read-Only access limiters)</option>
+              </select>
+              <div className="mt-3 flex items-center justify-between text-[9px] text-gray-500 font-mono">
+                <span>Actor ID: {currentUser.id}</span>
+                <span>Scope: {currentUser.role === "Admin" ? "Full Access" : "Scoped Actions"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Runtime Toggles */}
+          <div className="card-layer p-5 space-y-4">
+            <div className="border-b border-white/[0.04] pb-2">
+              <h3 className="font-display text-xs text-white uppercase tracking-wider flex items-center gap-2 font-bold">
+                <span className="material-symbols-outlined text-sm text-[#8ab4f8]">gavel</span>
+                Runtime Governance Guards
+              </h3>
+            </div>
+            
+            <div className="space-y-4">
+              {[
+                { name: "AI Direct Asset Trading", desc: "Allow autonomous intelligence agents to trigger programmatic asset reallocations.", val: allowAiTrades, setter: setAllowAiTrades, label: "AI_DIRECT_TRADES" },
+                { name: "Hardware 2FA Policies", desc: "Require physical security keys (YubiKey) for all core database mutations.", val: require2FA, setter: setRequire2FA, label: "YUBIKEY_MUTATIONS" },
+                { name: "Corporate IP Whitelisting", desc: "Restrict platform mutations exclusively to registered enterprise CIDR blocks.", val: ipRestrictedMode, setter: setIpRestrictedMode, label: "IP_WHITELIST" },
+                { name: "XSS Ingestion Sanitization Logs", desc: "Record all DOMPurify input filter triggers in centralized status feed.", val: dataSanitizationLog, setter: setDataSanitizationLog, label: "DOMPURIFY_LOGS" },
+              ].map((policy, i) => (
+                <div key={i} className="flex justify-between items-start gap-4">
+                  <div className="min-w-0 flex-1">
+                    <span className="block font-sans text-xs font-bold text-white">{policy.name}</span>
+                    <span className="block font-sans text-[10px] text-gray-400 mt-1 leading-normal font-light">
+                      {policy.desc}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => handleTogglePolicy(policy.label, policy.val, policy.setter)}
+                    className={`w-9 h-5 rounded-full relative border transition-all cursor-pointer shrink-0 mt-0.5 ${
+                      policy.val ? "bg-[#8ab4f8]/20 border-[#8ab4f8]/60" : "bg-[#1c1d24] border-white/[0.06]"
+                    }`}
+                  >
+                    <div
+                      className={`w-3.5 h-3.5 rounded-full absolute top-[2px] transition-all ${
+                        policy.val ? "bg-[#8ab4f8] right-[2px]" : "bg-gray-500 left-[2px]"
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
 
       </div>
