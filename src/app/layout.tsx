@@ -22,6 +22,12 @@ export const metadata: Metadata = {
     icon: "/Santrix_logo.jpeg",
     apple: "/Santrix_logo.jpeg",
   },
+  openGraph: {
+    title: "Sanktrix - Autonomous Computational OS",
+    description: "Autonomous Computational Intelligence Platform for Enterprise Decision-Making",
+    images: [{ url: "/Santrix_logo.jpeg", width: 800, height: 800, alt: "Sanktrix Logo" }],
+    type: "website",
+  },
 };
 
 export default function RootLayout({

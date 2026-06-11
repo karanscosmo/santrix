@@ -43,7 +43,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       addAuditLog("navigation.palette", `Navigated to ${item.name} from command palette`, "SUCCESS");
       router.push(item.url);
     } else if (item.action) {
-      addAuditLog("simulation.trigger", `Triggered command: ${item.action}`, "SUCCESS");
+      addAuditLog("command.trigger", `Triggered command: ${item.action}`, "SUCCESS");
       if (item.action.startsWith("/simulate")) {
         const scenario = item.action.replace("/simulate ", "");
         router.push(`/demo?scenario=${encodeURIComponent(scenario)}`);
@@ -51,8 +51,14 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         router.push("/wolfram?action=forecast");
       } else if (item.action.startsWith("/optimize")) {
         router.push("/wolfram?action=optimize");
-      } else if (item.action.startsWith("/run-agent")) {
+      } else if (item.action.startsWith("/run-agent") || item.action.startsWith("/agent")) {
         router.push("/agents");
+      } else if (item.action.startsWith("/workflow")) {
+        router.push("/workflows");
+      } else if (item.action.startsWith("/report")) {
+        router.push("/reports");
+      } else if (item.action.startsWith("/document")) {
+        router.push("/knowledge");
       }
     }
   };
@@ -73,6 +79,13 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       description: "Simulate cash runway crunch under market stress",
     },
     {
+      name: "/simulate Market Expansion",
+      action: "/simulate Market Expansion",
+      category: "Executive",
+      icon: "play_arrow",
+      description: "Run growth simulations on international segments",
+    },
+    {
       name: "/forecast Runway",
       action: "/forecast Runway",
       category: "Executive",
@@ -80,18 +93,74 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
       description: "Runway projection using Wolfram Cloud integration",
     },
     {
-      name: "/run-agent SDR Swarm",
-      action: "/run-agent SDR Swarm",
-      category: "Executive",
-      icon: "support_agent",
-      description: "Activate autonomous lead generation workforce",
-    },
-    {
       name: "/optimize Marketing",
       action: "/optimize Marketing",
       category: "Executive",
       icon: "bar_chart",
       description: "Wolfram-powered budget allocation optimization",
+    },
+    {
+      name: "/workflow CAC_EXCESS_TRIGGER",
+      action: "/workflow CAC_EXCESS_TRIGGER",
+      category: "Executive",
+      icon: "account_tree",
+      description: "View active CAC anomaly mitigation pipeline",
+    },
+    {
+      name: "/workflow LEAD_ROUTING_SYNC",
+      action: "/workflow LEAD_ROUTING_SYNC",
+      category: "Executive",
+      icon: "account_tree",
+      description: "Check CRM routing workflow synchronization logs",
+    },
+    {
+      name: "/report Q3 Board Briefing",
+      action: "/report Q3 Board Briefing",
+      category: "Executive",
+      icon: "assessment",
+      description: "Open synthesized executive brief for stakeholders",
+    },
+    {
+      name: "/report Financial Forecast Audit",
+      action: "/report Financial Forecast Audit",
+      category: "Executive",
+      icon: "assessment",
+      description: "View detailed cash and ARR projections audit",
+    },
+    {
+      name: "/agent Finance Optimizer",
+      action: "/agent Finance Optimizer",
+      category: "Executive",
+      icon: "support_agent",
+      description: "Review active financial scaling operations status",
+    },
+    {
+      name: "/agent Strategy Agent",
+      action: "/agent Strategy Agent",
+      category: "Executive",
+      icon: "support_agent",
+      description: "Trigger autonomous competitive landscape scanner",
+    },
+    {
+      name: "/agent SDR Swarm",
+      action: "/agent SDR Swarm",
+      category: "Executive",
+      icon: "support_agent",
+      description: "Check active workforce lead gen telemetry",
+    },
+    {
+      name: "/document Security Compliance Audit",
+      action: "/document Security Compliance Audit",
+      category: "Executive",
+      icon: "menu_book",
+      description: "Inspect active governance audit reports",
+    },
+    {
+      name: "/document Semantic Hub Index",
+      action: "/document Semantic Hub Index",
+      category: "Executive",
+      icon: "menu_book",
+      description: "View compiled vectors in knowledge storage base",
     },
     {
       name: "Overview Dashboard",

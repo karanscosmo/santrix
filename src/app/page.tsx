@@ -11,7 +11,7 @@ export default function Home() {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   
-  // Real-time states for the Interactive Hero Visualization
+  // States for Hero interactive cockpit
   const [activeAgentsCount, setActiveAgentsCount] = useState(12);
   const [liveTelemetry, setLiveTelemetry] = useState<string[]>([
     "System: Boot sequence complete. Wolfram connection open.",
@@ -20,25 +20,76 @@ export default function Home() {
   ]);
   const [sparklineData, setSparklineData] = useState<number[]>([30, 45, 38, 52, 60, 55, 78, 85, 92]);
 
-  // Handle scroll reveals and initial fade-ins
-  const [visibleElements, setVisibleElements] = useState<Set<string>>(new Set());
+  // States for Section 4: Wolfram Interactive Calculator
+  const [calcLoading, setCalcLoading] = useState(false);
+  const [calcRun, setCalcRun] = useState(false);
+  const [calcResult, setCalcResult] = useState({
+    runway: "16.2 months",
+    prob: "94.2%",
+    rec: "No immediate budget action required."
+  });
+
+  const runWolframCalculator = () => {
+    setCalcLoading(true);
+    setCalcRun(false);
+    setTimeout(() => {
+      setCalcLoading(false);
+      setCalcRun(true);
+      setCalcResult({
+        runway: "12.8 months",
+        prob: "78.4%",
+        rec: "WARNING: Margins compressed by 240 bps. Suggest reallocating $120K to search retention ads."
+      });
+    }, 1500);
+  };
+
+  // States for Section 5: Simulation Showcase
+  const [activeSimId, setActiveSimId] = useState("arr");
+  const simulationData: Record<string, { title: string, formula: string, preview: string }> = {
+    arr: {
+      title: "Revenue Forecasting",
+      formula: "f(t) = BaseARR * (1 + CompoundRate)^t + WolframGrowthShift",
+      preview: "ARR projected to scale from $41.2M to $42.8M by Q3. Trend volatility: 1.2%."
+    },
+    churn: {
+      title: "Churn Prediction",
+      formula: "P(c) = Logistic[Beta0 + Beta1*Activity + Beta2*CAC_Shift]",
+      preview: "Calculated 15% retention drop likelihood inside accounts with inactive SDR logs."
+    },
+    hiring: {
+      title: "Hiring Impact Analysis",
+      formula: "MilestoneDev(t) = BaseVelocity + (headcount * EfficiencyCoeff)",
+      preview: "Adding 3 developers reduces core launch timeline by 18 days. Incremental cost: $45K/mo."
+    },
+    expansion: {
+      title: "Market Expansion Planning",
+      formula: "ROI(m) = NetYield[InternationalSegment] - IntegrationCost",
+      preview: "EU segment expansion yields 1.4x capital return under optimized local spend."
+    },
+    resources: {
+      title: "Resource Optimization",
+      formula: "Max z = Sum[Spend_i * Output_i] s.t. Budget <= TotalCapital",
+      preview: "Reallocated marketing ad spend. Core conversion rate improved by +8.4%."
+    },
+    runway: {
+      title: "Cash Runway Modeling",
+      formula: "Runway(m) = TotalCapital / (BurnRate + NetExpansionMargin)",
+      preview: "Baseline cash runway: 15.4 months. Optimized runway: 18.2 months."
+    }
+  };
+
+  // States for Section 12: Product Preview Carousel
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const carouselItems = [
+    { title: "Overview Dashboard", desc: "Executive dashboard showing ARR, cash burn, and live logs.", icon: "dashboard" },
+    { title: "Simulations Sandbox", desc: "Run Monte Carlo models on runway under custom scenario variables.", icon: "model_training" },
+    { title: "Executive Copilot", desc: "Interact with AI Chief of Staff and receive computed briefs.", icon: "smart_toy" },
+    { title: "Agent Observatory", desc: "Inspect LLM trace trees and active agent coordinate loops.", icon: "visibility" },
+    { title: "Wolfram Center", desc: "Execute math calculations and inspect kernel CPU health.", icon: "functions" },
+    { title: "Digital Twin Graph", desc: "Trace operational node maps and departmental flows.", icon: "donut_large" },
+  ];
 
   useEffect(() => {
-    // Initial fade in for hero elements
-    const timer = setTimeout(() => {
-      setVisibleElements(prev => {
-        const next = new Set(prev);
-        next.add("hero-badge");
-        next.add("hero-title");
-        next.add("hero-desc");
-        next.add("hero-buttons");
-        next.add("hero-logo");
-        next.add("hero-visual");
-        return next;
-      });
-    }, 100);
-
-    // Simulated real-time updates for Hero visual cockpit
     const telemetryInterval = setInterval(() => {
       const logs = [
         `Wolfram: Computed risk path volatility (${(Math.random() * 2 + 1).toFixed(2)}%)`,
@@ -52,10 +103,7 @@ export default function Home() {
       setSparklineData(prev => [...prev.slice(1), 75 + Math.floor(Math.random() * 25)]);
     }, 4000);
 
-    return () => {
-      clearTimeout(timer);
-      clearInterval(telemetryInterval);
-    };
+    return () => clearInterval(telemetryInterval);
   }, []);
 
   const handleLogin = (e: React.FormEvent) => {
@@ -71,25 +119,21 @@ export default function Home() {
     }, 1800);
   };
 
-  const isVisible = (id: string) => visibleElements.has(id);
-
   return (
     <div className="bg-[#050505] text-[#e0e2ee] font-sans antialiased overflow-x-hidden min-h-screen selection:bg-primary/30 selection:text-white">
-      {/* 1. Global Header */}
+      {/* Navbar Logo */}
       <header className="fixed top-0 left-0 w-full z-50 bg-[#050505]/80 backdrop-blur-xl border-b border-white/5 h-16 flex justify-between items-center px-6 md:px-12">
         <div className="flex items-center gap-3">
           <div className="relative w-8 h-8 rounded border border-primary/20 overflow-hidden">
-            <img
-              src="/Santrix_logo.jpeg"
-              className="w-full h-full object-cover"
-              alt="Sanktrix Logo"
-            />
+            <img src="/Santrix_logo.jpeg" className="w-full h-full object-cover" alt="Sanktrix Logo" />
           </div>
           <span className="font-display text-lg font-bold text-white tracking-tight">Sanktrix</span>
         </div>
         <nav className="hidden md:flex gap-8">
-          <a href="#platform" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Modules</a>
-          <a href="#architecture" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Architecture</a>
+          <a href="#why-us" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Why Us</a>
+          <a href="#loop" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Intelligence Loop</a>
+          <a href="#wolfram" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Wolfram</a>
+          <a href="#agents" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Agents</a>
           <a href="#security" className="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest">Security</a>
         </nav>
         <button
@@ -100,34 +144,22 @@ export default function Home() {
         </button>
       </header>
 
-      {/* 2. Hero Section (Split-Screen layout) */}
+      {/* SECTION 1 — HERO */}
       <section className="relative w-full min-h-screen flex items-center justify-center pt-24 pb-16 overflow-hidden">
-        {/* Interactive WebGL Backdrop */}
         <div className="absolute inset-0 w-full h-full z-0 opacity-40 mix-blend-screen">
           <WebGLBackground />
         </div>
-
-        {/* Dark Gradient Overlay */}
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#050505]/60 to-[#050505]"></div>
 
         <div className="relative z-10 container mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center max-w-7xl">
-          {/* Left Side: Title, Desc, CTAs */}
+          {/* Left copy */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
-            <div
-              className={`inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6 transition-all duration-1000 ${
-                isVisible("hero-badge") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
-              id="hero-badge"
-            >
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 mb-6">
               <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_10px_#b0c6ff]"></div>
               <span className="font-mono text-[9px] uppercase tracking-widest text-primary font-bold">System Status: Optimal</span>
             </div>
 
-            <h1
-              className={`font-display text-5xl md:text-6xl lg:text-7xl leading-tight font-extrabold mb-6 transition-all duration-1000 delay-100 ${
-                isVisible("hero-title") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-            >
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl leading-tight font-extrabold mb-6">
               <span className="bg-gradient-to-r from-white via-primary to-primary-fixed-dim bg-clip-text text-transparent">
                 SANKTRIX
               </span>
@@ -136,47 +168,33 @@ export default function Home() {
               </span>
             </h1>
 
-            <p
-              className={`text-sm md:text-base text-on-surface-variant max-w-lg mb-10 leading-relaxed transition-all duration-1000 delay-200 ${
-                isVisible("hero-desc") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-            >
-              Transform enterprise data into autonomous strategic intelligence using AI agents, Wolfram-powered computation, and real-time workflow automation.
+            <p className="text-sm md:text-base text-on-surface-variant max-w-lg mb-10 leading-relaxed">
+              Transform enterprise data into autonomous strategic intelligence using AI agents, Wolfram-powered computation, and real-time workflow orchestration.
             </p>
 
-            <div
-              className={`flex flex-col sm:flex-row gap-4 w-full sm:w-auto transition-all duration-1000 delay-300 ${
-                isVisible("hero-buttons") ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-            >
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
               <button
                 onClick={() => setShowModal(true)}
                 className="bg-primary hover:bg-[#c2d6ff] text-[#001945] px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 glow-active flex items-center justify-center gap-2 hover:scale-[1.03] cursor-pointer"
               >
-                Access Platform
+                Launch Platform
                 <span className="material-symbols-outlined text-sm">rocket_launch</span>
               </button>
               <button
                 onClick={() => router.push("/demo")}
                 className="border border-white/10 hover:border-primary/50 text-[#e0e2ee] hover:text-white px-8 py-3.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 bg-white/5 hover:bg-white/10 backdrop-blur-sm flex items-center justify-center gap-2 hover:scale-[1.03] cursor-pointer"
               >
-                Watch Demo
+                Run Live Demo
                 <span className="material-symbols-outlined text-sm">play_circle</span>
               </button>
             </div>
           </div>
 
-          {/* Right Side: Interactive Computational Visualization Dashboard */}
-          <div
-            className={`lg:col-span-6 transition-all duration-1000 delay-400 ${
-              isVisible("hero-visual") ? "opacity-100 scale-100" : "opacity-0 scale-95"
-            }`}
-            id="hero-visual"
-          >
+          {/* Right cockpit visualizer */}
+          <div className="lg:col-span-6">
             <div className="glass-panel w-full p-6 rounded-2xl border border-primary/20 relative shadow-[0_0_50px_rgba(86,141,255,0.1)] flex flex-col space-y-4">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary/30 to-transparent animate-sweep"></div>
               
-              {/* Header section of visual */}
               <div className="flex justify-between items-center border-b border-white/5 pb-3">
                 <div className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-primary animate-ping"></span>
@@ -185,7 +203,6 @@ export default function Home() {
                 <span className="font-mono text-[9px] text-on-surface-variant">NODE: HOST_OS_9</span>
               </div>
 
-              {/* Grid block inside cockpit */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#050505]/40 border border-white/5 rounded-xl p-3 flex flex-col justify-between">
                   <span className="text-[10px] font-mono text-on-surface-variant uppercase">Active Workforce</span>
@@ -197,7 +214,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Sparkline visualization */}
               <div className="bg-[#050505]/40 border border-white/5 rounded-xl p-3 flex flex-col space-y-2">
                 <div className="flex justify-between items-center text-[10px] font-mono text-on-surface-variant">
                   <span>ARR Forecast Trend (Live Model)</span>
@@ -214,7 +230,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Active logging feed */}
               <div className="bg-[#050505]/40 border border-white/5 rounded-xl p-3 flex flex-col space-y-1">
                 <span className="text-[10px] font-mono text-on-surface-variant uppercase border-b border-white/5 pb-1 mb-1">Live Telemetry Feed</span>
                 <div className="space-y-1.5 font-mono text-[10px] text-on-surface">
@@ -231,119 +246,139 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. Live Intelligence Feed Section */}
-      <section className="py-16 bg-[#10131b]/20 border-t border-white/5">
-        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
-              <h2 className="font-display text-2xl md:text-3xl text-white font-bold">Realtime Intelligence Fabric</h2>
-              <p className="text-xs text-on-surface-variant mt-1">Continuous global telemetry stream syncing events</p>
-            </div>
-            <div className="flex items-center gap-2 bg-[#ffb955]/10 border border-[#ffb955]/30 text-[#ffb955] px-3.5 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#ffb955] animate-ping"></span> Live Market Sync
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { time: "Just now", type: "MACRO_EVENT", title: "Federal Interest Rate Shift", desc: "Wolfram Engine evaluated 0.25% variance impact on cash assets." },
-              { time: "2m ago", type: "AGENT_LOG", title: "Competitor Price Change", desc: "Lead agent tracked 8% price cuts in competitive platform matrix." },
-              { time: "15m ago", type: "COMPUTE_SUCCESS", title: "Monte Carlo Re-optimization", desc: "Reallocated operational spend to maximize runway longevity." }
-            ].map((feed, idx) => (
-              <div key={idx} className="glass-panel p-5 rounded-xl border border-white/5 flex flex-col justify-between space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-mono text-[9px] text-primary uppercase font-bold tracking-wider">{feed.type}</span>
-                  <span className="text-[10px] text-on-surface-variant">{feed.time}</span>
-                </div>
-                <h3 className="font-display text-sm text-white font-bold">{feed.title}</h3>
-                <p className="text-xs text-on-surface-variant leading-relaxed">{feed.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. AI Agent Ecosystem Section */}
-      <section className="py-24 border-t border-white/5" id="platform">
+      {/* SECTION 2 — WHY SANKTRIX */}
+      <section className="py-24 bg-[#10131b]/25 border-t border-white/5" id="why-us">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">AI Agent Workforce</h2>
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Why Traditional BI Fails</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
             <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
-              Deploy autonomous swarms coordination routines concurrently to execute complex operations.
+              Standard data dashboards only look backward. Sanktrix introduces the transition to real-time predictive computation and autonomous execution.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* Traditional BI */}
+            <div className="glass-panel p-8 rounded-2xl border border-white/5 flex flex-col space-y-6">
+              <h3 className="font-display text-xl text-[#ffb4ab] font-bold uppercase tracking-wider flex items-center gap-2">
+                <span className="material-symbols-outlined">history</span>
+                Traditional BI Systems
+              </h3>
+              <ul className="space-y-3 font-mono text-xs text-on-surface-variant">
+                <li className="flex gap-2 items-center"><span className="text-red-400 font-bold">✖</span> Static data tables and retro-fitted layouts</li>
+                <li className="flex gap-2 items-center"><span className="text-red-400 font-bold">✖</span> Reactive reports requiring human interpretation</li>
+                <li className="flex gap-2 items-center"><span className="text-red-400 font-bold">✖</span> Historical logs that cannot predict CAC deviations</li>
+              </ul>
+            </div>
+            {/* Sanktrix */}
+            <div className="glass-panel p-8 rounded-2xl border border-primary/20 shadow-[0_0_30px_rgba(86,141,255,0.05)] flex flex-col space-y-6">
+              <h3 className="font-display text-xl text-primary font-bold uppercase tracking-wider flex items-center gap-2">
+                <span className="material-symbols-outlined">bolt</span>
+                Sanktrix Autonomous OS
+              </h3>
+              <ul className="space-y-3 font-mono text-xs text-on-surface">
+                <li className="flex gap-2 items-center"><span className="text-[#4edea3] font-bold">✔</span> Real-time predictive Monte Carlo computation</li>
+                <li className="flex gap-2 items-center"><span className="text-[#4edea3] font-bold">✔</span> Powered by Wolfram Computational Engines</li>
+                <li className="flex gap-2 items-center"><span className="text-[#4edea3] font-bold">✔</span> Autonomous agent swarms coordinating execution</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 3 — THE INTELLIGENCE LOOP */}
+      <section className="py-24 border-t border-white/5" id="loop">
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">The Intelligence Loop</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              Trace the continuous computational pathway that converts raw noise into strategic business growth.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 relative">
             {[
-              { role: "SDR Swarm Coordinator", status: "Active", tasks: "Lead generation, CRM syncing", health: "98%" },
-              { role: "Financial Optimizer", status: "Running", tasks: "Cash optimization, burn tracking", health: "100%" },
-              { role: "Risk Auditor", status: "Idle", tasks: "Telemetry evaluation, compliance", health: "95%" },
-              { role: "Executive Assistant", status: "Active", tasks: "Document parsing, brief compiling", health: "99%" },
-            ].map((agent, idx) => (
-              <div key={idx} className="glass-panel p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-primary/20 transition-all">
-                <div className="flex justify-between items-center">
-                  <span className="material-symbols-outlined text-primary text-2xl">support_agent</span>
-                  <span className="font-mono text-[9px] text-[#4edea3] bg-[#4edea3]/10 px-2.5 py-0.5 rounded-full uppercase font-bold tracking-wider">{agent.status}</span>
-                </div>
-                <div>
-                  <h3 className="font-display text-sm text-white font-bold">{agent.role}</h3>
-                  <p className="text-[11px] text-on-surface-variant mt-1">Tasks: {agent.tasks}</p>
-                </div>
-                <div className="flex justify-between items-center text-[10px] font-mono text-on-surface-variant pt-2 border-t border-white/5">
-                  <span>Reliability Node</span>
-                  <span className="text-white font-bold">{agent.health}</span>
-                </div>
+              { id: "1", label: "Enterprise Data", icon: "database" },
+              { id: "2", label: "AI Agents", icon: "support_agent" },
+              { id: "3", label: "Wolfram Engine", icon: "functions" },
+              { id: "4", label: "Simulations", icon: "model_training" },
+              { id: "5", label: "Strategic Intel", icon: "verified" },
+              { id: "6", label: "Recommendations", icon: "dashboard" },
+            ].map((step, idx) => (
+              <div key={idx} className="glass-panel p-5 rounded-2xl text-center flex flex-col items-center justify-between space-y-4 hover:border-primary/20 transition-all border border-white/5">
+                <span className="font-mono text-2xl text-primary/30 font-bold">{step.id}</span>
+                <span className="material-symbols-outlined text-primary text-3xl">{step.icon}</span>
+                <span className="font-display text-xs text-white font-bold block">{step.label}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5. Wolfram Computational Engine Section */}
-      <section className="py-24 bg-[#10131b]/10 border-t border-white/5">
+      {/* SECTION 4 — WOLFRAM COMPUTATIONAL CORE */}
+      <section className="py-24 bg-[#10131b]/15 border-t border-white/5" id="wolfram">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center font-sans">
             <div className="lg:col-span-5 space-y-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold">
-                Symbolic Mathematics
+                Powered by Wolfram
               </div>
               <h2 className="font-display text-3xl md:text-4xl text-white font-bold leading-tight">
-                Wolfram Computational Intelligence
+                Computational Core Over Generative Text
               </h2>
               <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed">
-                Connect your operations to a deep computational engine. Sanktrix runs parametric modeling, Monte Carlo confidence intervals, and symbolic equation solving using host Wolfram Kernels.
+                Unlike traditional LLMs that speculate or guess values, Sanktrix connects queries directly to a host Wolfram Engine Kernel to run exact Monte Carlo simulations, solve strategic bounds, and optimize budget parameters.
               </p>
-              <div className="space-y-3 pt-2">
-                {[
-                  "16 Dedicated Multi-Core Compute Kernels active.",
-                  "Real-time probability bands computed in under 40ms.",
-                  "Zero-overhead symbolic integration algorithms."
-                ].map((txt, idx) => (
-                  <div key={idx} className="flex gap-2 items-center text-xs text-on-surface font-semibold">
-                    <span className="material-symbols-outlined text-[#4edea3] text-sm">check_circle</span>
-                    {txt}
+              
+              {/* Interactive trigger widget */}
+              <div className="bg-[#050505]/40 border border-white/5 p-4 rounded-xl space-y-4">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-mono text-white font-bold">Run Test: &quot;What happens if churn increases 15%?&quot;</span>
+                  <button
+                    onClick={runWolframCalculator}
+                    disabled={calcLoading}
+                    className="bg-[#ffb955] text-[#291800] hover:bg-[#ffddb4] px-4 py-1.5 rounded text-[10px] uppercase font-mono font-bold cursor-pointer transition-colors"
+                  >
+                    {calcLoading ? "Computing..." : "Run Sim"}
+                  </button>
+                </div>
+                
+                {calcLoading && (
+                  <div className="flex items-center gap-2 text-xs font-mono text-primary animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+                    <span>Wolfram Kernel solving parametric differential probability curves...</span>
                   </div>
-                ))}
+                )}
+
+                {calcRun && (
+                  <div className="space-y-2 font-mono text-[10px] text-on-surface bg-[#10131b]/50 p-3 rounded-lg border border-primary/20">
+                    <div className="flex justify-between"><span>Projected Runway:</span><span className="text-[#ffb4ab] font-bold">{calcResult.runway}</span></div>
+                    <div className="flex justify-between"><span>Confidence Bound:</span><span className="text-primary font-bold">{calcResult.prob}</span></div>
+                    <div className="border-t border-white/5 pt-1.5 text-on-surface-variant">{calcResult.rec}</div>
+                  </div>
+                )}
               </div>
             </div>
+            
+            {/* Probability curve display */}
             <div className="lg:col-span-7">
               <div className="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden flex flex-col space-y-4">
                 <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="font-mono text-[10px] text-primary uppercase font-bold">Live Computational Node</span>
-                  <span className="text-[10px] text-on-surface-variant font-mono">POWERED BY WOLFRAM</span>
+                  <span className="font-mono text-[10px] text-primary uppercase font-bold">Monte Carlo Probability Curve</span>
+                  <span className="text-[10px] text-on-surface-variant font-mono">16 ACTIVE KERNELS</span>
                 </div>
-                {/* SVG Curve */}
-                <div className="h-44 bg-[#050505]/40 border border-white/5 rounded-xl flex items-center justify-center p-4 relative overflow-hidden">
+                <div className="h-48 bg-[#050505]/40 border border-white/5 rounded-xl flex items-center justify-center p-4 relative overflow-hidden">
                   <svg className="w-full h-full text-primary" viewBox="0 0 500 200" fill="none">
                     <path d="M 0 160 Q 120 160, 200 60 T 400 160 T 500 160" stroke="#b0c6ff" strokeWidth="2" fill="none" />
-                    <path d="M 0 160 Q 120 160, 200 60 T 400 160 T 500 160 L 500 200 L 0 200 Z" fill="url(#grad)" opacity="0.1" />
+                    <path d="M 0 160 Q 120 160, 200 60 T 400 160 T 500 160 L 500 200 L 0 200 Z" fill="url(#grad2)" opacity="0.1" />
                     <defs>
-                      <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+                      <linearGradient id="grad2" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stopColor="#b0c6ff" />
                         <stop offset="100%" stopColor="transparent" />
                       </linearGradient>
                     </defs>
                   </svg>
                   <div className="absolute top-4 right-4 bg-[#050505]/60 border border-white/10 px-3 py-1.5 rounded font-mono text-[9px] text-[#4edea3]">
-                    Confidence Band: 94.2%
+                    Powered by Wolfram Computational Intelligence
                   </div>
                 </div>
               </div>
@@ -352,65 +387,90 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. Business Simulations Section */}
+      {/* SECTION 5 — BUSINESS SIMULATION SHOWCASE */}
       <section className="py-24 border-t border-white/5">
-        <div className="container mx-auto px-6 md:px-12 max-w-7xl text-center">
-          <div className="mb-12">
-            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Risk &amp; Runway Simulations</h2>
-            <p className="text-on-surface-variant text-sm max-w-xl mx-auto mt-2">
-              Stress-test company sustainability variables inside simulated scenarios powered by Wolfram evaluation curves.
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Business Simulations Sandbox</h2>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              Select a model profile to review the underlying formula and computed outputs.
             </p>
           </div>
-          <div className="glass-panel max-w-3xl mx-auto p-6 rounded-2xl border border-white/5 flex flex-col space-y-6 text-left">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-xs text-on-surface-variant block font-bold uppercase tracking-wider">Simulated Churn Delta</label>
-                <input type="range" min="0" max="30" defaultValue="15" className="w-full accent-primary bg-[#050505]/60 h-1.5 rounded-lg" />
-                <div className="flex justify-between text-[10px] font-mono text-on-surface-variant">
-                  <span>0% Churn</span>
-                  <span>15% Delta</span>
-                  <span>30% Churn</span>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs text-on-surface-variant block font-bold uppercase tracking-wider">Simulated Burn Delta</label>
-                <input type="range" min="50" max="250" defaultValue="120" className="w-full accent-primary bg-[#050505]/60 h-1.5 rounded-lg" />
-                <div className="flex justify-between text-[10px] font-mono text-on-surface-variant">
-                  <span>$50K/mo</span>
-                  <span>$120K/mo</span>
-                  <span>$250K/mo</span>
-                </div>
-              </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
+            {/* Left buttons list */}
+            <div className="lg:col-span-5 flex flex-col gap-2">
+              {Object.keys(simulationData).map(key => (
+                <button
+                  key={key}
+                  onClick={() => setActiveSimId(key)}
+                  className={`w-full text-left p-4 rounded-xl border transition-all text-xs font-bold uppercase tracking-wider cursor-pointer ${
+                    activeSimId === key
+                      ? "bg-primary/5 text-primary border-primary"
+                      : "bg-[#050505]/40 text-on-surface-variant border-white/5 hover:border-white/20"
+                  }`}
+                >
+                  {simulationData[key].title}
+                </button>
+              ))}
             </div>
-            <div className="p-4 bg-[#050505]/40 border border-white/5 rounded-xl flex items-center justify-between">
-              <span className="text-xs font-mono text-on-surface-variant">Formula: f(c,b) = RunwayEstimation[WolframKernel]</span>
-              <span className="font-mono text-xs text-[#4edea3] font-bold">Estimated Runway: 16.4 Months</span>
+
+            {/* Right formula/preview card */}
+            <div className="lg:col-span-7">
+              <div className="glass-panel p-6 rounded-2xl border border-white/5 h-full flex flex-col justify-between space-y-6">
+                <div>
+                  <span className="font-mono text-[9px] text-primary uppercase font-bold tracking-widest">Active Simulation Profile</span>
+                  <h3 className="font-display text-xl text-white font-bold mt-1">{simulationData[activeSimId].title}</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-[#050505]/40 border border-white/5 p-3 rounded-lg">
+                    <span className="text-[9px] font-mono text-[#ffb955] uppercase block">Equation Model</span>
+                    <p className="text-xs text-white font-mono mt-1 overflow-x-auto">{simulationData[activeSimId].formula}</p>
+                  </div>
+                  <div className="bg-[#050505]/40 border border-white/5 p-3 rounded-lg">
+                    <span className="text-[9px] font-mono text-[#4edea3] uppercase block">Realtime Telemetry Forecast</span>
+                    <p className="text-xs text-on-surface-variant leading-relaxed mt-1">{simulationData[activeSimId].preview}</p>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-white/5 text-[9px] font-mono text-on-surface-variant">
+                  COMPILED BY WOLFRAM HOST KERNEL // SYNCED
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 7. Enterprise Architecture Section */}
-      <section className="py-24 bg-[#10131b]/20 border-t border-white/5" id="architecture">
+      {/* SECTION 6 — AUTONOMOUS AGENT ECOSYSTEM */}
+      <section className="py-24 bg-[#10131b]/10 border-t border-white/5" id="agents">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Platform Architecture</h2>
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Autonomous Agent Ecosystem</h2>
             <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
-              Our deterministic pipeline converting high-throughput events into enterprise-ready strategic outcomes.
+              Deploy specialized agents that analyze, compute, and execute operations inside secure sandboxes.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { step: "01", name: "Data Ingestion", desc: "Aggregate streams from logs, APIs, databases, and message brokers." },
-              { step: "02", name: "AI Parsing", desc: "Specialized agent workflows synthesize content and extract key telemetry metrics." },
-              { step: "03", name: "Wolfram Compute", desc: "Perform deep evaluations, optimizations, and confidence intervals." },
-              { step: "04", name: "Dashboard alpha", desc: "Deliver actionable briefings, summaries, and automated trade outputs." },
-            ].map((arch, idx) => (
-              <div key={idx} className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4 hover:border-primary/20 transition-all">
-                <span className="font-mono text-3xl text-primary/30 font-bold">{arch.step}</span>
+              { name: "Finance Agent", status: "Active", tasks: "Monitor burn rates and run scenario alerts", score: "98" },
+              { name: "Forecasting Agent", status: "Active", tasks: "Run Monte Carlo ARR models continuously", score: "99" },
+              { name: "Strategy Agent", status: "Running", tasks: "Scan competitive vectors and price data", score: "94" },
+              { name: "Risk Agent", status: "Idle", tasks: "Verify compliance and check directory uploads", score: "96" },
+              { name: "Operations Agent", status: "Running", tasks: "Coordinate n8n and temporal workflow tasks", score: "95" },
+              { name: "Wolfram Compute Agent", status: "Active", tasks: "Resolve symbolic integrals and math bounds", score: "100" }
+            ].map((agent, idx) => (
+              <div key={idx} className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4 hover:border-primary/20 transition-all">
+                <div className="flex justify-between items-center">
+                  <span className="material-symbols-outlined text-primary text-2xl">support_agent</span>
+                  <span className="font-mono text-[9px] text-[#4edea3] bg-[#4edea3]/10 px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">{agent.status}</span>
+                </div>
                 <div>
-                  <h3 className="font-display text-sm text-white font-bold">{arch.name}</h3>
-                  <p className="text-xs text-on-surface-variant leading-relaxed mt-1">{arch.desc}</p>
+                  <h4 className="font-display text-sm text-white font-bold">{agent.name}</h4>
+                  <p className="text-[11px] text-on-surface-variant mt-1">{agent.tasks}</p>
+                </div>
+                <div className="pt-2 border-t border-white/5 flex justify-between items-center text-[9px] font-mono text-on-surface-variant font-bold">
+                  <span>INTELLIGENCE CAPABILITY SCORE</span>
+                  <span className="text-white">{agent.score}/100</span>
                 </div>
               </div>
             ))}
@@ -418,129 +478,146 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 8. Executive Copilot Section */}
+      {/* SECTION 7 — ENTERPRISE DIGITAL TWIN */}
       <section className="py-24 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7">
-              <div className="glass-panel p-6 rounded-2xl border border-white/5 space-y-4 bg-[#050505]/40">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2">
-                  <span className="font-mono text-[10px] text-primary uppercase font-bold">Interactive Briefing Console</span>
-                  <span className="text-[10px] text-on-surface-variant font-mono">STATUS: OPTIMIZED</span>
-                </div>
-                <div className="space-y-3">
-                  <div className="bg-[#10131b]/60 p-3 rounded-lg border border-white/5">
-                    <p className="text-[10px] font-mono text-primary uppercase font-bold">User query</p>
-                    <p className="text-xs text-white mt-1">&quot;What happens to our Q3 runway projection if marketing CAC surges 20%?&quot;</p>
-                  </div>
-                  <div className="bg-[#10131b]/60 p-3 rounded-lg border border-primary/20 shadow-[0_0_15px_rgba(86,141,255,0.05)]">
-                    <p className="text-[10px] font-mono text-tertiary uppercase font-bold">Copilot synthesis</p>
-                    <p className="text-xs text-on-surface-variant leading-relaxed mt-1">
-                      Based on Wolfram model RunwayCAC[0.20]: Q3 Runway is expected to drop from 18.2 to 15.6 months. Recommend triggering automated operational campaign budget limits inside Workflows to offset CAC surge.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 bg-[#ffb955]/10 border border-[#ffb955]/20 text-[#ffb955] px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold">
-                Decision Reasoning
-              </div>
-              <h2 className="font-display text-3xl md:text-4xl text-white font-bold leading-tight">
-                Executive Assistant Copilot
-              </h2>
-              <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed">
-                A conversational portal designed for instant strategic response. Get instant reports, run mathematical optimizations, and invoke workflow rules directly from text directives.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 9. Knowledge Graph Section */}
-      <section className="py-24 bg-[#10131b]/10 border-t border-white/5">
-        <div className="container mx-auto px-6 md:px-12 max-w-7xl text-center">
-          <div className="mb-12">
-            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Enterprise Relationship Graph</h2>
-            <p className="text-on-surface-variant text-sm max-w-xl mx-auto mt-2">
-              Trace dependency networks mapping data domains, agents, workflows, and computations.
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Enterprise Digital Twin</h2>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              A high-fidelity organizational graph tracing active relationships, parameters, and workflow integrations.
             </p>
           </div>
-          <div className="glass-panel max-w-2xl mx-auto p-6 rounded-2xl border border-white/5 h-64 flex items-center justify-center relative overflow-hidden bg-[#050505]/40">
+          <div className="glass-panel max-w-3xl mx-auto p-6 rounded-2xl border border-white/5 h-80 flex items-center justify-center relative overflow-hidden bg-[#050505]/40">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
-            {/* Visual graph nodes mock */}
             <div className="relative w-full h-full flex items-center justify-center">
-              <div className="absolute w-20 h-20 rounded-full border border-primary bg-primary/10 flex items-center justify-center font-mono text-[9px] uppercase tracking-wider text-white">Sanktrix OS</div>
-              <div className="absolute top-4 left-12 w-16 h-16 rounded-full border border-tertiary bg-tertiary/10 flex items-center justify-center font-mono text-[9px] uppercase text-white">Wolfram</div>
-              <div className="absolute bottom-4 right-12 w-16 h-16 rounded-full border border-secondary bg-secondary/10 flex items-center justify-center font-mono text-[9px] uppercase text-white">Agents</div>
-              {/* Connection lines */}
-              <svg className="absolute inset-0 w-full h-full text-white/10" pointerEvents="none">
-                <line x1="120" y1="60" x2="330" y2="100" stroke="currentColor" strokeWidth="1" />
-                <line x1="330" y1="100" x2="520" y2="180" stroke="currentColor" strokeWidth="1" />
+              <div className="absolute w-20 h-20 rounded-full border border-primary bg-primary/10 flex items-center justify-center font-mono text-[9px] uppercase tracking-wider text-white z-10 shadow-2xl">Sanktrix OS</div>
+              <div className="absolute top-6 left-16 w-16 h-16 rounded-full border border-tertiary bg-tertiary/10 flex items-center justify-center font-mono text-[9px] uppercase text-white">Product</div>
+              <div className="absolute bottom-6 right-16 w-16 h-16 rounded-full border border-secondary bg-secondary/10 flex items-center justify-center font-mono text-[9px] uppercase text-white">Finance</div>
+              <div className="absolute top-6 right-20 w-16 h-16 rounded-full border border-primary bg-primary/10 flex items-center justify-center font-mono text-[9px] uppercase text-white">Marketing</div>
+              <svg className="absolute inset-0 w-full h-full text-white/5" pointerEvents="none">
+                <line x1="150" y1="80" x2="380" y2="160" stroke="currentColor" strokeWidth="1" />
+                <line x1="380" y1="160" x2="600" y2="240" stroke="currentColor" strokeWidth="1" />
+                <line x1="380" y1="160" x2="550" y2="80" stroke="currentColor" strokeWidth="1" />
               </svg>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 10. Workflow Automation Section */}
-      <section className="py-24 border-t border-white/5">
+      {/* SECTION 8 — LIVE INTELLIGENCE FEED */}
+      <section className="py-16 bg-[#10131b]/20 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-5 space-y-6">
-              <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary px-3 py-1 rounded-full text-[10px] font-mono uppercase font-bold">
-                Automated Orchestration
-              </div>
-              <h2 className="font-display text-3xl md:text-4xl text-white font-bold leading-tight">
-                Robotic Workflow Automation
-              </h2>
-              <p className="text-xs md:text-sm text-on-surface-variant leading-relaxed">
-                Connect your business logic into deterministic, triggerable workflows. Integrate Slack, Salesforce, Jira, and message fabrics inside active pipelines.
-              </p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+              <h2 className="font-display text-2xl md:text-3xl text-white font-bold">Live Intelligence Telemetry</h2>
+              <p className="text-xs text-on-surface-variant mt-1">Continuous live events streaming from active operations</p>
             </div>
-            <div className="lg:col-span-7">
-              <div className="glass-panel p-5 rounded-2xl border border-white/5 space-y-3 bg-[#050505]/40 font-mono text-[11px]">
-                <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                  <span className="text-primary font-bold">Pipeline: CAC_EXCESS_TRIGGER</span>
-                  <span className="text-tertiary">Active</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { time: "Just now", icon: "sync", txt: "ARR forecast model recalculated. Growth trend +14.2%" },
+              { time: "2m ago", icon: "warning", txt: "CAC anomaly detected inside EU marketing channels. Mitigation triggered" },
+              { time: "15m ago", icon: "check_circle", txt: "Wolfram parametric simulation completed successfully. Status: nominal" }
+            ].map((feed, idx) => (
+              <div key={idx} className="glass-panel p-5 rounded-xl border border-white/5 flex flex-col justify-between space-y-3 bg-[#050505]/40">
+                <div className="flex justify-between items-center">
+                  <span className="material-symbols-outlined text-primary text-lg">{feed.icon}</span>
+                  <span className="text-[10px] text-on-surface-variant font-mono">{feed.time}</span>
                 </div>
-                <div className="space-y-2 text-on-surface-variant">
-                  <div className="flex justify-between p-2 bg-white/5 rounded border border-white/5">
-                    <span>Trigger: CAC_Anomaly_Event</span>
-                    <span className="text-white font-bold">FIRED</span>
-                  </div>
-                  <div className="flex justify-between p-2 bg-white/5 rounded border border-white/5">
-                    <span>Action: Query Wolfram CAC_Mitigation_Matrix</span>
-                    <span className="text-white font-bold">COMPLETED</span>
-                  </div>
-                  <div className="flex justify-between p-2 bg-white/5 rounded border border-white/5">
-                    <span>Action: Reallocate budget via Slack Dispatch</span>
-                    <span className="text-white font-bold">DISPATCHED</span>
-                  </div>
-                </div>
+                <p className="text-xs text-on-surface leading-relaxed font-semibold">{feed.txt}</p>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* 11. Security & Governance Section */}
-      <section className="py-24 bg-[#10131b]/20 border-t border-white/5" id="security">
+      {/* SECTION 9 — WHY WE ARE DIFFERENT */}
+      <section className="py-24 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Enterprise Security &amp; Compliance</h2>
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Why We Are Different</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
             <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
-              Hardened governance protocols protecting system integrity, secret tokens, and user actions.
+               Sanktrix stands as a complete, autonomous computational operating system.
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="overflow-x-auto max-w-4xl mx-auto glass-panel rounded-2xl border border-white/5">
+            <table className="w-full text-left font-mono text-xs text-on-surface-variant min-w-[600px]">
+              <thead>
+                <tr className="border-b border-white/10 text-white bg-[#10131b]/50">
+                  <th className="p-4 font-normal">Capability Matrix</th>
+                  <th className="p-4 font-normal text-center">Power BI / Tableau</th>
+                  <th className="p-4 font-normal text-center">ChatGPT / LLMs</th>
+                  <th className="p-4 font-normal text-center text-primary font-bold">SANKTRIX OS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {[
+                  { feature: "AI Agent Workforce Swarms", bi: "✖ None", llm: "✖ Chat only", sanktrix: "✔ Autonomous swarms" },
+                  { feature: "Wolfram Mathematical Core", bi: "✖ None", llm: "✖ Speculative", sanktrix: "✔ Real Kernels" },
+                  { feature: "Risk & Churn Simulations", bi: "✖ Manual pivot tables", llm: "✖ Text summaries", sanktrix: "✔ Monte Carlo engines" },
+                  { feature: "Autonomous Actions", bi: "✖ Read-only visuals", llm: "✖ API code outputs", sanktrix: "✔ Workflow triggers" }
+                ].map((row, idx) => (
+                  <tr key={idx} className="hover:bg-white/5 transition-colors">
+                    <td className="p-4 text-white font-semibold">{row.feature}</td>
+                    <td className="p-4 text-center text-on-surface-variant/70">{row.bi}</td>
+                    <td className="p-4 text-center text-on-surface-variant/70">{row.llm}</td>
+                    <td className="p-4 text-center text-primary font-bold">{row.sanktrix}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 10 — ARCHITECTURE */}
+      <section className="py-24 bg-[#10131b]/10 border-t border-white/5">
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Systems Architecture</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              Our technical flow pipelines, positioning Wolfram and AI Agents centrally.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 max-w-5xl mx-auto text-center font-mono">
             {[
-              { icon: "security", title: "Secret Isolation", desc: "All system tokens and API variables are cryptographically isolated and hosted securely." },
-              { icon: "verified_user", title: "RBAC Gating", desc: "Complete role validation (Admin, Executive, Analyst, Viewer) enforcing strict scope limits." },
-              { icon: "history", title: "Immutable Audit Logs", desc: "Every user and agent action is recorded instantly into central telemetry databases." },
+              { id: "01", name: "Data Sources", desc: "Salesforce, Clickhouse, Kafka brokers" },
+              { id: "02", name: "Workflows (n8n)", desc: "Trigger.dev pipeline orchestration" },
+              { id: "03", name: "AI Core", desc: "LangGraph autonomous agents" },
+              { id: "04", name: "Wolfram Engine", desc: "monte carlo & symbolic math" },
+              { id: "05", name: "Executive Output", desc: "recommendations & dashboard" }
+            ].map((node, idx) => (
+              <div key={idx} className="glass-panel p-5 rounded-2xl border border-white/5 flex flex-col justify-between space-y-4 hover:border-primary/20 transition-all">
+                <span className="text-2xl text-primary/30 font-bold">{node.id}</span>
+                <div>
+                  <h4 className="text-white font-bold text-xs uppercase tracking-wider">{node.name}</h4>
+                  <p className="text-[10px] text-on-surface-variant mt-1 leading-normal">{node.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 11 — ENTERPRISE SECURITY */}
+      <section className="py-24 border-t border-white/5" id="security">
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Enterprise Governance &amp; Security</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              Hardened protocols securing secret keys, access roles, uploads, and session rates.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {[
+              { title: "Role-Based Gating", desc: "Strict RBAC constraints restricting Viewer access to read-only." },
+              { title: "Validation & Upload Guards", desc: "Secure file validation limits uploads to sanitized document structures." },
+              { title: "Telemetry Audit Logs", desc: "All system and user modifications are registered instantly inside audit feeds." }
             ].map((sec, idx) => (
               <div key={idx} className="glass-panel p-6 rounded-2xl border border-white/5 flex flex-col space-y-3">
-                <span className="material-symbols-outlined text-primary text-3xl">{sec.icon}</span>
                 <h3 className="font-display text-base text-white font-bold">{sec.title}</h3>
                 <p className="text-xs text-on-surface-variant leading-relaxed">{sec.desc}</p>
               </div>
@@ -549,30 +626,91 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 12. Product Preview Card & CTA Section */}
+      {/* SECTION 12 — PRODUCT PREVIEW */}
+      <section className="py-24 bg-[#10131b]/10 border-t border-white/5">
+        <div className="container mx-auto px-6 md:px-12 max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-3xl md:text-4xl text-white font-bold">Explore Sanktrix OS</h2>
+            <div className="h-1 w-16 bg-primary mb-4 mx-auto"></div>
+            <p className="text-on-surface-variant text-sm max-w-2xl mx-auto mt-2">
+              Click through the slides below to review Sanktrix pages.
+            </p>
+          </div>
+          <div className="glass-panel max-w-xl mx-auto p-6 rounded-2xl border border-white/5 flex flex-col justify-between h-56 space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <span className="font-mono text-[9px] text-primary uppercase font-bold tracking-widest">Interface View {carouselIdx + 1}/6</span>
+                <h3 className="font-display text-lg text-white font-bold mt-1">{carouselItems[carouselIdx].title}</h3>
+              </div>
+              <span className="material-symbols-outlined text-primary text-2xl">{carouselItems[carouselIdx].icon}</span>
+            </div>
+            <p className="text-xs text-on-surface-variant leading-relaxed">{carouselItems[carouselIdx].desc}</p>
+            <div className="flex justify-between items-center pt-3 border-t border-white/5">
+              <button
+                onClick={() => setCarouselIdx(prev => (prev === 0 ? 5 : prev - 1))}
+                className="text-[10px] font-bold uppercase tracking-wider text-primary hover:underline cursor-pointer"
+              >
+                Previous View
+              </button>
+              <button
+                onClick={() => setCarouselIdx(prev => (prev === 5 ? 0 : prev + 1))}
+                className="text-[10px] font-bold uppercase tracking-wider text-primary hover:underline cursor-pointer"
+              >
+                Next View
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 13 — FINAL CTA */}
       <section className="py-24 border-t border-white/5">
         <div className="container mx-auto px-6 md:px-12 max-w-5xl text-center">
           <div className="glass-panel p-12 rounded-3xl border border-primary/20 shadow-[0_0_50px_rgba(86,141,255,0.1)] flex flex-col items-center space-y-6 relative overflow-hidden bg-[#0A0F1E]/20">
             <div className="absolute top-0 right-0 w-44 h-44 rounded-full bg-primary/10 blur-3xl"></div>
             <h2 className="font-display text-4xl text-white font-bold tracking-tight">
-              Ready to Orchestrate Your Intelligence?
+              The Future of Enterprise Intelligence
             </h2>
             <p className="text-sm text-on-surface-variant max-w-lg leading-relaxed">
-              Unlock strategic advantage with the next-generation autonomous computational intelligence platform built for absolute decision-making dominance.
+              While most AI systems generate answers, Sanktrix computes strategic intelligence. Get started today.
             </p>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-primary hover:bg-[#c2d6ff] text-[#001945] px-10 py-4 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(176,198,255,0.3)] hover:scale-[1.03] cursor-pointer"
-            >
-              Access Command Center
-            </button>
+            <div className="flex gap-4 flex-col sm:flex-row">
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-primary hover:bg-[#c2d6ff] text-[#001945] px-10 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(176,198,255,0.3)] hover:scale-[1.03] cursor-pointer"
+              >
+                Launch Platform
+              </button>
+              <button
+                onClick={() => router.push("/demo")}
+                className="border border-white/10 hover:border-white/20 text-white px-10 py-4 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-300 bg-white/5 cursor-pointer"
+              >
+                Run Demo Scenario
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Footer */}
+      <footer className="bg-[#050505] border-t border-white/5 py-8 relative z-10">
+        <div className="container mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded border border-white/10 overflow-hidden">
+              <img src="/Santrix_logo.jpeg" className="w-full h-full object-cover" alt="Sanktrix Logo" />
+            </div>
+            <span className="font-mono text-xs text-outline">© 2026 Sanktrix. All rights reserved.</span>
+          </div>
+          <div className="font-mono text-xs text-outline flex gap-6">
+            <a className="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+            <a className="hover:text-primary transition-colors" href="#">Terms of Service</a>
+          </div>
+        </div>
+      </footer>
+
       {/* Login Modal Overlay */}
       {showModal && (
-        <div className="fixed inset-0 z-[100] bg-[#050505]/80 backdrop-blur-xl flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 z-[100] bg-[#050505]/80 backdrop-blur-xl flex items-center justify-center p-4">
           <form
             onSubmit={handleLogin}
             className="glass-panel w-full max-w-[420px] p-6 rounded-2xl flex flex-col border border-primary/20 relative shadow-[0_0_50px_rgba(86,141,255,0.2)] space-y-6"
