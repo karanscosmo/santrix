@@ -226,9 +226,9 @@ export default function Dashboard() {
               You are currently viewing a live interactive demo populated with enterprise sample data. Sanktrix connects directly to your ERP, CRM, and financial systems to build a continuous digital twin of your business. It runs thousands of Monte Carlo simulations to forecast outcomes and recommend strategic executive actions.
             </p>
             <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button onClick={() => router.push("/simulations")} className="btn-action btn-primary text-[11px] py-2">
-                <span className="material-symbols-outlined text-[14px]">play_circle</span>
-                Run Live Scenarios
+              <button onClick={() => router.push("/dashboard?tour=1")} className="btn-action btn-primary text-[11px] py-2">
+                <span className="material-symbols-outlined text-[14px]">menu_book</span>
+                Start Guided Tour
               </button>
               <button className="btn-action btn-secondary text-[11px] py-2 text-gray-300">
                 <span className="material-symbols-outlined text-[14px]">restart_alt</span>

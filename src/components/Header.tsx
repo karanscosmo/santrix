@@ -69,12 +69,46 @@ export const Header: React.FC<HeaderProps> = ({ onOpenPalette }) => {
         </button>
 
         {/* User profile identifier */}
-        <div className="flex items-center gap-2 border-l border-white/[0.08] pl-3">
-          <img
-            alt={currentUser?.name || "User"}
-            className="w-7 h-7 rounded-full border border-white/[0.1] object-cover shadow-sm"
-            src={currentUser?.avatarUrl || "/branding/favicon.png"}
-          />
+        <div className="relative border-l border-white/[0.08] pl-3">
+          <button
+            onClick={() => {
+              const menu = document.getElementById("user-menu-dropdown");
+              if (menu) menu.classList.toggle("hidden");
+            }}
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+          >
+            <img
+              alt={currentUser?.name || "User"}
+              className="w-7 h-7 rounded-full border border-white/[0.1] object-cover shadow-sm"
+              src={currentUser?.avatarUrl || "/branding/user.png"}
+              onError={(e) => { (e.target as HTMLImageElement).src = "/branding/favicon.png" }}
+            />
+          </button>
+
+          {/* Dropdown Menu */}
+          <div id="user-menu-dropdown" className="hidden absolute right-0 top-10 w-48 bg-[#0d0e12]/95 backdrop-blur-xl rounded-[12px] shadow-[0_10px_30px_rgba(0,0,0,0.8)] border border-white/[0.05] overflow-hidden z-50">
+            <div className="p-3 border-b border-white/[0.05]">
+              <p className="text-white text-xs font-bold">{currentUser?.name || "Executive User"}</p>
+              <p className="text-gray-500 text-[10px] uppercase tracking-wider">{currentUser?.role || "ADMIN"}</p>
+            </div>
+            <div className="p-1">
+              <button 
+                onClick={() => window.location.href = "/dashboard?tour=1"}
+                className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-[#8ab4f8] hover:bg-white/[0.03] rounded-[6px] transition-colors flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[16px]">menu_book</span> User Guide (Tour)
+              </button>
+              <button className="w-full text-left px-3 py-2 text-xs text-gray-300 hover:text-white hover:bg-white/[0.03] rounded-[6px] transition-colors flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px]">person</span> Profile Settings
+              </button>
+              <button 
+                onClick={() => window.location.href = "/logout"}
+                className="w-full text-left px-3 py-2 text-xs text-error hover:bg-error/10 rounded-[6px] transition-colors flex items-center gap-2 mt-1"
+              >
+                <span className="material-symbols-outlined text-[16px]">logout</span> Sign Out
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Notification Feed Popover */}

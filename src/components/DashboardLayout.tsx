@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useSecurity } from "@/lib/SecurityContext";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import CommandPalette from "./CommandPalette";
 import Watermark from "./Watermark";
+import ProductTour from "./ProductTour";
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
@@ -76,6 +77,11 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
       {/* Global AI Command Palette */}
       <CommandPalette isOpen={isPaletteOpen} onClose={closePalette} />
+      
+      {/* Product Tour Guide */}
+      <Suspense fallback={null}>
+        <ProductTour />
+      </Suspense>
     </div>
   );
 };

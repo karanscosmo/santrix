@@ -670,7 +670,86 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 13. FINAL CTA */}
+      {/* 13. PRICING SECTION (INDIAN MARKET) */}
+      <section className="py-32 px-margin-desktop bg-surface-container-lowest border-t border-white/[0.02]" id="pricing">
+        <div className="max-w-[1440px] mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <h3 className="font-headline-lg text-headline-lg text-white">Enterprise Plans</h3>
+            <p className="text-on-surface-variant max-w-2xl mx-auto font-light">
+              Practical and transparent pricing built for the Indian enterprise ecosystem. Start with foundational intelligence, scale to autonomous operations.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Starter Plan */}
+            <div className="glass-panel p-10 rounded-[16px] flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
+              <div>
+                <h4 className="text-xl text-white font-bold mb-2">Growth Plan</h4>
+                <p className="text-sm text-on-surface-variant mb-6">Perfect for mid-sized companies beginning their data integration journey.</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-display font-bold text-white">₹25,000</span>
+                  <span className="text-sm text-gray-500"> /month</span>
+                </div>
+                <ul className="space-y-4 text-sm text-gray-300 mb-8">
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> Up to 3 Data Connectors</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 5 Executive Dashboards</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> Basic Predictive Analytics</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 48-Hour Support SLA</li>
+                </ul>
+              </div>
+              <button onClick={() => router.push("/login")} className="w-full py-3 rounded-[8px] bg-white/[0.05] border border-white/[0.1] hover:bg-white/[0.1] text-white font-bold transition-colors">
+                Get Started
+              </button>
+            </div>
+
+            {/* Business Plan (Highlighted) */}
+            <div className="glass-panel p-10 rounded-[16px] flex flex-col justify-between hover:-translate-y-2 transition-all duration-300 relative border-[#8ab4f8]/50 shadow-[0_0_30px_rgba(138,180,248,0.15)] bg-[#8ab4f8]/5">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#8ab4f8] text-[#050505] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                Most Popular
+              </div>
+              <div>
+                <h4 className="text-xl text-white font-bold mb-2">Corporate OS</h4>
+                <p className="text-sm text-on-surface-variant mb-6">Full computational intelligence and autonomous agent integration.</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-display font-bold text-white">₹75,000</span>
+                  <span className="text-sm text-gray-500"> /month</span>
+                </div>
+                <ul className="space-y-4 text-sm text-gray-300 mb-8">
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> Unlimited Data Connectors</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> Full Digital Twin Setup</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> Live Scenario Simulations</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> 12-Hour Support SLA</li>
+                </ul>
+              </div>
+              <button onClick={() => router.push("/login")} className="w-full py-3 rounded-[8px] bg-[#8ab4f8] text-[#050505] font-bold hover:bg-[#a8c7fa] transition-colors">
+                Start Free Trial
+              </button>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="glass-panel p-10 rounded-[16px] flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
+              <div>
+                <h4 className="text-xl text-white font-bold mb-2">Enterprise Custom</h4>
+                <p className="text-sm text-on-surface-variant mb-6">On-premise deployment and dedicated Wolfram modeling.</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-display font-bold text-white">Custom</span>
+                  <span className="text-sm text-gray-500"> Pricing</span>
+                </div>
+                <ul className="space-y-4 text-sm text-gray-300 mb-8">
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#c4b5fd] text-[18px]">check_circle</span> Private Cloud / On-Premise</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#c4b5fd] text-[18px]">check_circle</span> Custom Wolfram Models</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#c4b5fd] text-[18px]">check_circle</span> Unlimited Autonomous Agents</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#c4b5fd] text-[18px]">check_circle</span> 24/7 Dedicated Support</li>
+                </ul>
+              </div>
+              <button onClick={() => window.location.href="mailto:contact@sanktrix.com"} className="w-full py-3 rounded-[8px] bg-white/[0.05] border border-white/[0.1] hover:bg-white/[0.1] text-white font-bold transition-colors">
+                Contact Sales
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 14. FINAL CTA */}
       <section className="py-40 px-margin-desktop relative overflow-hidden bg-background text-center" id="cta">
         <div className="absolute inset-0 bg-primary/5 opacity-30 blur-[100px] -z-10"></div>
         <div className="max-w-4xl mx-auto space-y-12 relative z-10 flex flex-col items-center">
