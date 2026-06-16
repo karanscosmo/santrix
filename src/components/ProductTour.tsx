@@ -91,12 +91,14 @@ export const ProductTour: React.FC = () => {
     if (!currentStep || !isAutoMode) return;
 
     const timer = setTimeout(() => {
-      handleNext();
+      if (currentStep.nextUrl) {
+        const nextParamUrl = isAutoMode ? `${currentStep.nextUrl}&auto=true` : currentStep.nextUrl;
+        router.push(nextParamUrl);
+      }
     }, AUTO_TOUR_DELAY);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentStep, isAutoMode]);
+  }, [currentStep, isAutoMode, router]);
 
   if (!currentStep) return null;
 
