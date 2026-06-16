@@ -16,8 +16,8 @@ import {
   Position,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { ExecutiveRecommendationPanel, RecommendationProps } from "@/components/ExecutiveRecommendationPanel";
 
-/* ─── Node category config ─── */
 const categoryConfig: Record<string, { color: string; icon: string }> = {
   People: { color: "#8ab4f8", icon: "person" },
   Project: { color: "#c4b5fd", icon: "rocket_launch" },
@@ -28,9 +28,9 @@ const categoryConfig: Record<string, { color: string; icon: string }> = {
   Metric: { color: "#4edea3", icon: "analytics" },
 };
 
-/* ─── Custom Intelligence Node ─── */
 function IntelNode({ data, selected }: NodeProps) {
-  const d = data as { label: string; category: string; description: string };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const d = data as any;
   const cfg = categoryConfig[d.category] || categoryConfig.Metric;
 
   return (
@@ -58,39 +58,34 @@ function IntelNode({ data, selected }: NodeProps) {
           <span className="text-[9px] uppercase tracking-wider font-bold" style={{ color: cfg.color }}>{d.category}</span>
         </div>
       </div>
-
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-1 left-1/2 -translate-x-1/2 translate-y-full z-50 bg-[#0a0b0e] border border-white/[0.1] rounded-[10px] p-3 min-w-[200px] max-w-[260px] shadow-xl pointer-events-none">
-        <p className="text-[10px] text-gray-300 leading-relaxed">{d.description}</p>
-      </div>
     </div>
   );
 }
 
 const nodeTypes = { intel: IntelNode };
 
-/* ─── Graph Data ─── */
 const graphNodes: Node[] = [
   // People
-  { id: "ceo", type: "intel", position: { x: 400, y: 0 }, data: { label: "CEO", category: "People", description: "Chief Executive Officer. Primary strategic authority with oversight of all business units and final decision-maker for enterprise strategy." } },
-  { id: "cfo", type: "intel", position: { x: 150, y: 100 }, data: { label: "CFO", category: "People", description: "Chief Financial Officer. Manages financial planning, treasury, and investor relations. Reports to CEO." } },
-  { id: "vp_sales", type: "intel", position: { x: 650, y: 100 }, data: { label: "VP Sales", category: "People", description: "Vice President of Sales. Oversees $32.4M ARR target with 120 reps across enterprise and mid-market segments." } },
+  { id: "ceo", type: "intel", position: { x: 400, y: 0 }, data: { label: "CEO", category: "People", businessMeaning: "Chief Executive Officer. Primary strategic authority with oversight of all business units.", risks: "Execution drift across departments.", opportunities: "M&A target acquisitions.", decisions: "Q3 Budget Approval, DACH Expansion", recommendationData: { type: "RECOMMENDATION", title: "Approve DACH Expansion", context: "DACH expansion models show rapid breakeven.", action: "Sign off on Q3 expansion budget.", outcome: "+$4.1M ARR", confidence: 86, impact: "High", horizon: "18 Months" } } },
+  { id: "cfo", type: "intel", position: { x: 150, y: 100 }, data: { label: "CFO", category: "People", businessMeaning: "Chief Financial Officer. Manages financial planning and treasury.", risks: "Treasury yield compression.", opportunities: "Tax optimization in EU.", decisions: "Capital Allocation, R&D Investment", recommendationData: { type: "RECOMMENDATION", title: "R&D Cap Ex Shift", context: "Current tax laws favor R&D cap ex.", action: "Shift OPEX to CAPEX for mid-market.", outcome: "12% Tax Savings", confidence: 91, impact: "Medium", horizon: "6 Months" } } },
+  { id: "vp_sales", type: "intel", position: { x: 650, y: 100 }, data: { label: "VP Sales", category: "People", businessMeaning: "Vice President of Sales. Oversees $32.4M ARR target.", risks: "Q3 pipeline missing coverage ratio.", opportunities: "Partner channel expansion.", decisions: "Sales Incentive Structure", recommendationData: { type: "OPPORTUNITY", title: "Revise SPIFFs", context: "Mid-market product lacks sales focus.", action: "Double SPIFFs for mid-market bundle.", outcome: "Accelerate mid-market adoption.", confidence: 85, impact: "+$800K Pipe", horizon: "30 Days" } } },
   // Projects
-  { id: "europe_launch", type: "intel", position: { x: 0, y: 260 }, data: { label: "Europe Expansion", category: "Project", description: "Strategic initiative to enter DACH region. Projected $4.1M incremental revenue over 18 months with 3-person initial sales team." } },
-  { id: "product_launch", type: "intel", position: { x: 250, y: 280 }, data: { label: "Mid-Market Launch", category: "Project", description: "New mid-market product tier launching Q2. Targets $15K-50K ACV segment with self-serve capabilities." } },
+  { id: "europe_launch", type: "intel", position: { x: 0, y: 260 }, data: { label: "Europe Expansion", category: "Project", businessMeaning: "Strategic initiative to enter DACH region.", risks: "Regulatory compliance delays.", opportunities: "First-mover advantage in DACH.", decisions: "Localize vs Translate Product", recommendationData: { type: "RECOMMENDATION", title: "Full Localization", context: "DACH market rejects poor translations.", action: "Invest $120K in native localization.", outcome: "Reduce sales cycle by 22 days.", confidence: 89, impact: "Faster Sales", horizon: "90 Days" } } },
+  { id: "product_launch", type: "intel", position: { x: 250, y: 280 }, data: { label: "Mid-Market Launch", category: "Project", businessMeaning: "New product tier targeting $15K-50K ACV.", risks: "Cannibalizing enterprise tier.", opportunities: "Opening $240M TAM.", decisions: "Pricing Structure", recommendationData: { type: "OPPORTUNITY", title: "Volume Pricing", context: "Mid-market prefers seat-based pricing.", action: "Implement sliding scale per-seat model.", outcome: "Increase conversion by 14%.", confidence: 82, impact: "+14% Conv", horizon: "60 Days" } } },
   // Markets
-  { id: "apac_market", type: "intel", position: { x: 500, y: 260 }, data: { label: "APAC Market", category: "Market", description: "Asia-Pacific region contributing $8.4M ARR. Currently experiencing 8% churn increase requiring retention intervention." } },
-  { id: "emea_market", type: "intel", position: { x: 750, y: 260 }, data: { label: "EMEA Market", category: "Market", description: "Europe, Middle East & Africa. Fastest growing region at 23% YoY TAM growth. Key expansion target for next 2 quarters." } },
+  { id: "apac_market", type: "intel", position: { x: 500, y: 260 }, data: { label: "APAC Market", category: "Market", businessMeaning: "Asia-Pacific region contributing $8.4M ARR.", risks: "8% churn spike.", opportunities: "Local partner networks.", decisions: "Customer Success Resource Allocation", recommendationData: { type: "RISK", title: "APAC Churn Crisis", context: "Enterprise accounts churning to RegionPay.", action: "Deploy dedicated APAC success team.", outcome: "Halt 8% churn bleed.", confidence: 94, impact: "$2.3M Saved", horizon: "30 Days" } } },
+  { id: "emea_market", type: "intel", position: { x: 750, y: 260 }, data: { label: "EMEA Market", category: "Market", businessMeaning: "Europe, Middle East & Africa.", risks: "GDPR compliance changes.", opportunities: "23% YoY TAM growth.", decisions: "Regional HQ Location", recommendationData: { type: "RECOMMENDATION", title: "Frankfurt HQ", context: "DACH is primary target.", action: "Sign lease for Frankfurt hub.", outcome: "Establish localized presence.", confidence: 91, impact: "Strategic", horizon: "45 Days" } } },
   // Risks
-  { id: "churn_risk", type: "intel", position: { x: 100, y: 430 }, data: { label: "APAC Churn Risk", category: "Risk", description: "14 enterprise accounts flagged for potential churn in Q3. $2.3M ARR at risk. Root cause: reduced CSM coverage and competitive pressure." } },
-  { id: "supply_risk", type: "intel", position: { x: 380, y: 450 }, data: { label: "Supply Chain Risk", category: "Risk", description: "Three-tier vendor dependency with APAC concentration. 12-day delivery delay risk detected affecting 8 enterprise accounts." } },
+  { id: "churn_risk", type: "intel", position: { x: 100, y: 430 }, data: { label: "APAC Churn Risk", category: "Risk", businessMeaning: "14 enterprise accounts flagged for potential churn.", risks: "Contagion to global accounts.", opportunities: "Save campaigns yield high loyalty.", decisions: "Discount Approvals", recommendationData: { type: "RISK", title: "Aggressive Save Offers", context: "Accounts are 30 days from non-renewal.", action: "Authorize up to 20% save discounts.", outcome: "Retain $1.8M ARR.", confidence: 88, impact: "$1.8M Retained", horizon: "Immediate" } } },
+  { id: "supply_risk", type: "intel", position: { x: 380, y: 450 }, data: { label: "Supply Chain Risk", category: "Risk", businessMeaning: "Three-tier vendor dependency.", risks: "12-day delivery delays.", opportunities: "Diversifying to LATAM.", decisions: "Secondary Supplier Onboarding", recommendationData: { type: "RISK", title: "Supplier Diversification", context: "APAC delays threatening enterprise SLA.", action: "Onboard LATAM backup supplier.", outcome: "Eliminate SLA penalties.", confidence: 95, impact: "-$400K Risk", horizon: "60 Days" } } },
   // Reports
-  { id: "q3_forecast", type: "intel", position: { x: 620, y: 430 }, data: { label: "Q3 Forecast", category: "Report", description: "Quarterly revenue forecast showing $50.2M projected ARR. 91.8% confidence with primary downside risk from APAC churn." } },
+  { id: "q3_forecast", type: "intel", position: { x: 620, y: 430 }, data: { label: "Q3 Forecast", category: "Report", businessMeaning: "Quarterly revenue forecast.", risks: "Missed pipeline targets.", opportunities: "Exceeding street expectations.", decisions: "Guidance Revision", recommendationData: { type: "RECOMMENDATION", title: "Maintain Guidance", context: "Wolfram models show 91% chance to hit base.", action: "Do not revise public guidance.", outcome: "Stock stability.", confidence: 91, impact: "Stable", horizon: "End of Quarter" } } },
   // Agents
-  { id: "market_agent", type: "intel", position: { x: 0, y: 580 }, data: { label: "Market Analyst AI", category: "Agent", description: "Autonomous agent monitoring competitive landscape and market trends. Currently analyzing European expansion opportunity." } },
-  { id: "risk_agent", type: "intel", position: { x: 280, y: 580 }, data: { label: "Risk Forecaster AI", category: "Agent", description: "Autonomous agent monitoring risk signals across supply chain, churn indicators, and market volatility." } },
+  { id: "market_agent", type: "intel", position: { x: 0, y: 580 }, data: { label: "Market Analyst AI", category: "Agent", businessMeaning: "Autonomous agent monitoring competitive landscape.", risks: "Hallucinated data.", opportunities: "Real-time pricing intel.", decisions: "Competitive Pricing Adjustments", recommendationData: { type: "RECOMMENDATION", title: "Price Match Guarantee", context: "Competitors are aggressively discounting.", action: "Implement dynamic price matching.", outcome: "Protect win rates.", confidence: 84, impact: "Win Rates Up", horizon: "Ongoing" } } },
+  { id: "risk_agent", type: "intel", position: { x: 280, y: 580 }, data: { label: "Risk Forecaster AI", category: "Agent", businessMeaning: "Autonomous agent monitoring risk signals.", risks: "False positives.", opportunities: "Early warning detection.", decisions: "Automated SLA Pauses", recommendationData: { type: "OPPORTUNITY", title: "Automate Supply Alerts", context: "Agent can auto-notify customers of delays.", action: "Enable auto-communications.", outcome: "Improve customer trust.", confidence: 89, impact: "High Trust", horizon: "14 Days" } } },
   // Metrics
-  { id: "arr_metric", type: "intel", position: { x: 550, y: 580 }, data: { label: "$50.2M ARR", category: "Metric", description: "Annual Recurring Revenue — the primary revenue metric. Growing at 14.2% QoQ with 91.8% forecast confidence." } },
-  { id: "nrr_metric", type: "intel", position: { x: 800, y: 580 }, data: { label: "118% NRR", category: "Metric", description: "Net Revenue Retention. Enterprise segment declining from 118% to 109% over 2 quarters. Requires CSM intervention." } },
+  { id: "arr_metric", type: "intel", position: { x: 550, y: 580 }, data: { label: "$50.2M ARR", category: "Metric", businessMeaning: "Total Annual Recurring Revenue.", risks: "Macro downturn.", opportunities: "Cross-sell expansion.", decisions: "Growth Investment Sizing", recommendationData: { type: "RECOMMENDATION", title: "Reinvest Free Cash", context: "Growth is stable, cash yield is low.", action: "Deploy $2M into marketing.", outcome: "Accelerate to $55M ARR.", confidence: 81, impact: "+$5M ARR", horizon: "12 Months" } } },
+  { id: "nrr_metric", type: "intel", position: { x: 800, y: 580 }, data: { label: "118% NRR", category: "Metric", businessMeaning: "Net Revenue Retention.", risks: "Declining enterprise health.", opportunities: "New module upselling.", decisions: "CSM Compensation", recommendationData: { type: "RECOMMENDATION", title: "Bonus on Expansion", context: "CSMs are focused only on renewals.", action: "Introduce 2% commission on cross-sells.", outcome: "Boost NRR to 120%.", confidence: 92, impact: "+200bps NRR", horizon: "90 Days" } } },
 ];
 
 const graphEdges: Edge[] = [
@@ -98,64 +93,58 @@ const graphEdges: Edge[] = [
   { id: "e2", source: "ceo", target: "vp_sales", style: { stroke: "#8ab4f860" } },
   { id: "e3", source: "cfo", target: "europe_launch", style: { stroke: "#c4b5fd60" } },
   { id: "e4", source: "cfo", target: "product_launch", style: { stroke: "#c4b5fd60" } },
-  { id: "e5", source: "vp_sales", target: "apac_market", animated: true, style: { stroke: "#f28b82", strokeWidth: 2 } },
-  { id: "e6", source: "vp_sales", target: "emea_market", style: { stroke: "#4edea380" } },
-  { id: "e7", source: "apac_market", target: "churn_risk", animated: true, style: { stroke: "#f28b82", strokeWidth: 2 } },
-  { id: "e8", source: "supply_risk", target: "apac_market", style: { stroke: "#f28b8260", strokeDasharray: "5 3" } },
-  { id: "e9", source: "q3_forecast", target: "arr_metric", style: { stroke: "#4edea380" } },
-  { id: "e10", source: "apac_market", target: "nrr_metric", style: { stroke: "#f59e0b60" } },
-  { id: "e11", source: "market_agent", target: "europe_launch", animated: true, style: { stroke: "#80deea80" } },
-  { id: "e12", source: "risk_agent", target: "churn_risk", animated: true, style: { stroke: "#80deea80" } },
-  { id: "e13", source: "risk_agent", target: "supply_risk", animated: true, style: { stroke: "#80deea80" } },
-  { id: "e14", source: "emea_market", target: "europe_launch", style: { stroke: "#4edea360" } },
-  { id: "e15", source: "ceo", target: "q3_forecast", style: { stroke: "#f59e0b40" } },
+  { id: "e5", source: "vp_sales", target: "apac_market", style: { stroke: "#4edea360" } },
+  { id: "e6", source: "vp_sales", target: "emea_market", style: { stroke: "#4edea360" } },
+  { id: "e7", source: "apac_market", target: "churn_risk", animated: true, style: { stroke: "#f28b82" } },
+  { id: "e8", source: "emea_market", target: "europe_launch", style: { stroke: "#4edea360" } },
+  { id: "e9", source: "supply_risk", target: "product_launch", animated: true, style: { stroke: "#f28b82" } },
+  { id: "e10", source: "q3_forecast", target: "vp_sales", style: { stroke: "#f59e0b60" } },
+  { id: "e11", source: "market_agent", target: "emea_market", style: { stroke: "#80deea60", strokeDasharray: "5 5" } },
+  { id: "e12", source: "risk_agent", target: "supply_risk", style: { stroke: "#80deea60", strokeDasharray: "5 5" } },
+  { id: "e13", source: "risk_agent", target: "churn_risk", style: { stroke: "#80deea60", strokeDasharray: "5 5" } },
+  { id: "e14", source: "arr_metric", target: "q3_forecast", style: { stroke: "#4edea360" } },
+  { id: "e15", source: "nrr_metric", target: "churn_risk", style: { stroke: "#4edea360" } },
 ];
 
-const filterOptions = ["All", "People", "Project", "Market", "Risk", "Report", "Agent", "Metric"];
-
 export default function KnowledgeGraphPage() {
-  const [nodes, , onNodesChange] = useNodesState(graphNodes);
-  const [edges, , onEdgesChange] = useEdgesState(graphEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(graphNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(graphEdges);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("All");
+
+  const filterOptions = ["All", ...Object.keys(categoryConfig)];
+
+  const filteredNodes = useMemo(() => {
+    return nodes.filter(n => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const d = n.data as any;
+      const matchesSearch = d.label.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            d.businessMeaning.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = activeFilter === "All" || d.category === activeFilter;
+      return matchesSearch && matchesFilter;
+    });
+  }, [nodes, searchQuery, activeFilter]);
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
   }, []);
 
-  const filteredNodes = useMemo(() => {
-    return nodes.map(node => {
-      const d = node.data as { label: string; category: string; description: string };
-      const matchesSearch = !searchQuery ||
-        d.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        d.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilter = activeFilter === "All" || d.category === activeFilter;
-      return {
-        ...node,
-        style: {
-          ...node.style,
-          opacity: matchesSearch && matchesFilter ? 1 : 0.15,
-          transition: "opacity 0.3s ease",
-        },
-      };
-    });
-  }, [nodes, searchQuery, activeFilter]);
-
   const nodeTypesMemo = useMemo(() => nodeTypes, []);
-  const currentNodeData = selectedNode?.data as Record<string, string> | undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentNodeData = selectedNode?.data as any;
   const currentCfg = currentNodeData ? categoryConfig[currentNodeData.category] : null;
 
   return (
     <DashboardLayout>
-      {/* Page Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-            Enterprise Intelligence Graph
+            Enterprise Knowledge Graph
           </h1>
           <p className="text-sm text-gray-400 mt-1">
-            Explore connections between people, projects, markets, risks, and AI agents
+            Explore connections between business concepts, risks, and strategic decisions.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -166,8 +155,7 @@ export default function KnowledgeGraphPage() {
         </div>
       </header>
 
-      {/* Search & Filter Bar */}
-      <div className="card-layer p-3.5 flex flex-wrap gap-4 justify-between items-center">
+      <div className="card-layer p-3.5 flex flex-wrap gap-4 justify-between items-center mt-6">
         <div className="flex items-center gap-3 flex-1 min-w-[280px]">
           <span className="material-symbols-outlined text-[#8ab4f8] text-lg">search</span>
           <input
@@ -207,10 +195,8 @@ export default function KnowledgeGraphPage() {
         </div>
       </div>
 
-      {/* Graph + Detail Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Canvas */}
-        <div className="lg:col-span-8 panel-layer overflow-hidden" style={{ height: "560px" }}>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        <div className="lg:col-span-8 panel-layer overflow-hidden" style={{ height: "650px" }}>
           <ReactFlow
             nodes={filteredNodes}
             edges={edges}
@@ -229,10 +215,9 @@ export default function KnowledgeGraphPage() {
           </ReactFlow>
         </div>
 
-        {/* Detail Sidebar */}
-        <div className="lg:col-span-4 panel-layer p-6 flex flex-col justify-between" style={{ height: "560px" }}>
+        <div className="lg:col-span-4 panel-layer flex flex-col justify-start overflow-y-auto" style={{ height: "650px" }}>
           {selectedNode && currentNodeData && currentCfg ? (
-            <div className="space-y-5">
+            <div className="p-6 space-y-6">
               <div className="border-b border-white/[0.04] pb-4">
                 <div className="flex items-center gap-2 mb-2">
                   <div
@@ -250,57 +235,46 @@ export default function KnowledgeGraphPage() {
                     >
                       {currentNodeData.category}
                     </span>
-                    <h3 className="font-display text-lg font-bold text-white">{currentNodeData.label}</h3>
+                    <h3 className="font-display text-xl font-bold text-white">{currentNodeData.label}</h3>
                   </div>
                 </div>
               </div>
 
-              <p className="text-sm text-gray-300 leading-relaxed">{currentNodeData.description}</p>
-
-              <div>
-                <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold block mb-2">Connections</span>
-                <div className="space-y-1.5">
-                  {edges
-                    .filter(e => e.source === selectedNode.id || e.target === selectedNode.id)
-                    .map(e => {
-                      const connectedId = e.source === selectedNode.id ? e.target : e.source;
-                      const connectedNode = graphNodes.find(n => n.id === connectedId);
-                      if (!connectedNode) return null;
-                      const cd = connectedNode.data as Record<string, string>;
-                      const ccfg = categoryConfig[cd.category];
-                      return (
-                        <button
-                          key={e.id}
-                          onClick={() => setSelectedNode(connectedNode)}
-                          className="flex items-center gap-2 bg-[#050505]/40 border border-white/[0.03] p-2.5 rounded-[10px] text-[11px] text-white w-full hover:border-white/[0.1] transition-colors cursor-pointer text-left"
-                        >
-                          <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: ccfg?.color || "#8ab4f8" }}></span>
-                          <span className="truncate">{cd.label}</span>
-                          <span className="text-[9px] ml-auto shrink-0" style={{ color: ccfg?.color || "#8ab4f8" }}>{cd.category}</span>
-                        </button>
-                      );
-                    })}
+              <div className="space-y-4">
+                <div>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Business Meaning</span>
+                  <p className="text-sm text-white font-medium">{currentNodeData.businessMeaning}</p>
                 </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-error/5 p-3 rounded-[12px] border border-error/20">
+                    <span className="text-[10px] text-error uppercase tracking-wider block mb-1">Associated Risks</span>
+                    <span className="text-xs text-gray-300">{currentNodeData.risks}</span>
+                  </div>
+                  <div className="bg-primary/5 p-3 rounded-[12px] border border-primary/20">
+                    <span className="text-[10px] text-primary uppercase tracking-wider block mb-1">Opportunities</span>
+                    <span className="text-xs text-gray-300">{currentNodeData.opportunities}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Related Decisions</span>
+                  <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03]">
+                    <span className="text-xs text-gray-300">{currentNodeData.decisions}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/[0.04]">
+                <ExecutiveRecommendationPanel {...currentNodeData.recommendationData} />
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 text-gray-500">
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 text-gray-500 p-6">
               <span className="material-symbols-outlined text-[40px] opacity-30">hub</span>
-              <p className="text-sm">Click any entity to explore its connections and intelligence</p>
+              <p className="text-sm font-medium">Select any node to view its business meaning and associated actions</p>
             </div>
           )}
-
-          {/* Legend */}
-          <div className="pt-4 border-t border-white/[0.04] mt-auto">
-            <div className="grid grid-cols-2 gap-1.5 text-[10px]">
-              {Object.entries(categoryConfig).map(([cat, cfg]) => (
-                <div key={cat} className="flex items-center gap-2 text-gray-500">
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: cfg.color }}></span>
-                  <span>{cat}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </DashboardLayout>

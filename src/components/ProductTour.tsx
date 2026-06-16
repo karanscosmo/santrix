@@ -76,7 +76,7 @@ const TOUR_STEPS: Record<string, TourStep> = {
 };
 
 const TOTAL_STEPS = 10;
-const AUTO_TOUR_DELAY = 6000; // 6 seconds per page
+const AUTO_TOUR_DELAY = 5000; // 5 seconds per page
 
 export const ProductTour: React.FC = () => {
   const searchParams = useSearchParams();

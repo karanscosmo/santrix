@@ -8,9 +8,9 @@ interface Agent {
   role: string;
   objective: string;
   confidence: number;
-  cost: string;
+  valueGenerated: string;
   impact: string;
-  recentDecision: string;
+  recentInsight: string;
   status: "Active" | "Analyzing" | "Idle";
   icon: string;
   accentColor: string;
@@ -22,9 +22,9 @@ const agents: Agent[] = [
     role: "Market Intelligence",
     objective: "Analyzing European expansion opportunity and DACH region market dynamics",
     confidence: 91.2,
-    cost: "$0.42/decision",
-    impact: "+$2.1M revenue identified",
-    recentDecision: "Recommended DACH-first entry strategy based on TAM analysis of 23% YoY growth",
+    valueGenerated: "+$2.1M Identified",
+    impact: "Strategic Growth",
+    recentInsight: "Competitor pricing in DACH region is 15% higher than our baseline. Recommended DACH-first entry strategy based on TAM analysis of 23% YoY growth.",
     status: "Active",
     icon: "public",
     accentColor: "#8ab4f8",
@@ -34,9 +34,9 @@ const agents: Agent[] = [
     role: "Risk Assessment",
     objective: "Monitoring APAC supply chain disruption and enterprise churn signals",
     confidence: 94.8,
-    cost: "$0.38/decision",
-    impact: "3 risks mitigated this quarter",
-    recentDecision: "Flagged 14 enterprise accounts with high churn probability — triggered CSM intervention",
+    valueGenerated: "$1.4M Saved",
+    impact: "Churn Mitigation",
+    recentInsight: "Flagged 14 enterprise accounts with high churn probability. Triggered CSM intervention protocol which successfully retained 3 key accounts.",
     status: "Active",
     icon: "shield",
     accentColor: "#f28b82",
@@ -46,9 +46,9 @@ const agents: Agent[] = [
     role: "Strategic Planning",
     objective: "Evaluating Q4 budget reallocation across Sales, Marketing, and Customer Success",
     confidence: 88.5,
-    cost: "$0.55/decision",
-    impact: "$1.8M savings identified",
-    recentDecision: "Proposed shifting 8% of marketing budget to Customer Success for churn prevention",
+    valueGenerated: "$1.8M Optimized",
+    impact: "Capital Efficiency",
+    recentInsight: "Identified diminishing returns on display advertising. Proposed shifting 8% of marketing budget to Customer Success for churn prevention.",
     status: "Analyzing",
     icon: "strategy",
     accentColor: "#c4b5fd",
@@ -58,9 +58,9 @@ const agents: Agent[] = [
     role: "Financial Operations",
     objective: "Optimizing vendor payment terms and cash flow management",
     confidence: 96.1,
-    cost: "$0.29/decision",
-    impact: "$420K cash flow improvement",
-    recentDecision: "Negotiated net-60 terms with 3 tier-2 vendors, improving quarterly cash position",
+    valueGenerated: "$420K Yield",
+    impact: "Treasury Optimization",
+    recentInsight: "Analyzed current treasury yields. Negotiated net-60 terms with 3 tier-2 vendors, improving quarterly cash position.",
     status: "Active",
     icon: "account_balance",
     accentColor: "#4edea3",
@@ -70,9 +70,9 @@ const agents: Agent[] = [
     role: "Operational Efficiency",
     objective: "Reducing enterprise customer delivery cycle time and onboarding friction",
     confidence: 93.4,
-    cost: "$0.31/decision",
-    impact: "14% efficiency gain this quarter",
-    recentDecision: "Identified 3 onboarding bottlenecks reducing time-to-value by 8 days on average",
+    valueGenerated: "-14% Cycle Time",
+    impact: "Margin Expansion",
+    recentInsight: "Identified 3 onboarding bottlenecks reducing time-to-value by 8 days on average. Initiated process re-routing.",
     status: "Active",
     icon: "speed",
     accentColor: "#f59e0b",
@@ -84,14 +84,13 @@ export default function AgentsPage() {
 
   return (
     <DashboardLayout>
-      {/* Header */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-            AI Workforce
+            AI Workforce Observatory
           </h1>
           <p className="text-sm text-gray-400 mt-1">
-            Autonomous AI agents working on strategic objectives across your enterprise
+            Autonomous AI agents independently researching, analyzing, and generating business value.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -102,8 +101,7 @@ export default function AgentsPage() {
         </div>
       </header>
 
-      {/* Summary Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 mb-8">
         <div className="metric-card !p-4">
           <span className="text-[11px] text-gray-400">Total Agents</span>
           <span className="font-display text-2xl font-bold text-white block mt-1">{agents.length}</span>
@@ -115,20 +113,18 @@ export default function AgentsPage() {
           </span>
         </div>
         <div className="metric-card !p-4">
-          <span className="text-[11px] text-gray-400">Total Impact</span>
+          <span className="text-[11px] text-gray-400">Business Value Generated</span>
           <span className="font-display text-2xl font-bold text-[#8ab4f8] block mt-1">$4.3M+</span>
         </div>
         <div className="metric-card !p-4">
-          <span className="text-[11px] text-gray-400">Avg. Cost</span>
-          <span className="font-display text-2xl font-bold text-white block mt-1">$0.39/decision</span>
+          <span className="text-[11px] text-gray-400">Active Objectives</span>
+          <span className="font-display text-2xl font-bold text-white block mt-1">{activeCount}</span>
         </div>
       </div>
 
-      {/* Agent Cards */}
       <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {agents.map((agent, idx) => (
           <div key={idx} className="agent-card space-y-4">
-            {/* Header */}
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div
@@ -159,16 +155,14 @@ export default function AgentsPage() {
               </span>
             </div>
 
-            {/* Objective */}
             <div className="bg-[#050505]/40 border border-white/[0.03] rounded-[12px] p-3.5">
               <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold block mb-1">Current Objective</span>
               <p className="text-xs text-gray-200 leading-relaxed">{agent.objective}</p>
             </div>
 
-            {/* Metrics */}
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <span className="text-[10px] text-gray-500 block mb-0.5">Confidence</span>
+              <div className="bg-[#050505]/40 p-3 rounded-[10px] border border-white/[0.03]">
+                <span className="text-[10px] text-gray-500 block mb-0.5">Decision Confidence</span>
                 <div className="flex items-center gap-2">
                   <div className="confidence-bar flex-1">
                     <div className="fill" style={{ width: `${agent.confidence}%` }}></div>
@@ -176,22 +170,21 @@ export default function AgentsPage() {
                   <span className="text-xs font-bold text-white">{agent.confidence}%</span>
                 </div>
               </div>
-              <div>
-                <span className="text-[10px] text-gray-500 block mb-0.5">Cost per Decision</span>
-                <span className="text-xs font-bold text-white">{agent.cost}</span>
+              <div className="bg-[#050505]/40 p-3 rounded-[10px] border border-white/[0.03]">
+                <span className="text-[10px] text-gray-500 block mb-0.5">Value Generated</span>
+                <span className="text-xs font-bold text-[#8ab4f8]">{agent.valueGenerated}</span>
               </div>
             </div>
 
-            {/* Impact */}
             <div className="flex items-center gap-2 text-[11px]">
               <span className="material-symbols-outlined text-[14px] text-[#4edea3]">trending_up</span>
+              <span className="text-gray-400">Business Impact:</span>
               <span className="text-[#4edea3] font-bold">{agent.impact}</span>
             </div>
 
-            {/* Recent Decision */}
             <div className="border-t border-white/[0.04] pt-3">
-              <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold block mb-1">Latest Decision</span>
-              <p className="text-[11px] text-gray-400 leading-relaxed">{agent.recentDecision}</p>
+              <span className="text-[10px] text-[#8ab4f8] uppercase tracking-wider font-bold block mb-1">Recent Insight</span>
+              <p className="text-[11px] text-gray-300 leading-relaxed">{agent.recentInsight}</p>
             </div>
           </div>
         ))}

@@ -132,10 +132,10 @@ export default function LandingPage() {
 
           <div className="space-y-6">
             <h2 className="font-display text-4xl sm:text-7xl font-bold tracking-tight text-glow text-white max-w-4xl mx-auto leading-tight">
-              The Operating System for Autonomous Enterprises
+              Autonomous Executive Decision Engine
             </h2>
             <p className="text-on-surface-variant max-w-2xl mx-auto text-base sm:text-xl font-light leading-relaxed">
-              AI Agents reason. Wolfram computes. Sanktrix predicts, simulates, optimizes and recommends strategic decisions in real time.
+              Transforming data into automated strategy. Sanktrix predicts, simulates, optimizes and executes strategic decisions in real time with Computational Intelligence.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6 pt-8">
               <button
@@ -173,7 +173,7 @@ export default function LandingPage() {
                 Context Shift
               </div>
               <h3 className="font-headline-lg text-display-lg leading-tight text-white">
-                Beyond Static Dashboards.
+                Beyond Static Reports.
               </h3>
               <p className="text-on-surface-variant text-xl leading-relaxed font-light">
                 The era of manual reporting and spreadsheet chaos is over. Modern enterprises require computational rigor at the speed of thought.
@@ -184,7 +184,7 @@ export default function LandingPage() {
                 <span className="material-symbols-outlined text-error">warning</span>
                 <h4 className="font-headline-lg text-lg text-error font-bold">Traditional Enterprise</h4>
                 <ul className="space-y-2 text-on-surface-variant text-sm font-code-sm">
-                  <li className="flex items-center gap-2"><span className="w-1 h-1 bg-error rounded-full"></span> Static Dashboards</li>
+                  <li className="flex items-center gap-2"><span className="w-1 h-1 bg-error rounded-full"></span> Static Reports</li>
                   <li className="flex items-center gap-2"><span className="w-1 h-1 bg-error rounded-full"></span> Manual Reporting</li>
                   <li className="flex items-center gap-2"><span className="w-1 h-1 bg-error rounded-full"></span> Spreadsheet Chaos</li>
                   <li className="flex items-center gap-2"><span className="w-1 h-1 bg-error rounded-full"></span> Hindsight Focus</li>
@@ -595,8 +595,8 @@ export default function LandingPage() {
               { id: "01", name: "Data Sources", desc: "Salesforce, Clickhouse, Kafka brokers" },
               { id: "02", name: "Workflows (n8n)", desc: "Trigger.dev pipeline orchestration" },
               { id: "03", name: "AI Core", desc: "LangGraph autonomous agents" },
-              { id: "04", name: "Wolfram Engine", desc: "monte carlo & symbolic math" },
-              { id: "05", name: "Executive Output", desc: "recommendations & dashboard" }
+              { id: "04", name: "Simulation Engine", desc: "Monte Carlo testing" },
+              { id: "05", name: "Executive Output", desc: "automated strategy execution" }
             ].map((node, idx) => (
               <div key={idx} className="glass-panel p-5 rounded border border-white/5 flex flex-col justify-between space-y-4 hover:border-primary/20 transition-all duration-300">
                 <span className="text-2xl text-primary/30 font-bold">{node.id}</span>
@@ -683,16 +683,12 @@ export default function LandingPage() {
             {/* Starter Plan */}
             <div className="glass-panel p-10 rounded-[16px] flex flex-col justify-between hover:-translate-y-2 transition-all duration-300">
               <div>
-                <h4 className="text-xl text-white font-bold mb-2">Growth Plan</h4>
-                <p className="text-sm text-on-surface-variant mb-6">Perfect for mid-sized companies beginning their data integration journey.</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-display font-bold text-white">₹4,999</span>
-                  <span className="text-sm text-gray-500"> /month</span>
-                </div>
-                <ul className="space-y-4 text-sm text-gray-300 mb-8">
-                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> Up to 3 Data Connectors</li>
-                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 5 Executive Dashboards</li>
-                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> Basic Predictive Analytics</li>
+                <h4 className="font-headline-lg text-2xl font-bold text-white mb-2">Growth</h4>
+                <p className="text-sm text-on-surface-variant mb-6">Perfect for mid-sized companies beginning their automated strategy journey.</p>
+                <div className="text-4xl font-display-lg text-white font-bold mb-1">$4K<span className="text-lg text-on-surface-variant font-light">/mo</span></div>
+                <ul className="space-y-3 mb-8">
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 5 Automated Strategy Feeds</li>
+                  <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 3 Dedicated AI Agents</li>
                   <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#4edea3] text-[18px]">check_circle</span> 48-Hour Support SLA</li>
                 </ul>
               </div>
@@ -707,12 +703,9 @@ export default function LandingPage() {
                 Most Popular
               </div>
               <div>
-                <h4 className="text-xl text-white font-bold mb-2">Corporate OS</h4>
-                <p className="text-sm text-on-surface-variant mb-6">Full computational intelligence and autonomous agent integration.</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-display font-bold text-white">₹9,999</span>
-                  <span className="text-sm text-gray-500"> /month</span>
-                </div>
+                <h4 className="font-headline-lg text-2xl font-bold text-white mb-2">Enterprise</h4>
+                <p className="text-sm text-on-surface-variant mb-6">Full computational intelligence and automated strategy deployment.</p>
+                <div className="text-4xl font-display-lg text-white font-bold mb-1">Custom</div>
                 <ul className="space-y-4 text-sm text-gray-300 mb-8">
                   <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> Unlimited Data Connectors</li>
                   <li className="flex items-center gap-3"><span className="material-symbols-outlined text-[#8ab4f8] text-[18px]">check_circle</span> Full Digital Twin Setup</li>
@@ -794,7 +787,7 @@ export default function LandingPage() {
           <div className="flex gap-8">
             <a className="text-outline hover:text-on-surface transition-colors font-code-sm text-code-sm hover:underline decoration-primary-container" href="#">Privacy Protocol</a>
             <a className="text-outline hover:text-on-surface transition-colors font-code-sm text-code-sm hover:underline decoration-primary-container" href="#">Service Terms</a>
-            <a className="text-outline hover:text-on-surface transition-colors font-code-sm text-code-sm hover:underline decoration-primary-container" href="#">API Documentation</a>
+            <a className="text-outline hover:text-on-surface transition-colors font-code-sm text-code-sm hover:underline decoration-primary-container" href="#">Architecture Documentation</a>
             <a className="text-outline hover:text-on-surface transition-colors font-code-sm text-code-sm hover:underline decoration-primary-container" href="#">System Status</a>
           </div>
           <div className="text-secondary-fixed-dim font-code-sm text-code-sm uppercase tracking-widest">
