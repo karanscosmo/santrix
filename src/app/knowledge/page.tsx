@@ -163,14 +163,14 @@ export default function KnowledgeHubPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-md">
+      <div className="space-y-6">
         {/* Row 1: Ingestion and Graph */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Upload & Ingestion Area */}
-          <div className="lg:col-span-4 glass-panel rounded-lg p-md relative overflow-hidden flex flex-col h-[280px]">
+          <div className="lg:col-span-4 glass-panel rounded-lg p-6 relative overflow-hidden flex flex-col h-[280px]">
             <div className="stream-pulse"></div>
-            <div className="flex justify-between items-center mb-md border-b border-outline-variant pb-sm">
-              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-sm font-bold text-[16px]">
+            <div className="flex justify-between items-center mb-6 border-b border-outline-variant pb-4">
+              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-4 font-bold text-[16px]">
                 <span className="material-symbols-outlined text-primary text-sm">cloud_upload</span>
                 Data Ingestion
               </h2>
@@ -199,13 +199,13 @@ export default function KnowledgeHubPage() {
                 htmlFor="file-upload-input"
                 className="absolute inset-0 w-full h-full cursor-pointer flex flex-col items-center justify-center"
               >
-                <span className="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary mb-sm transition-colors">
+                <span className="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary mb-4 transition-colors">
                   upload_file
                 </span>
-                <p className="text-xs text-on-surface text-center px-lg font-bold">
+                <p className="text-xs text-on-surface text-center px-8 font-bold">
                   Drag &amp; drop files or click to upload
                 </p>
-                <p className="font-mono text-[9px] text-on-surface-variant mt-sm">
+                <p className="font-mono text-[9px] text-on-surface-variant mt-4">
                   PDF, CSV, XLSX, JSON, TXT (Max 10MB)
                 </p>
               </label>
@@ -213,13 +213,13 @@ export default function KnowledgeHubPage() {
           </div>
 
           {/* Knowledge Graph Visualization */}
-          <div className="lg:col-span-8 glass-panel rounded-lg p-md relative overflow-hidden flex flex-col h-[280px]">
-            <div className="flex justify-between items-center mb-md border-b border-outline-variant pb-sm">
-              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-sm font-bold text-[16px]">
+          <div className="lg:col-span-8 glass-panel rounded-lg p-6 relative overflow-hidden flex flex-col h-[280px]">
+            <div className="flex justify-between items-center mb-6 border-b border-outline-variant pb-4">
+              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-4 font-bold text-[16px]">
                 <span className="material-symbols-outlined text-primary text-sm">hub</span>
                 Entity Graph Explorer
               </h2>
-              <div className="flex gap-sm">
+              <div className="flex gap-4">
                 {["zoom_in", "zoom_out", "filter_list"].map((ico, idx) => (
                   <button
                     key={idx}
@@ -275,20 +275,20 @@ export default function KnowledgeHubPage() {
         </div>
 
         {/* Row 2: Ingestions Logs and Retrieval Preview */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Recent Ingestions / Stats */}
-          <div className="lg:col-span-4 glass-panel rounded-lg p-md flex flex-col h-[300px]">
-            <h2 className="font-display text-headline-md text-on-surface mb-md border-b border-outline-variant pb-sm flex items-center gap-sm font-bold text-[16px]">
+          <div className="lg:col-span-4 glass-panel rounded-lg p-6 flex flex-col h-[300px]">
+            <h2 className="font-display text-headline-md text-on-surface mb-6 border-b border-outline-variant pb-4 flex items-center gap-4 font-bold text-[16px]">
               <span className="material-symbols-outlined text-primary text-sm">history</span>
               Index Status
             </h2>
-            <div className="flex-grow overflow-y-auto space-y-sm pr-xs">
+            <div className="flex-grow overflow-y-auto space-y-4 pr-2">
               {documents.map(doc => (
                 <div
                   key={doc.id}
-                  className="bg-surface-container p-sm rounded border border-outline-variant flex items-start gap-md hover:border-primary/30 transition-colors"
+                  className="bg-surface-container p-4 rounded border border-outline-variant flex items-start gap-6 hover:border-primary/30 transition-colors"
                 >
-                  <div className="p-xs bg-primary/10 rounded">
+                  <div className="p-2 bg-primary/10 rounded">
                     <span className="material-symbols-outlined text-primary text-[20px]">
                       {doc.type === "PDF" ? "picture_as_pdf" : doc.type === "SLACK" ? "forum" : "description"}
                     </span>
@@ -319,12 +319,12 @@ export default function KnowledgeHubPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-md pt-md border-t border-outline-variant grid grid-cols-2 gap-sm">
-              <div className="bg-surface-container-low p-sm rounded border border-outline-variant text-center">
+            <div className="mt-6 pt-md border-t border-outline-variant grid grid-cols-2 gap-4">
+              <div className="bg-surface-container-low p-4 rounded border border-outline-variant text-center">
                 <p className="text-[9px] text-on-surface-variant font-mono uppercase">Total Documents</p>
                 <p className="text-lg font-bold text-on-surface font-mono">{documents.length + 14201}</p>
               </div>
-              <div className="bg-surface-container-low p-sm rounded border border-outline-variant text-center">
+              <div className="bg-surface-container-low p-4 rounded border border-outline-variant text-center">
                 <p className="text-[9px] text-on-surface-variant font-mono uppercase">Vector Count</p>
                 <p className="text-lg font-bold text-primary font-mono">2.4M</p>
               </div>
@@ -332,13 +332,13 @@ export default function KnowledgeHubPage() {
           </div>
 
           {/* Document Viewer / Retrieval Preview */}
-          <div className="lg:col-span-8 glass-panel rounded-lg p-md flex flex-col h-[300px]">
-            <div className="flex justify-between items-center mb-md border-b border-outline-variant pb-sm">
-              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-sm font-bold text-[16px]">
+          <div className="lg:col-span-8 glass-panel rounded-lg p-6 flex flex-col h-[300px]">
+            <div className="flex justify-between items-center mb-6 border-b border-outline-variant pb-4">
+              <h2 className="font-display text-headline-md text-on-surface flex items-center gap-4 font-bold text-[16px]">
                 <span className="material-symbols-outlined text-primary text-sm">find_in_page</span>
                 Retrieval Preview
               </h2>
-              <div className="flex gap-sm items-center">
+              <div className="flex gap-4 items-center">
                 <span className="font-mono text-[10px] text-on-surface-variant bg-surface-container px-2 py-1 rounded">
                   Score: {retrievalScore}
                 </span>
@@ -351,14 +351,14 @@ export default function KnowledgeHubPage() {
               </div>
             </div>
 
-            <div className="flex-1 bg-surface-container-lowest border border-outline-variant rounded p-md overflow-y-auto font-sans text-xs text-on-surface-variant leading-relaxed">
+            <div className="flex-1 bg-surface-container-lowest border border-outline-variant rounded p-6 overflow-y-auto font-sans text-xs text-on-surface-variant leading-relaxed">
               <p className="mb-2">
                 <strong className="text-on-surface font-bold">Source:</strong> {retrievalSource}
               </p>
-              <div className="p-sm bg-surface-container/50 border-l-4 border-primary rounded-r font-mono">
+              <div className="p-4 bg-surface-container/50 border-l-4 border-primary rounded-r font-mono">
                 {retrievalText}
               </div>
-              <div className="mt-md flex gap-sm">
+              <div className="mt-6 flex gap-4">
                 <span className="px-2 py-0.5 border border-outline-variant rounded-full font-mono text-[9px] text-on-surface-variant bg-surface-container-high">
                   #infrastructure
                 </span>

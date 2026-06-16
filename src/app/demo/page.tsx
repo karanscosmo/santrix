@@ -100,13 +100,13 @@ export default function DemoPage() {
       {runningScenario && (
         <div className="fixed inset-0 bg-surface-lowest/90 backdrop-blur-xl z-[150] flex flex-col items-center justify-center">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin glow-primary"></div>
-          <h3 className="font-display text-2xl text-on-surface mt-lg">{runningScenario.loadingTitle}</h3>
-          <p className="font-mono text-on-surface-variant text-xs mt-sm animate-pulse">{runningScenario.loadingSubtitle}</p>
+          <h3 className="font-display text-2xl text-on-surface mt-8">{runningScenario.loadingTitle}</h3>
+          <p className="font-mono text-on-surface-variant text-xs mt-4 animate-pulse">{runningScenario.loadingSubtitle}</p>
         </div>
       )}
 
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-md border-b border-outline-variant pb-md mb-md">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-outline-variant pb-6 mb-md">
         <div>
           <h2 className="font-display text-4xl text-on-surface">Demo Control Center</h2>
           <p className="font-mono text-xs text-on-surface-variant">One-click scenarios for hackathon pitch validation and user flow stress tests.</p>
@@ -126,28 +126,28 @@ export default function DemoPage() {
         </div>
       </div>
 
-      <div className="space-y-md pb-8">
+      <div className="space-y-6 pb-8">
         {/* Scenarios Grid */}
-        <div className="glass-panel rounded-xl p-md relative overflow-hidden">
+        <div className="glass-panel rounded-xl p-6 relative overflow-hidden">
           <div className="stream-pulse"></div>
-          <div className="border-b border-outline-variant/30 pb-sm mb-md flex justify-between items-center">
+          <div className="border-b border-outline-variant/30 pb-4 mb-6 flex justify-between items-center">
             <div>
               <h3 className="font-display text-base text-on-surface">Interactive Hackathon Pitch Scenarios</h3>
               <p className="font-mono text-[9px] text-on-surface-variant mt-1">SELECT A SCENARIO TO AUTO-LOAD TELEMETRY AND COMPUTE CONSTRAINTS</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-md my-sm">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 my-4">
             {scenarios.map((sc) => (
               <button
                 key={sc.id}
                 onClick={() => runScenario(sc)}
-                className={`bg-surface-container hover:bg-surface-container-high border border-outline-variant transition-all p-md rounded-xl flex flex-col justify-between text-left h-[190px] cursor-pointer group ${sc.color}`}
+                className={`bg-surface-container hover:bg-surface-container-high border border-outline-variant transition-all p-6 rounded-xl flex flex-col justify-between text-left h-[190px] cursor-pointer group ${sc.color}`}
               >
                 <div>
                   <span className="material-symbols-outlined text-2xl">{sc.icon}</span>
-                  <h4 className="font-display text-sm font-semibold text-on-surface mt-sm">{sc.name}</h4>
-                  <p className="text-[10px] text-on-surface-variant leading-relaxed mt-xs group-hover:text-on-surface transition-colors">
+                  <h4 className="font-display text-sm font-semibold text-on-surface mt-4">{sc.name}</h4>
+                  <p className="text-[10px] text-on-surface-variant leading-relaxed mt-2 group-hover:text-on-surface transition-colors">
                     {sc.desc}
                   </p>
                 </div>
@@ -160,34 +160,34 @@ export default function DemoPage() {
         </div>
 
         {/* Stack explanations & Walkthrough guide */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-md">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Architecture Block */}
-          <div className="lg:col-span-7 glass-panel rounded-xl p-md">
-            <div className="border-b border-outline-variant/30 pb-sm mb-sm">
+          <div className="lg:col-span-7 glass-panel rounded-xl p-6">
+            <div className="border-b border-outline-variant/30 pb-4 mb-sm">
               <h3 className="font-display text-base text-on-surface">Sanktrix Platform Stack Integration</h3>
               <p className="font-mono text-[9px] text-on-surface-variant mt-1">THE COMPUTATIONAL OS DEPLOYMENT TOPOLOGY</p>
             </div>
 
-            <div className="space-y-sm my-md text-xs text-on-surface-variant leading-relaxed">
-              <div className="flex gap-md items-start">
+            <div className="space-y-4 my-6 text-xs text-on-surface-variant leading-relaxed">
+              <div className="flex gap-6 items-start">
                 <span className="bg-primary-container/10 text-primary border border-primary/25 px-2 py-1 rounded font-mono text-[9px] uppercase w-28 text-center shrink-0">AI Layer</span>
                 <p>
                   <strong className="text-on-surface">LangGraph + CrewAI Workforce Swarm:</strong> Generates self-correcting logic chains and handles multi-agent task brokerage (visualized on Agent Observatory).
                 </p>
               </div>
-              <div className="flex gap-md items-start">
+              <div className="flex gap-6 items-start">
                 <span className="bg-primary-container/10 text-primary border border-primary/25 px-2 py-1 rounded font-mono text-[9px] uppercase w-28 text-center shrink-0">Compute Core</span>
                 <p>
                   <strong className="text-on-surface">Wolfram Computational Kernel:</strong> Executes parametric equations, Monte Carlo trials (n=50,000), and symbolic notebook inputs in under 20ms.
                 </p>
               </div>
-              <div className="flex gap-md items-start">
+              <div className="flex gap-6 items-start">
                 <span className="bg-primary-container/10 text-primary border border-primary/25 px-2 py-1 rounded font-mono text-[9px] uppercase w-28 text-center shrink-0">Automation</span>
                 <p>
                   <strong className="text-on-surface">n8n / Temporal Orchestrations:</strong> Executes real-time event-driven tasks and hooks directly to Slack webhooks, Stripe events, and data lakes.
                 </p>
               </div>
-              <div className="flex gap-md items-start">
+              <div className="flex gap-6 items-start">
                 <span className="bg-primary-container/10 text-primary border border-primary/25 px-2 py-1 rounded font-mono text-[9px] uppercase w-28 text-center shrink-0">Data Fabrics</span>
                 <p>
                   <strong className="text-on-surface">Supabase + PostgreSQL + Pinecone + ClickHouse:</strong> Hybrid semantic vector indexer and analytical store for fast twin synchronization.
@@ -197,13 +197,13 @@ export default function DemoPage() {
           </div>
 
           {/* Pitch Deck guide */}
-          <div className="lg:col-span-5 glass-panel rounded-xl p-md flex flex-col justify-between">
+          <div className="lg:col-span-5 glass-panel rounded-xl p-6 flex flex-col justify-between">
             <div>
-              <div className="border-b border-outline-variant/30 pb-sm mb-xs">
+              <div className="border-b border-outline-variant/30 pb-4 mb-2">
                 <h3 className="font-display text-base text-on-surface">Pitch Deck &amp; Judge Walkthrough</h3>
                 <p className="font-mono text-[9px] text-on-surface-variant mt-1">STRATEGIC PRESENTATION SEQUENCING</p>
               </div>
-              <div className="text-xs text-on-surface-variant leading-relaxed space-y-sm my-md pr-xs overflow-y-auto">
+              <div className="text-xs text-on-surface-variant leading-relaxed space-y-4 my-6 pr-2 overflow-y-auto">
                 <p>
                   1. <strong className="text-on-surface">The Paradigm Shift:</strong> Pitch Sanktrix as the first real &apos;Computational OS&apos; that connects corporate strategic execution to a deterministic mathematical core.
                 </p>
@@ -215,7 +215,7 @@ export default function DemoPage() {
                 </p>
               </div>
             </div>
-            <div className="pt-sm border-t border-outline-variant/30 text-[9px] font-mono text-on-surface-variant">
+            <div className="pt-4 border-t border-outline-variant/30 text-[9px] font-mono text-on-surface-variant">
               Pitch deck sync profile: Hackathon Pitch Deck V2
             </div>
           </div>

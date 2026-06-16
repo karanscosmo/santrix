@@ -227,7 +227,7 @@ export default function WorkflowsPage() {
   return (
     <DashboardLayout>
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-md border-b border-outline-variant pb-md mb-md">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-outline-variant pb-6 mb-md">
         <div>
           <h2 className="font-display text-4xl text-on-surface">Workflow Orchestration</h2>
           <p className="font-mono text-xs text-on-surface-variant">Visual n8n & Temporal Orchestrator. 3 Active pipelines.</p>
@@ -235,7 +235,7 @@ export default function WorkflowsPage() {
         <button
           onClick={executeWorkflow}
           disabled={isExecuting}
-          className={`flex items-center gap-xs px-md py-sm rounded font-sans text-xs uppercase font-bold transition-all shadow-[0_0_15px_rgba(176,198,255,0.3)] cursor-pointer ${
+          className={`flex items-center gap-2 px-6 py-4 rounded font-sans text-xs uppercase font-bold transition-all shadow-[0_0_15px_rgba(176,198,255,0.3)] cursor-pointer ${
             isExecuting
               ? "bg-outline-variant text-on-surface-variant"
               : "bg-primary text-on-primary hover:bg-primary-container"
@@ -250,14 +250,14 @@ export default function WorkflowsPage() {
         {/* Canvas Area */}
         <div className="flex-1 bg-surface-dim grid-bg relative overflow-hidden h-full">
           {/* Zoom controls */}
-          <div className="absolute bottom-md right-md flex gap-xs bg-surface-container border border-outline-variant rounded-lg p-xs z-10">
+          <div className="absolute bottom-md right-md flex gap-2 bg-surface-container border border-outline-variant rounded-lg p-2 z-10">
             <button className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded">
               <span className="material-symbols-outlined text-[18px]">remove</span>
             </button>
             <button className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded">
               <span className="material-symbols-outlined text-[18px]">add</span>
             </button>
-            <div className="w-px bg-outline-variant my-xs mx-xs"></div>
+            <div className="w-px bg-outline-variant my-2 mx-xs"></div>
             <button className="w-8 h-8 flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container-highest rounded">
               <span className="material-symbols-outlined text-[18px]">fit_screen</span>
             </button>
@@ -317,7 +317,7 @@ export default function WorkflowsPage() {
                 {/* Node Titlebar / Drag Handle */}
                 <div
                   onMouseDown={(e) => handleMouseDown(e, node.id)}
-                  className={`p-sm flex items-center gap-sm rounded-t-xl cursor-move border-b border-outline-variant ${themeClass}`}
+                  className={`p-4 flex items-center gap-4 rounded-t-xl cursor-move border-b border-outline-variant ${themeClass}`}
                 >
                   <span className="material-symbols-outlined text-[20px]">
                     {node.type === "trigger" ? "bolt" : node.type === "agent" ? "support_agent" : "chat"}
@@ -329,7 +329,7 @@ export default function WorkflowsPage() {
                 </div>
 
                 {/* Node details */}
-                <div className="p-md font-mono text-[10px] space-y-1 text-on-surface-variant">
+                <div className="p-6 font-mono text-[10px] space-y-1 text-on-surface-variant">
                   {Object.entries(node.data).map(([k, v]) => {
                     if (k === "prompt" || k === "variables") return null; // hide long items in card
                     return (
@@ -348,10 +348,10 @@ export default function WorkflowsPage() {
         {/* Right Sidebar (Properties & Library) */}
         <div className="w-full lg:w-80 bg-surface-container-low border-t lg:border-t-0 lg:border-l border-outline-variant flex flex-col h-full z-20">
           {/* Tab buttons */}
-          <div className="flex border-b border-outline-variant p-sm gap-xs bg-surface-container-lowest">
+          <div className="flex border-b border-outline-variant p-4 gap-2 bg-surface-container-lowest">
             <button
               onClick={() => setActiveTab("properties")}
-              className={`flex-1 py-xs font-sans text-xs uppercase font-bold rounded border transition-colors cursor-pointer text-center ${
+              className={`flex-1 py-2 font-sans text-xs uppercase font-bold rounded border transition-colors cursor-pointer text-center ${
                 activeTab === "properties"
                   ? "text-primary bg-primary-container/10 border-primary/20"
                   : "text-on-surface-variant hover:bg-surface-container-highest border-transparent"
@@ -361,7 +361,7 @@ export default function WorkflowsPage() {
             </button>
             <button
               onClick={() => setActiveTab("library")}
-              className={`flex-1 py-xs font-sans text-xs uppercase font-bold rounded border transition-colors cursor-pointer text-center ${
+              className={`flex-1 py-2 font-sans text-xs uppercase font-bold rounded border transition-colors cursor-pointer text-center ${
                 activeTab === "library"
                   ? "text-primary bg-primary-container/10 border-primary/20"
                   : "text-on-surface-variant hover:bg-surface-container-highest border-transparent"
@@ -373,17 +373,17 @@ export default function WorkflowsPage() {
 
           {/* Properties tab panel */}
           {activeTab === "properties" && (
-            <div className="flex-1 overflow-y-auto p-md space-y-md">
+            <div className="flex-1 overflow-y-auto p-6 space-y-md">
               {selectedNode ? (
                 <div>
-                  <div className="flex items-center gap-sm mb-md pb-xs border-b border-outline-variant/30">
+                  <div className="flex items-center gap-4 mb-6 pb-2 border-b border-outline-variant/30">
                     <span className="material-symbols-outlined text-primary text-xl">
                       {selectedNode.type === "trigger" ? "bolt" : selectedNode.type === "agent" ? "support_agent" : "chat"}
                     </span>
                     <h3 className="font-display text-md text-on-surface">{selectedNode.name}</h3>
                   </div>
 
-                  <div className="space-y-sm">
+                  <div className="space-y-4">
                     {/* Node Name input */}
                     <div>
                       <label className="font-sans text-[10px] text-on-surface-variant uppercase font-semibold block mb-1">
@@ -399,7 +399,7 @@ export default function WorkflowsPage() {
                           }
                           setNodes(prev => prev.map(n => n.id === selectedNode.id ? { ...n, name: e.target.value } : n));
                         }}
-                        className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                        className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                       />
                     </div>
 
@@ -413,7 +413,7 @@ export default function WorkflowsPage() {
                           <select
                             value={selectedNode.data.stream}
                             onChange={(e) => updateNodeData(selectedNode.id, "stream", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           >
                             <option value="GL_TRANSACTIONS">GL_TRANSACTIONS</option>
                             <option value="STRIPE_EVENTS">STRIPE_EVENTS</option>
@@ -429,7 +429,7 @@ export default function WorkflowsPage() {
                             type="text"
                             value={selectedNode.data.threshold}
                             onChange={(e) => updateNodeData(selectedNode.id, "threshold", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           />
                         </div>
                       </>
@@ -444,7 +444,7 @@ export default function WorkflowsPage() {
                           <select
                             value={selectedNode.data.model}
                             onChange={(e) => updateNodeData(selectedNode.id, "model", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           >
                             <option value="Sanktrix-Fin-v4 (Recommended)">Sanktrix-Fin-v4 (Recommended)</option>
                             <option value="GPT-4o-Enterprise">GPT-4o-Enterprise</option>
@@ -460,7 +460,7 @@ export default function WorkflowsPage() {
                             type="text"
                             value={selectedNode.data.task}
                             onChange={(e) => updateNodeData(selectedNode.id, "task", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           />
                         </div>
                         <div>
@@ -470,7 +470,7 @@ export default function WorkflowsPage() {
                           <textarea
                             value={selectedNode.data.prompt}
                             onChange={(e) => updateNodeData(selectedNode.id, "prompt", e.target.value)}
-                            className="w-full h-24 bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
+                            className="w-full h-24 bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none"
                           />
                         </div>
                       </>
@@ -486,7 +486,7 @@ export default function WorkflowsPage() {
                             type="text"
                             value={selectedNode.data.channel}
                             onChange={(e) => updateNodeData(selectedNode.id, "channel", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           />
                         </div>
                         <div>
@@ -496,7 +496,7 @@ export default function WorkflowsPage() {
                           <select
                             value={selectedNode.data.priority}
                             onChange={(e) => updateNodeData(selectedNode.id, "priority", e.target.value)}
-                            className="w-full bg-surface-dim border border-outline-variant rounded p-sm font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full bg-surface-dim border border-outline-variant rounded p-4 font-mono text-xs text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"
                           >
                             <option value="High">High Priority</option>
                             <option value="Medium">Medium Priority</option>
@@ -512,12 +512,12 @@ export default function WorkflowsPage() {
               )}
 
               {/* Execution logs */}
-              <div className="pt-md border-t border-outline-variant/30">
-                <div className="flex justify-between items-center mb-sm">
+              <div className="pt-6 border-t border-outline-variant/30">
+                <div className="flex justify-between items-center mb-4">
                   <h4 className="font-sans text-[10px] uppercase font-bold text-on-surface-variant">Live Execution Log</h4>
                   <span className="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
                 </div>
-                <div className="bg-[#050505] border border-outline-variant rounded-lg p-sm h-36 overflow-y-auto font-mono text-[10px] space-y-1 select-all">
+                <div className="bg-[#050505] border border-outline-variant rounded-lg p-4 h-36 overflow-y-auto font-mono text-[10px] space-y-1 select-all">
                   {terminalLogs.length === 0 ? (
                     <div className="text-outline">Initializing execution...</div>
                   ) : (
@@ -542,16 +542,16 @@ export default function WorkflowsPage() {
 
           {/* Library tab panel */}
           {activeTab === "library" && (
-            <div className="flex-1 overflow-y-auto p-md space-y-md">
-              <h3 className="font-display text-md text-on-surface mb-xs border-b border-outline-variant/30 pb-xs">Pipeline Node Templates</h3>
+            <div className="flex-1 overflow-y-auto p-6 space-y-md">
+              <h3 className="font-display text-md text-on-surface mb-2 border-b border-outline-variant/30 pb-2">Pipeline Node Templates</h3>
               <p className="font-mono text-[10px] text-on-surface-variant leading-relaxed">
                 Click any component below to instantiate and drop it into the visual orchestrator canvas.
               </p>
 
-              <div className="space-y-sm pt-sm">
+              <div className="space-y-4 pt-sm">
                 <button
                   onClick={() => addNodeFromLibrary("trigger", "DB Write Listener")}
-                  className="w-full text-left p-sm rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-tertiary/50 transition-all flex items-center gap-sm cursor-pointer group"
+                  className="w-full text-left p-4 rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-tertiary/50 transition-all flex items-center gap-4 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-tertiary">bolt</span>
                   <div>
@@ -562,7 +562,7 @@ export default function WorkflowsPage() {
 
                 <button
                   onClick={() => addNodeFromLibrary("agent", "Wolfram Math Agent")}
-                  className="w-full text-left p-sm rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-primary/50 transition-all flex items-center gap-sm cursor-pointer group"
+                  className="w-full text-left p-4 rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-primary/50 transition-all flex items-center gap-4 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-primary">functions</span>
                   <div>
@@ -573,7 +573,7 @@ export default function WorkflowsPage() {
 
                 <button
                   onClick={() => addNodeFromLibrary("agent", "Risk Auditor Agent")}
-                  className="w-full text-left p-sm rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-primary/50 transition-all flex items-center gap-sm cursor-pointer group"
+                  className="w-full text-left p-4 rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-primary/50 transition-all flex items-center gap-4 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-primary">gavel</span>
                   <div>
@@ -584,7 +584,7 @@ export default function WorkflowsPage() {
 
                 <button
                   onClick={() => addNodeFromLibrary("action", "Slack Notification")}
-                  className="w-full text-left p-sm rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-secondary/50 transition-all flex items-center gap-sm cursor-pointer group"
+                  className="w-full text-left p-4 rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-secondary/50 transition-all flex items-center gap-4 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-secondary">chat</span>
                   <div>
@@ -595,7 +595,7 @@ export default function WorkflowsPage() {
 
                 <button
                   onClick={() => addNodeFromLibrary("action", "Webhook Dispatch")}
-                  className="w-full text-left p-sm rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-secondary/50 transition-all flex items-center gap-sm cursor-pointer group"
+                  className="w-full text-left p-4 rounded border border-outline-variant/50 bg-surface-container-low hover:bg-surface-container-highest hover:border-secondary/50 transition-all flex items-center gap-4 cursor-pointer group"
                 >
                   <span className="material-symbols-outlined text-secondary">send</span>
                   <div>
