@@ -61,6 +61,11 @@
 :root {
   --background: #050505;
   --foreground: #f3f4f6;
+  --accent-blue: #8ab4f8;
+  --accent-green: #4edea3;
+  --accent-amber: #f59e0b;
+  --accent-red: #f28b82;
+  --accent-purple: #c4b5fd;
 }
 
 body {
@@ -70,7 +75,10 @@ body {
   overflow-x: hidden;
 }
 
-/* Premium Layering Classes */
+/* ═══════════════════════════════════════════
+   PREMIUM LAYERING CLASSES
+   ═══════════════════════════════════════════ */
+
 .card-layer {
   background: rgba(13, 15, 22, 0.65);
   backdrop-filter: blur(12px);
@@ -102,7 +110,187 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-/* Premium Buttons matching 14px Radius rule */
+/* ═══════════════════════════════════════════
+   EXECUTIVE METRIC CARDS
+   ═══════════════════════════════════════════ */
+
+.metric-card {
+  background: linear-gradient(135deg, rgba(13, 15, 22, 0.8) 0%, rgba(18, 22, 35, 0.6) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.metric-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+.metric-card:hover {
+  border-color: rgba(138, 180, 248, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(138, 180, 248, 0.06);
+}
+
+/* ═══════════════════════════════════════════
+   AI INSIGHT PANEL
+   ═══════════════════════════════════════════ */
+
+.insight-panel {
+  background: linear-gradient(135deg, rgba(138, 180, 248, 0.06) 0%, rgba(10, 11, 16, 0.9) 100%);
+  border: 1px solid rgba(138, 180, 248, 0.12);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.insight-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #8ab4f8, #4edea3);
+  border-radius: 4px 0 0 4px;
+}
+
+/* ═══════════════════════════════════════════
+   SCENARIO / RECOMMENDATION CARDS
+   ═══════════════════════════════════════════ */
+
+.scenario-card {
+  background: rgba(13, 15, 22, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  padding: 1.75rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.scenario-card:hover {
+  border-color: rgba(138, 180, 248, 0.2);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.scenario-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.scenario-card:hover::after {
+  opacity: 1;
+}
+
+/* ═══════════════════════════════════════════
+   AGENT / WORKFORCE CARDS
+   ═══════════════════════════════════════════ */
+
+.agent-card {
+  background: linear-gradient(135deg, rgba(13, 15, 22, 0.75) 0%, rgba(16, 20, 30, 0.6) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  padding: 1.75rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.agent-card:hover {
+  border-color: rgba(78, 222, 163, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+}
+
+.agent-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════
+   EVENT / FEED CARDS
+   ═══════════════════════════════════════════ */
+
+.event-card {
+  background: rgba(13, 15, 22, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-left: 3px solid;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.event-card:hover {
+  background: rgba(13, 15, 22, 0.85);
+  border-color: rgba(255, 255, 255, 0.08);
+  transform: translateX(4px);
+}
+
+.event-card.revenue { border-left-color: #4edea3; }
+.event-card.customer { border-left-color: #8ab4f8; }
+.event-card.market { border-left-color: #c4b5fd; }
+.event-card.operational { border-left-color: #f59e0b; }
+.event-card.risk { border-left-color: #f28b82; }
+
+.feed-card {
+  background: rgba(13, 15, 22, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 20px;
+  padding: 1.5rem;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.feed-card:hover {
+  border-color: rgba(138, 180, 248, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.feed-card .why-matters {
+  background: rgba(138, 180, 248, 0.05);
+  border: 1px solid rgba(138, 180, 248, 0.1);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+}
+
+/* ═══════════════════════════════════════════
+   PREMIUM BUTTONS
+   ═══════════════════════════════════════════ */
+
 .btn-action {
   border-radius: 14px;
   padding: 0.625rem 1.25rem;
@@ -159,7 +347,30 @@ body {
   transform: translateY(-1px);
 }
 
-/* Background grid patterns */
+.btn-simulate {
+  background: linear-gradient(135deg, rgba(138, 180, 248, 0.15), rgba(78, 222, 163, 0.15));
+  color: #4edea3;
+  border: 1px solid rgba(78, 222, 163, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-sans), sans-serif;
+  letter-spacing: 0.02em;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.btn-simulate:hover {
+  background: linear-gradient(135deg, rgba(138, 180, 248, 0.25), rgba(78, 222, 163, 0.25));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(78, 222, 163, 0.15);
+}
+
+/* ═══════════════════════════════════════════
+   BACKGROUND PATTERNS & EFFECTS
+   ═══════════════════════════════════════════ */
+
 .bg-grid-pattern {
   background-image: 
     linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
@@ -167,7 +378,17 @@ body {
   background-size: 24px 24px;
 }
 
-/* Glowing text & icons */
+.glass-panel {
+  background: rgba(13, 14, 18, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY & GLOW EFFECTS
+   ═══════════════════════════════════════════ */
+
 .glow-cyan {
   box-shadow: 0 0 40px rgba(0, 219, 231, 0.05);
 }
@@ -180,6 +401,10 @@ body {
   mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
 }
 
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════ */
+
 @keyframes pulse-cyan {
   0% { box-shadow: 0 0 0 0 rgba(0, 219, 231, 0.4); }
   70% { box-shadow: 0 0 0 10px rgba(0, 219, 231, 0); }
@@ -190,7 +415,153 @@ body {
   animation: pulse-cyan 2s infinite;
 }
 
-/* Scrollbar tweaks */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(138, 180, 248, 0.08) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(138, 180, 248, 0.15); }
+  50% { box-shadow: 0 0 20px rgba(138, 180, 248, 0.3); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes stream-line {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.stream-line {
+  animation: stream-line 2s linear infinite;
+}
+
+/* ═══════════════════════════════════════════
+   CONFIDENCE GAUGE
+   ═══════════════════════════════════════════ */
+
+.confidence-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.confidence-bar .fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #8ab4f8, #4edea3);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ═══════════════════════════════════════════
+   STATUS INDICATORS
+   ═══════════════════════════════════════════ */
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-dot.operational {
+  background: #4edea3;
+  box-shadow: 0 0 8px rgba(78, 222, 163, 0.4);
+}
+
+.status-dot.warning {
+  background: #f59e0b;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+  animation: pulse-cyan 2s infinite;
+}
+
+.status-dot.critical {
+  background: #f28b82;
+  box-shadow: 0 0 8px rgba(242, 139, 130, 0.4);
+  animation: pulse-cyan 1.5s infinite;
+}
+
+/* ═══════════════════════════════════════════
+   REACT FLOW OVERRIDES
+   ═══════════════════════════════════════════ */
+
+.react-flow__background {
+  background: transparent !important;
+}
+
+.react-flow__controls {
+  background: rgba(13, 15, 22, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden;
+}
+
+.react-flow__controls button {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  color: #9ca3af !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.react-flow__controls button:hover {
+  background: rgba(138, 180, 248, 0.1) !important;
+  color: #8ab4f8 !important;
+}
+
+.react-flow__controls button:last-child {
+  border-bottom: none !important;
+}
+
+.react-flow__controls button svg {
+  fill: currentColor !important;
+}
+
+.react-flow__minimap {
+  background: rgba(13, 15, 22, 0.9) !important;
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 12px !important;
+}
+
+.react-flow__attribution {
+  display: none !important;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2 !important;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR TWEAKS
+   ═══════════════════════════════════════════ */
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

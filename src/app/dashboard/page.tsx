@@ -1,352 +1,303 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useRouter } from "next/navigation";
 
-interface LogFeedItem {
-  id: string;
-  time: string;
-  icon: string;
-  text: string;
-  color: string;
-}
+const metrics = [
+  { name: "Enterprise Health Score", value: "94.2", unit: "", change: "+2.1% this quarter", positive: true, icon: "monitoring" },
+  { name: "Forecast Confidence", value: "91.8", unit: "%", change: "Validated across 12 models", positive: true, icon: "verified" },
+  { name: "Revenue Risk", value: "-8.4", unit: "%", change: "APAC churn trending up", positive: false, icon: "trending_down" },
+  { name: "Operational Efficiency", value: "1.42", unit: "x", change: "+12% vs last quarter", positive: true, icon: "speed" },
+  { name: "Active AI Agents", value: "5", unit: "", change: "All nominal", positive: true, icon: "smart_toy" },
+  { name: "Decision Accuracy", value: "96.1", unit: "%", change: "Last 30 days", positive: true, icon: "target" },
+];
+
+const recommendations = [
+  {
+    problem: "APAC churn rising 8% — $2.3M ARR at risk from Tier-1 enterprise accounts",
+    action: "Deploy targeted retention campaign and increase CSM coverage in APAC",
+    confidence: 94.2,
+    outcome: "+$2.3M ARR recovery",
+    horizon: "90 days",
+    category: "Revenue Forecasting",
+    accentColor: "#f28b82",
+  },
+  {
+    problem: "Q3 Marketing spend exceeding budget by 18% with declining ROAS",
+    action: "Reallocate 25% of display budget to high-performing search campaigns",
+    confidence: 89.1,
+    outcome: "$1.8M savings with maintained pipeline",
+    horizon: "60 days",
+    category: "Budget Optimization",
+    accentColor: "#f59e0b",
+  },
+  {
+    problem: "European TAM growing 23% YoY — competitors entering DACH region",
+    action: "Establish DACH beachhead with localized product and 3-person sales team",
+    confidence: 86.4,
+    outcome: "+$4.1M new revenue stream",
+    horizon: "180 days",
+    category: "Market Expansion",
+    accentColor: "#4edea3",
+  },
+  {
+    problem: "Enterprise segment NRR declining from 118% to 109% over 2 quarters",
+    action: "Increase CSM-to-account ratio from 1:15 to 1:10 in enterprise segment",
+    confidence: 91.7,
+    outcome: "+340bps NRR improvement",
+    horizon: "120 days",
+    category: "Customer Churn",
+    accentColor: "#8ab4f8",
+  },
+];
 
 export default function Dashboard() {
   const router = useRouter();
-  const [liveLogs, setLiveLogs] = useState<LogFeedItem[]>([
-    { id: "log_1", time: "Just now", icon: "support_agent", text: "Forecasting Agent running on Q3 Projections", color: "text-[#8ab4f8]" },
-    { id: "log_2", time: "2m ago", icon: "model_training", text: "Risk Simulation completed - Variance minimal", color: "text-amber-500" },
-    { id: "log_3", time: "15m ago", icon: "error", text: "Burn Rate anomaly detected in Marketing", color: "text-red-400" },
-    { id: "log_4", time: "1h ago", icon: "sync", text: "Data Lake sync complete - 2.4TB processed", color: "text-[#8ab4f8]" },
-  ]);
-
-  // Simulate incoming real-time telemetry events
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const logs = [
-        "Wolfram Kernel computed Monte Carlo optimization pipeline",
-        "n8n Workflow triggered for SDR agent task assignment",
-        "Realtime Event Fabric processed 1,200 events/sec",
-        "Pinecone vector space indexing completed successfully",
-        "Executive Copilot compiled quarterly briefing report",
-      ];
-      const icons = ["functions", "account_tree", "stream", "database", "smart_toy"];
-      const colors = ["text-amber-500", "text-[#8ab4f8]", "text-[#4edea3]", "text-[#8ab4f8]", "text-amber-500"];
-
-      const randomIdx = Math.floor(Math.random() * logs.length);
-      const newLog: LogFeedItem = {
-        id: `log_${Date.now()}`,
-        time: "Just now",
-        icon: icons[randomIdx],
-        text: logs[randomIdx],
-        color: colors[randomIdx],
-      };
-
-      setLiveLogs(prev => {
-        const updated = [newLog, ...prev.map(l => l.time === "Just now" ? { ...l, time: "1m ago" } : l)];
-        return updated.slice(0, 5);
-      });
-    }, 6000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <DashboardLayout>
-      {/* 1. Page Header matching visual hierarchy guidelines */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+      {/* Page Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
             Executive Command Center
           </h1>
-          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
-            Enterprise Model: Active Twin | 16 Compute Kernels Syncing
+          <p className="text-sm text-gray-400 mt-1">
+            Real-time strategic overview of enterprise performance and AI-driven recommendations
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Status Indicators */}
-          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3] animate-pulse"></span>
-            Health: 98.2%
-          </div>
-          {/* Context Actions */}
-          <button 
+        <div className="flex flex-wrap items-center gap-3">
+          <button
             onClick={() => router.push("/simulations")}
-            className="btn-action btn-primary text-[10px] py-2"
+            className="btn-action btn-primary text-[11px] py-2.5"
           >
-            Run Scenario Lab
+            <span className="material-symbols-outlined text-[14px]">science</span>
+            Run Scenario
           </button>
-          <button 
+          <button
             onClick={() => router.push("/copilot")}
-            className="btn-action btn-secondary text-[10px] py-2"
+            className="btn-action btn-secondary text-[11px] py-2.5"
           >
-            Ask Copilot
+            <span className="material-symbols-outlined text-[14px]">psychology</span>
+            Ask Decision AI
           </button>
         </div>
       </header>
 
-      {/* 2. Hero KPI Row: 5 Premium Cards */}
-      <section className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        {[
-          { name: "Revenue Impact", val: "$24.8M", change: "+14.2% QoQ", positive: true, icon: "payments" },
-          { name: "Agent Activity", val: "18 Swarms", change: "42 Processes Active", positive: true, icon: "support_agent" },
-          { name: "Risk Score", val: "68 / 100", change: "Elevated Target", positive: false, icon: "warning" },
-          { name: "Forecast Confidence", val: "94.2%", change: "Wolfram Validated", positive: true, icon: "functions" },
-          { name: "System Health", val: "99.98%", change: "Nominal latency", positive: true, icon: "analytics" },
-        ].map((kpi, idx) => (
-          <div 
-            key={idx} 
-            className="card-layer p-4 flex flex-col justify-between min-h-[120px]"
-          >
+      {/* Top Metrics Row */}
+      <section className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+        {metrics.map((m, idx) => (
+          <div key={idx} className="metric-card flex flex-col justify-between min-h-[140px]">
             <div className="flex justify-between items-start">
-              <span className="text-[9px] font-mono text-gray-500 uppercase tracking-wider">{kpi.name}</span>
-              <span className={`material-symbols-outlined text-[16px] ${kpi.positive ? "text-[#8ab4f8]" : "text-amber-500"}`}>
-                {kpi.icon}
+              <span className="text-[11px] text-gray-400 font-medium leading-tight max-w-[80%]">{m.name}</span>
+              <span className={`material-symbols-outlined text-[18px] ${m.positive ? "text-[#8ab4f8]" : "text-[#f28b82]"}`}>
+                {m.icon}
               </span>
             </div>
-            <div className="mt-4 flex flex-col gap-0.5">
-              <span className="font-display text-xl font-bold text-white tracking-tight">{kpi.val}</span>
-              <span className={`font-mono text-[9px] font-bold ${kpi.positive ? "text-[#4edea3]" : "text-amber-400"}`}>
-                {kpi.change}
+            <div className="mt-auto pt-3">
+              <span className="font-display text-2xl font-bold text-white tracking-tight">
+                {m.value}<span className="text-lg text-gray-400 font-normal">{m.unit}</span>
+              </span>
+              <span className={`block text-[11px] font-medium mt-1 ${m.positive ? "text-[#4edea3]" : "text-[#f28b82]"}`}>
+                {m.change}
               </span>
             </div>
           </div>
         ))}
       </section>
 
-      {/* 3. Strategic Insights & AI Generated Summaries */}
-      <section className="panel-layer p-5 relative overflow-hidden flex flex-col md:flex-row gap-5 justify-between items-start md:items-center">
-        <div className="space-y-2 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[#8ab4f8] text-sm">smart_toy</span>
-            <span className="font-mono text-[9px] text-[#8ab4f8] uppercase font-bold tracking-widest">
-              AI Strategic Intelligence Briefing
+      {/* Executive Insights Panel */}
+      <section className="insight-panel p-6 md:p-8">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-8 h-8 rounded-full bg-[#8ab4f8]/10 border border-[#8ab4f8]/30 flex items-center justify-center">
+            <span className="material-symbols-outlined text-[16px] text-[#8ab4f8]" style={{ fontVariationSettings: "'FILL' 1" }}>
+              smart_toy
             </span>
           </div>
-          <p className="text-xs text-gray-300 leading-relaxed max-w-5xl">
-            Sanktrix telemetry has detected a minor marketing CAC deviation. Wolfram Engine projection shows a <strong className="text-white font-semibold">94.2% probability</strong> of achieving targets if <strong className="text-[#8ab4f8] font-semibold">15% budget is shifted to search campaigns</strong>. Action recommended.
-          </p>
+          <span className="text-[11px] text-[#8ab4f8] uppercase font-bold tracking-widest">
+            AI Strategic Intelligence Briefing
+          </span>
         </div>
-        <div className="flex gap-2 shrink-0">
-          <button 
-            onClick={() => router.push("/twin")}
-            className="btn-action btn-primary text-[10px] py-2"
-          >
-            Acknowledge &amp; Optimize
-          </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Summary */}
+          <div className="space-y-2">
+            <h3 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">Situation</h3>
+            <p className="text-sm text-gray-200 leading-relaxed">
+              Revenue risk increased 8% due to APAC churn trends. Customer retention in Tier-1 enterprise accounts declining — 14 accounts flagged for potential churn in Q3.
+            </p>
+          </div>
+
+          {/* Recommended Action */}
+          <div className="space-y-2">
+            <h3 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">Recommended Action</h3>
+            <p className="text-sm text-gray-200 leading-relaxed">
+              Increase retention budget by 12% and deploy targeted win-back campaign across APAC enterprise accounts. Assign dedicated CSMs to top 14 at-risk accounts.
+            </p>
+          </div>
+
+          {/* Projected Impact */}
+          <div className="space-y-3">
+            <h3 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">Projected Impact</h3>
+            <div className="flex items-baseline gap-2">
+              <span className="font-display text-2xl font-bold text-[#4edea3]">+$2.3M</span>
+              <span className="text-sm text-gray-400">ARR recovery</span>
+            </div>
+            <div className="confidence-bar">
+              <div className="fill" style={{ width: "94%" }}></div>
+            </div>
+            <span className="text-[11px] text-gray-500">94% confidence · 90-day horizon</span>
+          </div>
         </div>
       </section>
 
-      {/* 4. Bento Grid Charts & Telemetry */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Card: Revenue Forecast (Col 8) */}
-        <div className="card-layer col-span-1 lg:col-span-8 p-5 flex flex-col h-[400px]">
-          <div className="flex justify-between items-start mb-6 border-b border-white/[0.04] pb-3">
-            <div>
-              <h2 className="font-display text-sm text-white font-bold tracking-wide">Revenue Forecast</h2>
-              <p className="font-mono text-[9px] text-gray-500 mt-0.5">MONTE CARLO TARGET BOUNDS // 12-MONTH OUTLOOK</p>
-            </div>
-            <span className="text-[9px] bg-[#8ab4f8]/15 border border-[#8ab4f8]/30 text-[#8ab4f8] px-2 py-0.5 rounded font-mono font-bold">
-              Confidence: 94.2%
-            </span>
-          </div>
-
-          {/* Premium Custom SVG Chart */}
-          <div className="flex-1 w-full bg-[#050505]/40 rounded-xl border border-white/[0.03] flex items-end justify-center relative overflow-hidden p-4">
-            <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
-            
-            <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="chartGlow" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8ab4f8" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#8ab4f8" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Grid Lines */}
-              <line x1="5%" y1="20%" x2="95%" y2="20%" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-              <line x1="5%" y1="50%" x2="95%" y2="50%" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-              <line x1="5%" y1="80%" x2="95%" y2="80%" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-              
-              {/* Area Path */}
-              <path
-                d="M 50 220 Q 150 180 250 190 T 450 120 T 650 60 L 650 250 L 50 250 Z"
-                fill="url(#chartGlow)"
-              />
-              {/* Line Path */}
-              <path
-                d="M 50 220 Q 150 180 250 190 T 450 120 T 650 60"
-                fill="none"
-                stroke="#8ab4f8"
-                strokeWidth="2.5"
-                className="drop-shadow-[0_0_10px_rgba(138,180,248,0.4)]"
-              />
-              
-              {/* Highlight Nodes */}
-              <circle cx="250" cy="190" r="4" fill="#8ab4f8" stroke="#0a0b0e" strokeWidth="2" />
-              <circle cx="450" cy="120" r="4" fill="#8ab4f8" stroke="#0a0b0e" strokeWidth="2" />
-              <circle cx="650" cy="60" r="5" fill="#4edea3" stroke="#0a0b0e" strokeWidth="2.5" />
-            </svg>
-
-            {/* Custom Tooltip */}
-            <div className="absolute top-10 right-10 bg-[#0d0f14] border border-white/[0.08] px-3 py-1.5 rounded-[8px] font-mono text-[9px] text-white flex flex-col gap-0.5 shadow-lg">
-              <span className="text-gray-400">PROJECTED PEAK</span>
-              <span className="font-bold text-[#4edea3]">$4.2M // M12</span>
-            </div>
-            
-            <div className="absolute bottom-2 left-0 right-0 flex justify-between px-6 font-mono text-[9px] text-gray-500">
-              <span>M1</span>
-              <span>M3</span>
-              <span>M6</span>
-              <span>M9</span>
-              <span>M12</span>
-            </div>
-          </div>
+      {/* Top Recommendations Grid */}
+      <section>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-display text-lg font-bold text-white">Top Recommendations</h2>
+          <span className="text-[11px] text-gray-500">AI-generated · Updated 12 min ago</span>
         </div>
 
-        {/* Right Card: Risk Score & Matrix (Col 4) */}
-        <div className="card-layer col-span-1 lg:col-span-4 p-5 flex flex-col h-[400px]">
-          <div className="flex justify-between items-start mb-6 border-b border-white/[0.04] pb-3">
-            <h2 className="font-display text-sm text-white font-bold tracking-wide">Risk Assessment Matrix</h2>
-            <span className="material-symbols-outlined text-amber-500 text-sm">warning</span>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center relative">
-            {/* Animated Donut Gauge */}
-            <div className="w-36 h-36 rounded-full border-4 border-white/[0.02] relative flex items-center justify-center">
-              <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                <circle
-                  cx="72"
-                  cy="72"
-                  r="64"
-                  stroke="rgba(245,158,11,0.1)"
-                  strokeWidth="6"
-                  fill="transparent"
-                />
-                <circle
-                  cx="72"
-                  cy="72"
-                  r="64"
-                  stroke="#f59e0b"
-                  strokeWidth="6"
-                  fill="transparent"
-                  strokeDasharray="402"
-                  strokeDashoffset="130"
-                  className="drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]"
-                />
-              </svg>
-              <div className="text-center z-10">
-                <span className="font-display text-3xl font-extrabold text-white block">68</span>
-                <span className="font-mono text-[8px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full uppercase tracking-wider font-bold block mt-1">
-                  ELEVATED
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {recommendations.map((rec, idx) => (
+            <div key={idx} className="scenario-card group">
+              {/* Category Badge */}
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border"
+                  style={{
+                    color: rec.accentColor,
+                    backgroundColor: `${rec.accentColor}10`,
+                    borderColor: `${rec.accentColor}25`,
+                  }}
+                >
+                  {rec.category}
                 </span>
+                <span className="text-[11px] text-gray-500">{rec.horizon}</span>
+              </div>
+
+              {/* Problem */}
+              <p className="text-sm text-gray-300 leading-relaxed mb-4">{rec.problem}</p>
+
+              {/* Suggested Action */}
+              <div className="bg-[#050505]/40 border border-white/[0.03] rounded-[12px] p-3.5 mb-4">
+                <span className="text-[10px] text-[#8ab4f8] uppercase tracking-wider font-bold block mb-1">Suggested Action</span>
+                <p className="text-xs text-white leading-relaxed">{rec.action}</p>
+              </div>
+
+              {/* Bottom Row */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {/* Confidence */}
+                  <div className="flex items-center gap-2">
+                    <div className="confidence-bar w-16">
+                      <div className="fill" style={{ width: `${rec.confidence}%` }}></div>
+                    </div>
+                    <span className="text-[11px] text-white font-bold">{rec.confidence}%</span>
+                  </div>
+                  {/* Outcome */}
+                  <span className="text-[11px] text-[#4edea3] font-bold">{rec.outcome}</span>
+                </div>
+
+                <button
+                  onClick={() => router.push("/simulations")}
+                  className="btn-simulate text-[10px]"
+                >
+                  <span className="material-symbols-outlined text-[12px]">play_arrow</span>
+                  Simulate
+                </button>
               </div>
             </div>
-
-            {/* Risk details */}
-            <div className="w-full mt-6 space-y-2 bg-[#050505]/30 p-3 rounded-xl border border-white/[0.03]">
-              <div className="flex justify-between font-mono text-[10px] items-center">
-                <span className="text-gray-400">Market Volatility</span>
-                <span className="text-red-400 font-bold">High</span>
-              </div>
-              <div className="flex justify-between font-mono text-[10px] items-center">
-                <span className="text-gray-400">Supply Chain Latency</span>
-                <span className="text-amber-400 font-bold">Medium</span>
-              </div>
+          ))}
+        </div>
+      </section>
+      {/* Project Overview & Demo Sandbox */}
+      <section className="pt-4">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-display text-lg font-bold text-white">Project Overview &amp; Demo Sandbox</h2>
+          <span className="text-[11px] text-[#4edea3] font-bold border border-[#4edea3]/30 bg-[#4edea3]/10 px-2.5 py-1 rounded-full">Interactive Demo Mode</span>
+        </div>
+        
+        <div className="card-layer p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 space-y-4">
+            <h3 className="text-white font-bold text-sm">Sanktrix Decision Intelligence OS</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              You are currently viewing a live interactive demo populated with enterprise sample data. Sanktrix connects directly to your ERP, CRM, and financial systems to build a continuous digital twin of your business. It runs thousands of Monte Carlo simulations to forecast outcomes and recommend strategic executive actions.
+            </p>
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <button onClick={() => router.push("/simulations")} className="btn-action btn-primary text-[11px] py-2">
+                <span className="material-symbols-outlined text-[14px]">play_circle</span>
+                Run Live Scenarios
+              </button>
+              <button className="btn-action btn-secondary text-[11px] py-2 text-gray-300">
+                <span className="material-symbols-outlined text-[14px]">restart_alt</span>
+                Reset Sandbox Data
+              </button>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* 5. Health & Logs Telemetry Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Left Panel: Operational Health & Swarms (Col 8) */}
-        <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           
-          {/* Health Details */}
-          <div className="card-layer p-5 flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-4 border-b border-white/[0.04] pb-2">
-              <h2 className="font-display text-xs text-white uppercase tracking-wider font-bold">Cluster Node Health</h2>
-              <span className="font-mono text-[9px] text-[#4edea3] bg-[#4edea3]/10 px-2 py-0.5 rounded font-bold">98.2%</span>
+          <div className="bg-[#050505]/60 border border-white/[0.05] rounded-[14px] p-5 flex flex-col justify-center items-center text-center space-y-3">
+            <div className="w-10 h-10 rounded-full bg-[#8ab4f8]/10 border border-[#8ab4f8]/20 flex items-center justify-center">
+              <span className="material-symbols-outlined text-[#8ab4f8]">cable</span>
             </div>
-            <div className="space-y-3">
-              {[
-                { name: "Node Cluster Alpha", pct: 95 },
-                { name: "Node Cluster Beta", pct: 88 },
-                { name: "Database Shard 1", pct: 99 },
-              ].map((node, i) => (
-                <div key={i} className="space-y-1">
-                  <div className="flex justify-between items-center text-[10px] font-mono">
-                    <span className="text-gray-400">{node.name}</span>
-                    <span className="font-bold text-white">{node.pct}%</span>
-                  </div>
-                  <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-[#4edea3] rounded-full" 
-                      style={{ width: `${node.pct}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Productivity Multiplier */}
-          <div className="card-layer p-5 flex flex-col justify-between">
-            <div className="flex justify-between items-start mb-4 border-b border-white/[0.04] pb-2">
-              <h2 className="font-display text-xs text-white uppercase tracking-wider font-bold">Productivity Index</h2>
-              <span className="material-symbols-outlined text-[#8ab4f8] text-sm">trending_up</span>
-            </div>
-            <div className="flex flex-col items-center justify-center my-2">
-              <span className="font-display text-3xl font-extrabold text-[#8ab4f8] block">1.42</span>
-              <span className="font-mono text-[8px] text-gray-500 uppercase tracking-widest font-semibold mt-0.5">INDEX MULTIPLIER</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2 text-center border-t border-white/[0.04] pt-3 font-mono text-[9px]">
-              <div>
-                <span className="block text-gray-500">AGENTS</span>
-                <span className="block font-sans text-xs font-bold text-white">+12%</span>
-              </div>
-              <div className="border-l border-r border-white/[0.04] px-1">
-                <span className="block text-gray-500">HUMANS</span>
-                <span className="block font-sans text-xs font-bold text-white">+4%</span>
-              </div>
-              <div>
-                <span className="block text-gray-500">HYBRID</span>
-                <span className="block font-sans text-xs font-bold text-[#4edea3]">+28%</span>
-              </div>
+            <div>
+              <h4 className="text-white font-bold text-xs">Ready for Production?</h4>
+              <p className="text-[11px] text-gray-500 mt-1 mb-3">Connect your actual data sources securely.</p>
+              <button className="w-full btn-action bg-white/5 border border-white/10 hover:bg-white/10 text-white text-[10px] py-1.5 transition-colors">
+                Connect Integrations
+              </button>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Right Panel: Live Event Feed (Col 4) */}
-        <div className="card-layer lg:col-span-4 flex flex-col h-[240px]">
-          <div className="p-4 border-b border-white/[0.04] flex justify-between items-center bg-[#07080c]/50">
-            <h2 className="font-display text-[10px] text-white uppercase tracking-wider flex items-center gap-2 font-bold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] animate-pulse"></span>
-              Live Telemetry Streams
-            </h2>
-          </div>
-          <div className="flex-1 overflow-y-auto p-3 space-y-2 pr-1 scrollbar-thin">
-            {liveLogs.map((log) => (
-              <div
-                key={log.id}
-                className="bg-[#050505]/40 p-2 rounded-[10px] border border-white/[0.03] flex gap-2.5 items-start transition-all hover:bg-white/[0.01]"
-              >
-                <span className={`material-symbols-outlined ${log.color} text-[14px] mt-0.5`}>
-                  {log.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="font-mono text-[10px] text-white leading-tight truncate">{log.text}</p>
-                  <p className="font-mono text-[8px] text-gray-500 mt-0.5">{log.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* The Sanktrix Advantage Comparison */}
+      <section className="pt-4 pb-8">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="font-display text-lg font-bold text-white">Platform Comparison</h2>
+          <span className="text-[11px] text-gray-500">Competitive Landscape</span>
         </div>
-
-      </div>
+        
+        <div className="panel-layer overflow-hidden border border-white/[0.05] rounded-[16px]">
+          <table className="w-full text-left font-mono text-xs">
+            <thead>
+              <tr className="bg-[#0d0f14] border-b border-white/[0.05]">
+                <th className="p-5 font-bold text-gray-400">Capability</th>
+                <th className="p-5 font-bold text-[#8ab4f8]">Sanktrix OS</th>
+                <th className="p-5 font-bold text-gray-500">Legacy BI Tools</th>
+                <th className="p-5 font-bold text-gray-500">Generic LLMs</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.02]">
+              <tr className="hover:bg-white/[0.01] transition-colors">
+                <td className="p-5 font-medium text-white">Autonomous Actions</td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#4edea3]">check_circle</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+              </tr>
+              <tr className="hover:bg-white/[0.01] transition-colors">
+                <td className="p-5 font-medium text-white">Continuous Simulation</td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#4edea3]">check_circle</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#f59e0b]">circle</span></td>
+              </tr>
+              <tr className="hover:bg-white/[0.01] transition-colors">
+                <td className="p-5 font-medium text-white">Wolfram Mathematical Rigor</td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#4edea3]">check_circle</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+              </tr>
+              <tr className="hover:bg-white/[0.01] transition-colors">
+                <td className="p-5 font-medium text-white">Live Digital Twin</td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#4edea3]">check_circle</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-[#f59e0b]">circle</span></td>
+                <td className="p-5"><span className="material-symbols-outlined text-gray-600">cancel</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </DashboardLayout>
   );
 }

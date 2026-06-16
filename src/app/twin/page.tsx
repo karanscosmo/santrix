@@ -1,516 +1,257 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSecurity } from "@/lib/SecurityContext";
+import {
+  ReactFlow,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  BackgroundVariant,
+  type Node,
+  type Edge,
+  type NodeProps,
+  Handle,
+  Position,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
-interface NodeDetails {
-  name: string;
-  desc: string;
-  load: string;
-  FTE: string;
-  cost: string;
-  deps: string;
-}
-
-export default function DigitalTwinPage() {
-  const { checkPermission, addAuditLog } = useSecurity();
-  const [selectedNode, setSelectedNode] = useState<string>("Engineering");
-  const [zoom, setZoom] = useState<number>(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-
-  // Health and style states
-  const [nodeHealth, setNodeHealth] = useState({
-    Engineering: { val: 95, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-    Marketing: { val: 92, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-    Operations: { val: 99, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-    Sales: { val: 94, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-    Product: { val: 98, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-  });
-
-  const [riskLogs, setRiskLogs] = useState<string[]>([
-    "[SYSTEM] Telemetry nominal. No propagation events registered.",
-    "[SYSTEM] Twin running in sync with Pinecone metadata lake.",
-  ]);
-
-  const nodeDetailsMap: Record<string, NodeDetails> = {
-    Product: {
-      name: "Product",
-      desc: "Manages development, design, and roadmap priorities.",
-      load: "45.2%",
-      FTE: "8 / 8 FTE",
-      cost: "$180K",
-      deps: "Engineering, Marketing",
-    },
-    Engineering: {
-      name: "Engineering",
-      desc: "Manages development, deployments, and security architecture.",
-      load: "78.4%",
-      FTE: "14 / 16 FTE",
-      cost: "$340K",
-      deps: "Operations, Sales",
-    },
-    Marketing: {
-      name: "Marketing",
-      desc: "Owns user acquisition, lead gen pipelines, and branding campaigns.",
-      load: "82.1%",
-      FTE: "10 / 12 FTE",
-      cost: "$450K",
-      deps: "Sales",
-    },
-    Operations: {
-      name: "Operations",
-      desc: "Orchestrates infrastructure, databases, and LLM orchestration layer.",
-      load: "62.0%",
-      FTE: "6 / 6 FTE",
-      cost: "$210K",
-      deps: "Sales",
-    },
-    Sales: {
-      name: "Sales (ARR)",
-      desc: "Executes closing strategy, ARR expansions, and partner operations.",
-      load: "90.5%",
-      FTE: "12 / 12 FTE",
-      cost: "$290K",
-      deps: "None",
-    },
+/* ─── Custom Node Component ─── */
+function EnterpriseNode({ data, selected }: NodeProps) {
+  const d = data as {
+    label: string;
+    icon: string;
+    impact: string;
+    risk: string;
+    contribution: string;
+    description: string;
+    accentColor: string;
   };
-
-  const logMessage = (msg: string) => {
-    const now = new Date().toLocaleTimeString();
-    setRiskLogs(prev => [`[${now}] ${msg}`, ...prev]);
-  };
-
-  const triggerRiskPropagation = (type: "aws" | "dev") => {
-    if (!checkPermission("simulation:run")) {
-      alert("Access Denied: Your current role does not have permission to trigger risk simulations.");
-      return;
-    }
-
-    if (type === "aws") {
-      setNodeHealth(prev => ({
-        ...prev,
-        Operations: { val: 14, status: "[OUTAGE]", colorClass: "text-red-400" },
-        Sales: { val: 62, status: "[BLOCKED]", colorClass: "text-amber-400" },
-      }));
-      logMessage("[RISK_TRIGGER] AWS Outage event activated.");
-      logMessage("Operations health degraded to 14%. Propagation started.");
-      logMessage("Dependency warning: Sales ARR sync compromised. Sales health degraded.");
-      addAuditLog("twin.simulate_aws_outage", "AWS Outage risk propagation simulated", "SUCCESS");
-    } else {
-      setNodeHealth(prev => ({
-        ...prev,
-        Engineering: { val: 55, status: "[DELAY]", colorClass: "text-amber-400" },
-        Sales: { val: 75, status: "[PIPELINE DELAY]", colorClass: "text-amber-400" },
-      }));
-      logMessage("[RISK_TRIGGER] Engineering Sprint Delay event activated.");
-      logMessage("Engineering health degraded to 55%. Propagation started.");
-      logMessage("Dependency warning: Sales feature release commitments impacted.");
-      addAuditLog("twin.simulate_dev_delay", "Dev Sprint Delay risk propagation simulated", "SUCCESS");
-    }
-  };
-
-  const resetTwin = () => {
-    setNodeHealth({
-      Engineering: { val: 95, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-      Marketing: { val: 92, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-      Operations: { val: 99, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-      Sales: { val: 94, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-      Product: { val: 98, status: "NOMINAL", colorClass: "text-[#4edea3]" },
-    });
-    logMessage("[SYSTEM] Telemetry reset to nominal.");
-    addAuditLog("twin.reset", "Digital twin simulation state reset", "SUCCESS");
-  };
-
-  const runDiagnostic = () => {
-    addAuditLog("twin.diagnostic", "Full twin diagnostics run executed", "SUCCESS");
-    alert(
-      "Running complete Organization Digital Twin diagnostics. Pinecone node graph consistent. n8n automation channels checked. All operational links verified."
-    );
-  };
-
-  const handleZoom = (type: "in" | "out" | "reset") => {
-    if (type === "in") setZoom(prev => Math.min(prev + 0.1, 1.8));
-    else if (type === "out") setZoom(prev => Math.max(prev - 0.1, 0.6));
-    else {
-      setZoom(1);
-      setPan({ x: 0, y: 0 });
-    }
-  };
-
-  const currentInspect = nodeDetailsMap[selectedNode];
-
-  // Calculate overall enterprise score based on department averages
-  const overallHealth = Math.round(
-    Object.values(nodeHealth).reduce((acc, curr) => acc + curr.val, 0) / 5
-  );
 
   return (
-    <DashboardLayout>
-      {/* 1. Page Header matching visual hierarchy guidelines */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
-        <div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-            Digital Twin Modeling
-          </h1>
-          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
-            Model enterprise dependencies and simulate failure propagation.
-          </p>
+    <div
+      className={`bg-[#0d0e12]/95 backdrop-blur-md border rounded-[16px] p-4 min-w-[160px] max-w-[180px] transition-all duration-300 group cursor-grab ${
+        selected
+          ? "border-[#8ab4f8] shadow-[0_0_24px_rgba(138,180,248,0.2)]"
+          : "border-white/[0.06] hover:border-white/[0.15]"
+      }`}
+    >
+      <Handle type="target" position={Position.Left} className="!bg-[#8ab4f8] !border-[#0d0e12] !w-2 !h-2" />
+      <Handle type="source" position={Position.Right} className="!bg-[#8ab4f8] !border-[#0d0e12] !w-2 !h-2" />
+
+      <div className="flex items-center gap-2 mb-2">
+        <div
+          className="w-8 h-8 rounded-[10px] flex items-center justify-center"
+          style={{ backgroundColor: `${d.accentColor}15`, border: `1px solid ${d.accentColor}30` }}
+        >
+          <span className="material-symbols-outlined text-[16px]" style={{ color: d.accentColor }}>
+            {d.icon}
+          </span>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Status Indicator */}
-          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
-            Twin Health: {overallHealth}%
-          </div>
-          {/* Action Contexts */}
-          <button
-            onClick={() => triggerRiskPropagation("aws")}
-            className="btn-action btn-danger text-[10px] py-2"
-          >
-            Simulate AWS Outage
-          </button>
-          <button
-            onClick={() => triggerRiskPropagation("dev")}
-            className="btn-action btn-secondary text-[10px] py-2"
-          >
-            Simulate Dev Delay
-          </button>
-          <button
-            onClick={resetTwin}
-            className="btn-action btn-secondary text-[10px] py-2"
-          >
-            Reset Model
-          </button>
+        <span className="text-xs font-bold text-white leading-tight">{d.label}</span>
+      </div>
+
+      <div className="space-y-1.5">
+        <div className="flex justify-between text-[10px]">
+          <span className="text-gray-500">Impact</span>
+          <span className="text-white font-bold">{d.impact}</span>
         </div>
-      </header>
-
-      {/* 2. Interactive SVG network canvas panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Network Canvas (Col 8) */}
-        <div className="lg:col-span-8 panel-layer p-5 flex flex-col h-[520px] relative overflow-hidden">
-          <div className="flex justify-between items-center border-b border-white/[0.04] pb-3 mb-4">
-            <div>
-              <h3 className="font-display text-sm font-bold text-white tracking-wide">
-                Dependency Tree &amp; Animacy
-              </h3>
-              <p className="font-mono text-[9px] text-gray-500 mt-0.5">
-                CLICK NODES TO INSPECT TELEMETRY METRICS
-              </p>
-            </div>
-            
-            {/* Zoom Controls */}
-            <div className="flex items-center gap-1.5 bg-[#050505]/60 border border-white/[0.06] rounded-[8px] p-1">
-              <button
-                onClick={() => handleZoom("in")}
-                className="w-6 h-6 rounded hover:bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
-                title="Zoom In"
-              >
-                <span className="material-symbols-outlined text-[15px]">zoom_in</span>
-              </button>
-              <button
-                onClick={() => handleZoom("out")}
-                className="w-6 h-6 rounded hover:bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
-                title="Zoom Out"
-              >
-                <span className="material-symbols-outlined text-[15px]">zoom_out</span>
-              </button>
-              <button
-                onClick={() => handleZoom("reset")}
-                className="w-6 h-6 rounded hover:bg-white/5 flex items-center justify-center text-gray-400 hover:text-white transition-colors cursor-pointer"
-                title="Reset Zoom"
-              >
-                <span className="material-symbols-outlined text-[15px]">restart_alt</span>
-              </button>
-            </div>
-          </div>
-
-          {/* SVG Map Area */}
-          <div className="flex-1 bg-[#050505]/50 rounded-xl border border-white/[0.03] relative flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-grid-pattern opacity-40"></div>
-
-            {/* Transform Canvas for Zoom & Pan */}
-            <div 
-              className="w-full h-full relative transition-transform duration-300 ease-out"
-              style={{ transform: `scale(${zoom}) translate(${pan.x}px, ${pan.y}px)` }}
-            >
-              {/* Dynamic Connection lines SVG */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <linearGradient id="normalGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#8ab4f8" stopOpacity="0.4" />
-                    <stop offset="100%" stopColor="#8ab4f8" stopOpacity="0.1" />
-                  </linearGradient>
-                  <linearGradient id="failureGrad" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#f28b82" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#f28b82" stopOpacity="0.2" />
-                  </linearGradient>
-                </defs>
-
-                {/* Product -> Engineering */}
-                <line
-                  x1="120"
-                  y1="235"
-                  x2="280"
-                  y2="140"
-                  stroke={nodeHealth.Engineering.val < 60 ? "url(#failureGrad)" : "url(#normalGrad)"}
-                  strokeWidth="2.5"
-                  strokeDasharray={nodeHealth.Engineering.val < 60 ? "5 3" : "0"}
-                />
-                
-                {/* Product -> Marketing */}
-                <line
-                  x1="120"
-                  y1="235"
-                  x2="280"
-                  y2="340"
-                  stroke="url(#normalGrad)"
-                  strokeWidth="2"
-                />
-
-                {/* Engineering -> Operations */}
-                <line
-                  x1="400"
-                  y1="140"
-                  x2="540"
-                  y2="140"
-                  stroke={nodeHealth.Operations.val < 50 ? "url(#failureGrad)" : "url(#normalGrad)"}
-                  strokeWidth="2.5"
-                  strokeDasharray={nodeHealth.Operations.val < 50 ? "6 3" : "0"}
-                />
-
-                {/* Marketing -> Sales */}
-                <line
-                  x1="400"
-                  y1="340"
-                  x2="540"
-                  y2="340"
-                  stroke="url(#normalGrad)"
-                  strokeWidth="2"
-                />
-
-                {/* Operations -> Sales */}
-                <line
-                  x1="600"
-                  y1="180"
-                  x2="600"
-                  y2="300"
-                  stroke={nodeHealth.Sales.val < 80 ? "url(#failureGrad)" : "url(#normalGrad)"}
-                  strokeWidth="2"
-                  strokeDasharray="4"
-                />
-              </svg>
-
-              {/* Department Nodes mapping */}
-              {/* Product Node */}
-              <button
-                onClick={() => setSelectedNode("Product")}
-                className={`absolute left-8 top-1/2 -translate-y-1/2 bg-[#0d0e12]/90 border p-3.5 rounded-[18px] text-center cursor-pointer transition-all w-28 hover:scale-[1.03] ${
-                  selectedNode === "Product" ? "border-[#8ab4f8] shadow-[0_0_20px_rgba(138,180,248,0.15)]" : "border-white/[0.06] hover:border-white/[0.15]"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[#8ab4f8] text-lg">design_services</span>
-                <div className="font-mono text-[10px] font-bold text-white mt-1">Product</div>
-                <div className="text-[9px] text-[#4edea3] mt-0.5">{nodeHealth.Product.val}% Health</div>
-              </button>
-
-              {/* Engineering Node */}
-              <button
-                onClick={() => setSelectedNode("Engineering")}
-                className={`absolute left-[260px] top-1/4 -translate-y-1/2 bg-[#0d0e12]/90 border p-3.5 rounded-[18px] text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
-                  selectedNode === "Engineering" ? "border-[#8ab4f8] shadow-[0_0_20px_rgba(138,180,248,0.15)]" : "border-white/[0.06]"
-                } ${
-                  nodeHealth.Engineering.val < 60 ? "border-amber-500/80 text-amber-500" : ""
-                }`}
-              >
-                <span className="material-symbols-outlined text-[#8ab4f8] text-lg">developer_board</span>
-                <div className="font-mono text-[10px] font-bold text-white mt-1">Engineering</div>
-                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Engineering.colorClass}`}>
-                  H: {nodeHealth.Engineering.val}% {nodeHealth.Engineering.status !== "NOMINAL" && nodeHealth.Engineering.status}
-                </div>
-              </button>
-
-              {/* Marketing Node */}
-              <button
-                onClick={() => setSelectedNode("Marketing")}
-                className={`absolute left-[260px] bottom-1/4 translate-y-1/2 bg-[#0d0e12]/90 border p-3.5 rounded-[18px] text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
-                  selectedNode === "Marketing" ? "border-[#8ab4f8] shadow-[0_0_20px_rgba(138,180,248,0.15)]" : "border-white/[0.06] hover:border-white/[0.15]"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[#8ab4f8] text-lg">campaign</span>
-                <div className="font-mono text-[10px] font-bold text-white mt-1">Marketing</div>
-                <div className="text-[9px] text-[#4edea3] mt-0.5">{nodeHealth.Marketing.val}% Health</div>
-              </button>
-
-              {/* Operations Node */}
-              <button
-                onClick={() => setSelectedNode("Operations")}
-                className={`absolute right-[120px] top-1/4 -translate-y-1/2 bg-[#0d0e12]/90 border p-3.5 rounded-[18px] text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
-                  selectedNode === "Operations" ? "border-[#8ab4f8] shadow-[0_0_20px_rgba(138,180,248,0.15)]" : "border-white/[0.06]"
-                } ${
-                  nodeHealth.Operations.val < 50 ? "border-red-400/80 text-red-400" : ""
-                }`}
-              >
-                <span className="material-symbols-outlined text-[#8ab4f8] text-lg">cloud_done</span>
-                <div className="font-mono text-[10px] font-bold text-white mt-1">Operations</div>
-                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Operations.colorClass}`}>
-                  H: {nodeHealth.Operations.val}% {nodeHealth.Operations.status !== "NOMINAL" && nodeHealth.Operations.status}
-                </div>
-              </button>
-
-              {/* Sales Node */}
-              <button
-                onClick={() => setSelectedNode("Sales")}
-                className={`absolute right-[120px] bottom-1/4 translate-y-1/2 bg-[#0d0e12]/90 border p-3.5 rounded-[18px] text-center cursor-pointer transition-all w-32 hover:scale-[1.03] ${
-                  selectedNode === "Sales" ? "border-[#8ab4f8] shadow-[0_0_20px_rgba(138,180,248,0.15)]" : "border-white/[0.06]"
-                } ${
-                  nodeHealth.Sales.val < 80 ? "border-amber-500/80 text-amber-500" : ""
-                }`}
-              >
-                <span className="material-symbols-outlined text-[#8ab4f8] text-lg">payments</span>
-                <div className="font-mono text-[10px] font-bold text-white mt-1">Sales</div>
-                <div className={`text-[9px] font-bold mt-0.5 ${nodeHealth.Sales.colorClass}`}>
-                  H: {nodeHealth.Sales.val}% {nodeHealth.Sales.status !== "NOMINAL" && nodeHealth.Sales.status}
-                </div>
-              </button>
-            </div>
-
-            {/* Mini Map Panel (Bottom Right of Canvas) */}
-            <div className="absolute bottom-3 right-3 bg-[#0d0f14]/90 border border-white/[0.08] rounded-[10px] p-2 w-28 h-20 opacity-80 pointer-events-none flex flex-col justify-between">
-              <span className="font-mono text-[7px] text-gray-500 tracking-wider">MINI-MAP</span>
-              <div className="relative w-full h-8 bg-black/40 rounded border border-white/5 flex items-center justify-around px-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8]"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8]"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8]"></span>
-                <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8]"></span>
-              </div>
-            </div>
-          </div>
+        <div className="flex justify-between text-[10px]">
+          <span className="text-gray-500">Risk</span>
+          <span className={`font-bold ${d.risk === "High" ? "text-[#f28b82]" : d.risk === "Medium" ? "text-[#f59e0b]" : "text-[#4edea3]"}`}>
+            {d.risk}
+          </span>
         </div>
-
-        {/* Telemetry Inspect Sidebar (Col 4) */}
-        <div className="lg:col-span-4 panel-layer p-5 flex flex-col justify-between h-[520px]">
-          <div>
-            <div className="border-b border-white/[0.04] pb-3 mb-4">
-              <h3 className="font-display text-sm font-bold text-white tracking-wide">Department Telemetry</h3>
-              <p className="font-mono text-[9px] text-gray-500 mt-0.5">NODE INSPECTION DETAILS</p>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-[#050505]/40 p-3.5 rounded-[12px] border border-white/[0.03]">
-                <span className="font-mono text-[8px] text-[#8ab4f8] uppercase font-bold tracking-wider block">
-                  SELECTED NODE
-                </span>
-                <h4 className="font-bold text-xs text-white mt-1">{currentInspect.name} Department</h4>
-                <p className="text-[10px] text-gray-400 mt-1 leading-relaxed">{currentInspect.desc}</p>
-              </div>
-              
-              <div className="space-y-1">
-                <div className="flex justify-between items-center text-[10px] font-mono">
-                  <span className="text-gray-400">Operational Load</span>
-                  <span className="font-bold text-white">{currentInspect.load}</span>
-                </div>
-                <div className="w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#8ab4f8] rounded-full"
-                    style={{ width: currentInspect.load }}
-                  ></div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 font-mono text-[10px]">
-                <div className="bg-[#050505]/20 p-2.5 rounded-[10px] border border-white/[0.02]">
-                  <span className="text-gray-500 text-[8px] block">HEADCOUNT</span>
-                  <span className="font-bold text-white mt-0.5 block">{currentInspect.FTE}</span>
-                </div>
-                <div className="bg-[#050505]/20 p-2.5 rounded-[10px] border border-white/[0.02]">
-                  <span className="text-gray-500 text-[8px] block">MONTHLY COST</span>
-                  <span className="font-bold text-white mt-0.5 block">{currentInspect.cost}</span>
-                </div>
-              </div>
-
-              <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03] text-[9px] font-mono text-gray-400">
-                <span className="text-[#8ab4f8] font-bold uppercase tracking-wider text-[8px] block mb-1">DEPENDENCIES</span>
-                <p>{currentInspect.deps}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-white/[0.04] mt-4">
-            <button
-              onClick={runDiagnostic}
-              className="w-full btn-action btn-primary py-3 text-[10px]"
-            >
-              Run Full Twin Diagnostics
-            </button>
-          </div>
+        <div className="flex justify-between text-[10px]">
+          <span className="text-gray-500">Contribution</span>
+          <span className="text-[#8ab4f8] font-bold">{d.contribution}</span>
         </div>
       </div>
 
-      {/* 3. Autonomous Bottlenecks & Outage logs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
-        
-        {/* Anomaly analysis */}
-        <div className="card-layer p-5">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">
-              Autonomous Bottleneck Report
-            </h3>
-            <p className="font-mono text-[9px] text-gray-500 mt-0.5">CRITICAL OPERATIONAL TELEMETRY SLOWDOWNS</p>
-          </div>
-          
-          <div className="space-y-2">
-            <div className="flex justify-between items-center p-3 bg-[#050505]/40 rounded-[12px] border border-white/[0.03] hover:border-amber-500/20 transition-all">
-              <div className="min-w-0 flex-1">
-                <span className="text-xs text-white font-bold block">Engineering Pipeline Delay</span>
-                <p className="text-[10px] text-gray-400 mt-0.5 truncate leading-relaxed">
-                  QA automation bottlenecks slowing release pipeline by 1.2 days.
-                </p>
-              </div>
-              <span className="text-[8px] text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20 font-mono font-bold shrink-0">
-                MEDIUM
-              </span>
-            </div>
-            
-            <div className="flex justify-between items-center p-3 bg-[#050505]/40 rounded-[12px] border border-white/[0.03] hover:border-red-400/20 transition-all">
-              <div className="min-w-0 flex-1">
-                <span className="text-xs text-white font-bold block">Operations Compute Limit</span>
-                <p className="text-[10px] text-gray-400 mt-0.5 truncate leading-relaxed">
-                  Peak hour AWS cluster utilization exceeding 92% thresholds.
-                </p>
-              </div>
-              <span className="text-[8px] text-red-400 bg-red-400/10 px-2 py-0.5 rounded border border-red-400/20 font-mono font-bold shrink-0">
-                CRITICAL
-              </span>
-            </div>
+      {/* Tooltip on hover */}
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full z-50 bg-[#0a0b0e] border border-white/[0.1] rounded-[10px] p-3 min-w-[200px] max-w-[240px] shadow-xl pointer-events-none">
+        <p className="text-[10px] text-gray-300 leading-relaxed">{d.description}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Node Type Registry ─── */
+const nodeTypes = { enterprise: EnterpriseNode };
+
+/* ─── Primary Metrics ─── */
+const primaryMetrics = [
+  { label: "Revenue", value: "Revenue" },
+  { label: "Profit", value: "Profit" },
+  { label: "Growth", value: "Growth" },
+  { label: "Customer Retention", value: "Retention" },
+  { label: "Market Expansion", value: "Expansion" },
+];
+
+/* ─── Graph Data ─── */
+const initialNodes: Node[] = [
+  { id: "revenue", type: "enterprise", position: { x: 450, y: 0 }, data: { label: "Revenue", icon: "payments", impact: "$50.2M ARR", risk: "Medium", contribution: "Core metric", description: "Total annual recurring revenue across all segments and regions. Primary north-star metric for executive decision-making.", accentColor: "#4edea3" } },
+  { id: "sales", type: "enterprise", position: { x: 50, y: 140 }, data: { label: "Sales", icon: "storefront", impact: "$32.4M", risk: "Low", contribution: "64%", description: "Direct and partner-led sales across enterprise, mid-market, and SMB segments. 120 reps across 3 regions.", accentColor: "#8ab4f8" } },
+  { id: "marketing", type: "enterprise", position: { x: 280, y: 160 }, data: { label: "Marketing", icon: "campaign", impact: "$8.2M pipeline", risk: "Medium", contribution: "18%", description: "Demand generation, brand, and product marketing. $4.2M quarterly budget with 2.8x pipeline coverage.", accentColor: "#c4b5fd" } },
+  { id: "customer_success", type: "enterprise", position: { x: 650, y: 140 }, data: { label: "Customer Success", icon: "support_agent", impact: "118% NRR", risk: "High", contribution: "24%", description: "Post-sale relationship management, renewal execution, and expansion revenue. APAC NRR declining to 109%.", accentColor: "#f59e0b" } },
+  { id: "products", type: "enterprise", position: { x: 880, y: 160 }, data: { label: "Products", icon: "inventory_2", impact: "3 tiers", risk: "Low", contribution: "Platform", description: "Enterprise, Professional, and Starter tiers. New mid-market tier planned for Q2 launch.", accentColor: "#8ab4f8" } },
+  { id: "finance", type: "enterprise", position: { x: 100, y: 340 }, data: { label: "Finance", icon: "account_balance", impact: "$12.4M burn", risk: "Low", contribution: "Controls", description: "Financial planning, treasury, and investor relations. 18-month runway at current burn rate.", accentColor: "#4edea3" } },
+  { id: "operations", type: "enterprise", position: { x: 370, y: 340 }, data: { label: "Operations", icon: "precision_manufacturing", impact: "1.42x efficiency", risk: "Low", contribution: "Enabler", description: "Infrastructure, IT, procurement, and business operations. Driving 14% YoY efficiency improvement.", accentColor: "#8ab4f8" } },
+  { id: "supply_chain", type: "enterprise", position: { x: 620, y: 360 }, data: { label: "Supply Chain", icon: "local_shipping", impact: "3-tier vendor", risk: "High", contribution: "Critical", description: "Three-tier vendor dependency with APAC concentration. 12-day delay risk detected in logistics nodes.", accentColor: "#f28b82" } },
+  { id: "partners", type: "enterprise", position: { x: 870, y: 340 }, data: { label: "Partners", icon: "handshake", impact: "$6.8M indirect", risk: "Medium", contribution: "14%", description: "Channel partners, technology alliances, and reseller network. 42 active partners across EMEA and Americas.", accentColor: "#c4b5fd" } },
+  { id: "apac", type: "enterprise", position: { x: 50, y: 520 }, data: { label: "APAC Region", icon: "public", impact: "$8.4M", risk: "High", contribution: "17%", description: "Asia-Pacific region with 8% churn increase trend. Key risk concentration area requiring immediate attention.", accentColor: "#f28b82" } },
+  { id: "emea", type: "enterprise", position: { x: 350, y: 520 }, data: { label: "EMEA Region", icon: "public", impact: "$14.2M", risk: "Low", contribution: "28%", description: "Europe, Middle East & Africa. Fastest growing region with 23% YoY TAM expansion. DACH entry recommended.", accentColor: "#4edea3" } },
+  { id: "americas", type: "enterprise", position: { x: 670, y: 520 }, data: { label: "Americas", icon: "public", impact: "$27.6M", risk: "Low", contribution: "55%", description: "Largest revenue region with stable growth. Mature market with focus on expansion and upsell.", accentColor: "#8ab4f8" } },
+];
+
+const initialEdges: Edge[] = [
+  { id: "e-sales-rev", source: "sales", target: "revenue", animated: true, style: { stroke: "#8ab4f8", strokeWidth: 2 } },
+  { id: "e-mkt-rev", source: "marketing", target: "revenue", animated: true, style: { stroke: "#c4b5fd", strokeWidth: 2 } },
+  { id: "e-cs-rev", source: "customer_success", target: "revenue", animated: true, style: { stroke: "#f59e0b", strokeWidth: 2 } },
+  { id: "e-prod-rev", source: "products", target: "revenue", style: { stroke: "#8ab4f8", strokeWidth: 1.5 } },
+  { id: "e-fin-sales", source: "finance", target: "sales", style: { stroke: "#4edea380", strokeWidth: 1.5 } },
+  { id: "e-ops-mkt", source: "operations", target: "marketing", style: { stroke: "#8ab4f860", strokeWidth: 1.5 } },
+  { id: "e-ops-cs", source: "operations", target: "customer_success", style: { stroke: "#8ab4f860", strokeWidth: 1.5 } },
+  { id: "e-sc-ops", source: "supply_chain", target: "operations", animated: true, style: { stroke: "#f28b82", strokeWidth: 2 } },
+  { id: "e-part-sales", source: "partners", target: "products", style: { stroke: "#c4b5fd60", strokeWidth: 1.5 } },
+  { id: "e-apac-sales", source: "apac", target: "sales", style: { stroke: "#f28b8280", strokeWidth: 1.5, strokeDasharray: "5 3" } },
+  { id: "e-apac-cs", source: "apac", target: "customer_success", animated: true, style: { stroke: "#f28b82", strokeWidth: 2, strokeDasharray: "5 3" } },
+  { id: "e-emea-sales", source: "emea", target: "sales", style: { stroke: "#4edea380", strokeWidth: 1.5 } },
+  { id: "e-amer-sales", source: "americas", target: "sales", style: { stroke: "#8ab4f860", strokeWidth: 1.5 } },
+  { id: "e-sc-apac", source: "supply_chain", target: "apac", animated: true, style: { stroke: "#f28b82", strokeWidth: 2 } },
+  { id: "e-part-emea", source: "partners", target: "emea", style: { stroke: "#c4b5fd60", strokeWidth: 1.5 } },
+];
+
+export default function DigitalTwinPage() {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [selectedMetric, setSelectedMetric] = useState("Revenue");
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
+
+  const nodeTypesMemo = useMemo(() => nodeTypes, []);
+
+  const currentNodeData = selectedNode?.data as Record<string, string> | undefined;
+
+  return (
+    <DashboardLayout>
+      {/* Page Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
+        <div>
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
+            Enterprise Impact Map
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Visualize business dependencies, risk propagation, and financial impact across your organization
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[11px] font-medium text-gray-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3] animate-pulse"></span>
+            Live sync · 12 departments
           </div>
         </div>
+      </header>
 
-        {/* Real-time propagation terminal logs */}
-        <div className="card-layer p-5 flex flex-col min-h-[220px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">Risk Propagation Log</h3>
-            <p className="font-mono text-[9px] text-gray-500 mt-0.5">AUTONOMOUS SIMULATION TRACE OUTPUTS</p>
-          </div>
-          <div className="flex-1 bg-[#050505]/60 border border-white/[0.03] rounded-xl p-3 font-mono text-[10px] overflow-y-auto text-gray-400 space-y-1.5 scrollbar-thin">
-            {riskLogs.map((log, idx) => {
-              let colorClass = "text-gray-400";
-              if (log.includes("RISK_TRIGGER") || log.includes("degraded") || log.includes("compromised")) {
-                colorClass = log.includes("Operations") || log.includes("AWS Outage") ? "text-red-400" : "text-amber-400";
-              } else if (log.includes("[SYSTEM] Telemetry nominal") || log.includes("nominal")) {
-                colorClass = "text-[#4edea3]";
-              }
-              return (
-                <div key={idx} className={`${colorClass} flex items-start gap-1 font-light leading-relaxed`}>
-                  <span className="text-[#8ab4f8]/50 shrink-0">&raquo;</span>
-                  <span>{log}</span>
+      {/* Metric Selector */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <span className="text-[11px] text-gray-500 font-medium uppercase tracking-wider">Primary Metric:</span>
+        {primaryMetrics.map(pm => (
+          <button
+            key={pm.value}
+            onClick={() => setSelectedMetric(pm.value)}
+            className={`text-[11px] px-3.5 py-1.5 rounded-full border transition-all cursor-pointer ${
+              selectedMetric === pm.value
+                ? "bg-[#8ab4f8]/10 text-[#8ab4f8] border-[#8ab4f8]/30 font-bold"
+                : "text-gray-400 border-white/[0.04] hover:border-white/[0.1] hover:text-white"
+            }`}
+          >
+            {pm.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Graph + Side Panel */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* React Flow Canvas */}
+        <div className="lg:col-span-8 panel-layer overflow-hidden" style={{ height: "580px" }}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onNodeClick={onNodeClick}
+            nodeTypes={nodeTypesMemo}
+            fitView
+            fitViewOptions={{ padding: 0.3 }}
+            minZoom={0.4}
+            maxZoom={1.8}
+            proOptions={{ hideAttribution: true }}
+          >
+            <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="rgba(255,255,255,0.03)" />
+            <Controls showInteractive={false} />
+          </ReactFlow>
+        </div>
+
+        {/* Department Detail Panel */}
+        <div className="lg:col-span-4 panel-layer p-6 flex flex-col justify-between" style={{ height: "580px" }}>
+          {selectedNode && currentNodeData ? (
+            <div className="space-y-5">
+              <div className="border-b border-white/[0.04] pb-4">
+                <span className="text-[10px] text-[#8ab4f8] uppercase tracking-widest font-bold">Department Detail</span>
+                <h3 className="font-display text-lg font-bold text-white mt-1">{currentNodeData.label}</h3>
+              </div>
+
+              <p className="text-sm text-gray-300 leading-relaxed">{currentNodeData.description}</p>
+
+              <div className="space-y-3">
+                <div className="bg-[#050505]/40 p-3.5 rounded-[12px] border border-white/[0.03]">
+                  <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Financial Impact</span>
+                  <span className="text-lg font-bold text-white">{currentNodeData.impact}</span>
                 </div>
-              );
-            })}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03]">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Risk Level</span>
+                    <span className={`text-sm font-bold ${currentNodeData.risk === "High" ? "text-[#f28b82]" : currentNodeData.risk === "Medium" ? "text-[#f59e0b]" : "text-[#4edea3]"}`}>
+                      {currentNodeData.risk}
+                    </span>
+                  </div>
+                  <div className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03]">
+                    <span className="text-[10px] text-gray-500 uppercase tracking-wider block mb-1">Contribution</span>
+                    <span className="text-sm font-bold text-[#8ab4f8]">{currentNodeData.contribution}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-3 text-gray-500">
+              <span className="material-symbols-outlined text-[40px] opacity-30">touch_app</span>
+              <p className="text-sm">Click any department node to inspect its business telemetry</p>
+            </div>
+          )}
+
+          <div className="pt-4 border-t border-white/[0.04] mt-auto">
+            <div className="text-[10px] text-gray-500 space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-[2px] bg-[#8ab4f8] rounded"></span>
+                <span>Dependency flow</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-[2px] bg-[#f28b82] rounded" style={{ borderBottom: "2px dashed #f28b82" }}></span>
+                <span>Risk propagation path</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-6 h-[2px] bg-[#4edea3] rounded"></span>
+                <span>Revenue contribution</span>
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
     </DashboardLayout>
   );

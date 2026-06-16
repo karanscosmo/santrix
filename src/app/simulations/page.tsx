@@ -4,342 +4,280 @@ import React, { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useSecurity } from "@/lib/SecurityContext";
 
-interface RiskMetric {
-  name: string;
-  baseline: string;
-  simulated: string;
-  status: "nominal" | "warning" | "error";
-  colorClass: string;
+interface Scenario {
+  id: string;
+  title: string;
+  question: string;
+  category: string;
+  accentColor: string;
+  icon: string;
+  results: {
+    metrics: { label: string; current: string; simulated: string; direction: "up" | "down" | "neutral" }[];
+    recommendation: string;
+    confidence: number;
+    timeHorizon: string;
+  };
 }
 
-interface MonteCarloRow {
-  percentile: string;
-  baseline: string;
-  simulated: string;
-  prob: string;
-  colorClass: string;
-}
+const scenarios: Scenario[] = [
+  {
+    id: "budget_reduction",
+    title: "Budget Reduction",
+    question: "What if we cut Q4 budget by 15%?",
+    category: "Financial",
+    accentColor: "#f59e0b",
+    icon: "account_balance_wallet",
+    results: {
+      metrics: [
+        { label: "Revenue Impact", current: "$50.2M", simulated: "$47.8M", direction: "down" },
+        { label: "Margin Improvement", current: "68.4%", simulated: "72.1%", direction: "up" },
+        { label: "Pipeline Coverage", current: "2.8x", simulated: "2.1x", direction: "down" },
+        { label: "Runway Extension", current: "18 months", simulated: "22 months", direction: "up" },
+      ],
+      recommendation: "Selective cuts recommended: reduce display advertising (-$1.2M) and travel (-$400K) while protecting CSM and R&D budgets. This preserves 94% of pipeline while extending runway by 4 months.",
+      confidence: 88,
+      timeHorizon: "Next quarter",
+    },
+  },
+  {
+    id: "hiring_freeze",
+    title: "Hiring Freeze",
+    question: "Impact of 6-month hiring freeze",
+    category: "Operations",
+    accentColor: "#c4b5fd",
+    icon: "group_off",
+    results: {
+      metrics: [
+        { label: "Delivery Delay", current: "On track", simulated: "+45 days", direction: "down" },
+        { label: "Cost Savings", current: "—", simulated: "$2.4M", direction: "up" },
+        { label: "Competitive Risk", current: "Low", simulated: "Medium", direction: "down" },
+        { label: "Employee Load", current: "82%", simulated: "96%", direction: "down" },
+      ],
+      recommendation: "A full freeze is not recommended. Instead, freeze non-critical hires and prioritize 3 engineering roles critical to the mid-market launch. Net savings: $1.6M with minimal delivery impact.",
+      confidence: 91,
+      timeHorizon: "6 months",
+    },
+  },
+  {
+    id: "price_increase",
+    title: "Price Increase",
+    question: "10% enterprise tier price hike",
+    category: "Revenue",
+    accentColor: "#4edea3",
+    icon: "trending_up",
+    results: {
+      metrics: [
+        { label: "Revenue Lift", current: "$50.2M", simulated: "$53.8M", direction: "up" },
+        { label: "Churn Risk", current: "8%", simulated: "11.5%", direction: "down" },
+        { label: "New Deal Velocity", current: "42 days", simulated: "48 days", direction: "down" },
+        { label: "LTV:CAC Ratio", current: "3.2x", simulated: "3.6x", direction: "up" },
+      ],
+      recommendation: "Implement a grandfathered pricing strategy: existing customers retain current pricing for 12 months, new customers get the 10% increase. This yields $2.8M uplift with only 2% incremental churn risk.",
+      confidence: 85,
+      timeHorizon: "12 months",
+    },
+  },
+  {
+    id: "expansion",
+    title: "Expansion Strategy",
+    question: "Enter European market via DACH",
+    category: "Growth",
+    accentColor: "#8ab4f8",
+    icon: "public",
+    results: {
+      metrics: [
+        { label: "Investment Required", current: "—", simulated: "$800K", direction: "down" },
+        { label: "Projected ROI", current: "—", simulated: "4.1x by Year 2", direction: "up" },
+        { label: "Breakeven", current: "—", simulated: "Month 14", direction: "neutral" },
+        { label: "Revenue Contribution", current: "0%", simulated: "8% of ARR", direction: "up" },
+      ],
+      recommendation: "Proceed with DACH-first entry. Hire a regional sales lead from the market, localize top 3 enterprise use cases, and partner with 2 regional system integrators. Projected $4.1M Year 1 revenue.",
+      confidence: 86,
+      timeHorizon: "18 months",
+    },
+  },
+  {
+    id: "marketing_shift",
+    title: "Marketing Shift",
+    question: "Move 40% budget from brand to performance",
+    category: "Marketing",
+    accentColor: "#f28b82",
+    icon: "campaign",
+    results: {
+      metrics: [
+        { label: "CAC Change", current: "$1,245", simulated: "$985", direction: "up" },
+        { label: "Pipeline Impact", current: "$8.2M/qtr", simulated: "$9.1M/qtr", direction: "up" },
+        { label: "Brand Awareness", current: "Top 5", simulated: "Top 8", direction: "down" },
+        { label: "Payback Period", current: "14 months", simulated: "11 months", direction: "up" },
+      ],
+      recommendation: "Shift is viable for short-term gains but cap at 30% to protect brand equity. Recommend a phased approach: move 20% immediately, monitor for 60 days, then evaluate the final 10%.",
+      confidence: 83,
+      timeHorizon: "90 days",
+    },
+  },
+  {
+    id: "new_product",
+    title: "New Product Launch",
+    question: "Launch mid-market tier in Q2",
+    category: "Product",
+    accentColor: "#80deea",
+    icon: "rocket_launch",
+    results: {
+      metrics: [
+        { label: "TAM Expansion", current: "$180M", simulated: "$420M", direction: "up" },
+        { label: "Cannibalization Risk", current: "—", simulated: "5-8% of SMB", direction: "down" },
+        { label: "Revenue by Year 1", current: "—", simulated: "$6.2M", direction: "up" },
+        { label: "Engineering Cost", current: "—", simulated: "$1.4M", direction: "down" },
+      ],
+      recommendation: "Launch is strategically sound. The mid-market tier expands TAM by 2.3x with acceptable cannibalization. Key requirement: ensure clear feature differentiation from Enterprise tier to protect ACV.",
+      confidence: 79,
+      timeHorizon: "12 months",
+    },
+  },
+];
 
 export default function SimulationsPage() {
-  const { addAuditLog, checkPermission, rateLimitCheck } = useSecurity();
-  const [prompt, setPrompt] = useState<string>("What happens if churn rises next quarter?");
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const { addAuditLog, checkPermission } = useSecurity();
+  const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+  const [isSimulating, setIsSimulating] = useState(false);
 
-  // States that change based on simulation run
-  const [runCount, setRunCount] = useState<number>(12482);
-  const [curvePath, setCurvePath] = useState<string>(
-    "M 50 250 C 150 250, 200 80, 250 80 C 300 80, 350 250, 450 250" // Baseline wave
-  );
-  const [simulatedPath, setSimulatedPath] = useState<string>(
-    "M 50 250 C 120 250, 180 140, 280 140 C 330 140, 380 250, 450 250"
-  );
-
-  const [riskMetrics, setRiskMetrics] = useState<RiskMetric[]>([
-    { name: "Revenue Impact", baseline: "-0.5%", simulated: "-12.4%", status: "error", colorClass: "text-red-400" },
-    { name: "CAC Variance", baseline: "+1.2%", simulated: "+8.1%", status: "warning", colorClass: "text-amber-500" },
-    { name: "Market Share", baseline: "+0.2%", simulated: "-1.2%", status: "nominal", colorClass: "text-gray-400" },
-  ]);
-
-  const [monteCarlo, setMonteCarlo] = useState<MonteCarloRow[]>([
-    { percentile: "90th (Optimistic)", baseline: "-$0.4M", simulated: "-$2.1M", prob: "10%", colorClass: "text-[#4edea3]" },
-    { percentile: "50th (Expected)", baseline: "-$1.2M", simulated: "-$5.4M", prob: "80%", colorClass: "text-white" },
-    { percentile: "10th (Pessimistic)", baseline: "-$3.8M", simulated: "-$11.2M", prob: "10%", colorClass: "text-red-400" },
-  ]);
-
-  const [aiRecommendation, setAiRecommendation] = useState<string>(
-    "Deploy retention offers to cohorts B and C to mitigate worst-case scenarios by 40%."
-  );
-
-  const handleExecute = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRunScenario = (scenario: Scenario) => {
     if (!checkPermission("simulation:run")) {
       alert("Access Denied: Your current role does not have permission to execute simulations.");
       return;
     }
-    if (!rateLimitCheck()) {
-      alert("Rate limit reached. Please limit simulation execution to 10 requests per minute.");
-      return;
-    }
 
     setIsSimulating(true);
-    addAuditLog("simulation.execute_start", `Running business simulation for prompt: "${prompt}"`, "SUCCESS");
+    addAuditLog("simulation.run", `Running scenario: ${scenario.title}`, "SUCCESS");
 
     setTimeout(() => {
+      setSelectedScenario(scenario);
       setIsSimulating(false);
-      setRunCount(prev => prev + 1);
-
-      const isChurn = prompt.toLowerCase().includes("churn");
-      const isMarketing = prompt.toLowerCase().includes("market") || prompt.toLowerCase().includes("ad");
-
-      if (isChurn) {
-        setSimulatedPath("M 50 250 C 130 250, 220 180, 310 180 C 360 180, 400 250, 450 250");
-        setRiskMetrics([
-          { name: "Revenue Impact", baseline: "-0.5%", simulated: "-14.8%", status: "error", colorClass: "text-red-400" },
-          { name: "CAC Variance", baseline: "+1.2%", simulated: "+9.5%", status: "warning", colorClass: "text-amber-500" },
-          { name: "Market Share", baseline: "+0.2%", simulated: "-2.1%", status: "error", colorClass: "text-red-400" },
-        ]);
-        setMonteCarlo([
-          { percentile: "90th (Optimistic)", baseline: "-$0.4M", simulated: "-$3.8M", prob: "10%", colorClass: "text-[#4edea3]" },
-          { percentile: "50th (Expected)", baseline: "-$1.2M", simulated: "-$7.2M", prob: "80%", colorClass: "text-white" },
-          { percentile: "10th (Pessimistic)", baseline: "-$3.8M", simulated: "-$15.6M", prob: "10%", colorClass: "text-red-400" },
-        ]);
-        setAiRecommendation("Initiate SDR Swarm retention callbacks. Reallocate budget from cold display to customer retention accounts.");
-      } else if (isMarketing) {
-        setSimulatedPath("M 50 250 C 100 250, 160 90, 220 90 C 280 90, 360 250, 450 250");
-        setRiskMetrics([
-          { name: "Revenue Impact", baseline: "-0.5%", simulated: "+6.2%", status: "nominal", colorClass: "text-[#4edea3]" },
-          { name: "CAC Variance", baseline: "+1.2%", simulated: "-4.8%", status: "nominal", colorClass: "text-[#4edea3]" },
-          { name: "Market Share", baseline: "+0.2%", simulated: "+1.5%", status: "nominal", colorClass: "text-[#4edea3]" },
-        ]);
-        setMonteCarlo([
-          { percentile: "90th (Optimistic)", baseline: "-$0.4M", simulated: "+$1.8M", prob: "10%", colorClass: "text-[#4edea3]" },
-          { percentile: "50th (Expected)", baseline: "-$1.2M", simulated: "+$0.4M", prob: "80%", colorClass: "text-white" },
-          { percentile: "10th (Pessimistic)", baseline: "-$3.8M", simulated: "-$1.1M", prob: "10%", colorClass: "text-red-400" },
-        ]);
-        setAiRecommendation("Search ad reallocation is mathematically sound. Push budget commit rules to fabric event router.");
-      } else {
-        setSimulatedPath(`M 50 250 C 100 250, ${150 + Math.random() * 80} ${100 + Math.random() * 80}, 250 150 C 300 150, 380 250, 450 250`);
-        setRiskMetrics([
-          { name: "Revenue Impact", baseline: "-0.5%", simulated: "-4.2%", status: "warning", colorClass: "text-amber-500" },
-          { name: "CAC Variance", baseline: "+1.2%", simulated: "+3.2%", status: "nominal", colorClass: "text-gray-400" },
-          { name: "Market Share", baseline: "+0.2%", simulated: "-0.5%", status: "nominal", colorClass: "text-gray-400" },
-        ]);
-        setAiRecommendation("General parameters indicate normal operation variance. Run specific Wolfram optimization scenarios.");
-      }
-
-      addAuditLog("simulation.execute_complete", `Completed simulation run #${runCount + 1}`, "SUCCESS");
     }, 1200);
   };
 
   return (
     <DashboardLayout>
-      {/* 1. Page Header matching visual hierarchy guidelines */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-            Executive Scenario Lab
+            Scenario Planning Lab
           </h1>
-          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
-            Simulate Monte Carlo cash yield distributions and forecast ARR outcomes.
+          <p className="text-sm text-gray-400 mt-1">
+            Simulate business scenarios to understand impact before making decisions
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Status Indicator */}
-          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[11px] font-medium text-gray-300">
             <span className="w-1.5 h-1.5 rounded-full bg-[#8ab4f8] animate-pulse"></span>
-            Simulations Run: {runCount} Runs
+            6 scenarios available
           </div>
-          <button
-            onClick={() => alert("Simulation History logs retrieved successfully.")}
-            className="btn-action btn-secondary text-[10px] py-2"
-          >
-            History Logs
-          </button>
         </div>
       </header>
 
-      {/* 2. Interactive Prompt Panel */}
-      <section className="panel-layer p-5 relative overflow-hidden">
-        <label className="font-mono text-[9px] text-[#8ab4f8] mb-2 block font-bold uppercase tracking-widest">
-          Monte Carlo Simulation Prompt
-        </label>
-        <form onSubmit={handleExecute} className="flex flex-col md:flex-row gap-3">
-          <input
-            className="flex-1 bg-[#050505]/60 border border-white/[0.06] text-white font-sans text-xs py-3 px-4 rounded-[12px] focus:outline-none focus:border-[#8ab4f8]"
-            type="text"
-            value={prompt}
-            onChange={e => setPrompt(e.target.value)}
-            placeholder="What happens if churn rises next quarter?"
-          />
-          <button
-            type="submit"
-            disabled={isSimulating}
-            className="btn-action btn-primary py-3 px-6 text-[10px]"
-          >
-            {isSimulating ? (
-              <div className="w-4.5 h-4.5 border-2 border-[#001945] border-t-transparent rounded-full animate-spin"></div>
-            ) : (
-              <span className="material-symbols-outlined text-xs">play_arrow</span>
-            )}
-            {isSimulating ? "COMPUTING..." : "EXECUTE SCENARIO"}
-          </button>
-        </form>
-        
-        {/* Preset quick chips */}
-        <div className="flex gap-2 mt-4 font-mono text-[8px] text-gray-500">
-          <span className="bg-[#050505]/40 border border-white/[0.03] px-2.5 py-1 rounded-[6px]">
-            Model: Predictor-X7
-          </span>
-          <span className="bg-[#050505]/40 border border-white/[0.03] px-2.5 py-1 rounded-[6px]">
-            Confidence Interval: 95.8%
-          </span>
-          <span className="bg-[#050505]/40 border border-white/[0.03] px-2.5 py-1 rounded-[6px]">
-            Engine: Wolfram solver v4
-          </span>
+      {/* Scenario Cards Grid */}
+      <section>
+        <h2 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold mb-4">Select a Scenario</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {scenarios.map(s => (
+            <button
+              key={s.id}
+              onClick={() => handleRunScenario(s)}
+              disabled={isSimulating}
+              className={`scenario-card text-left ${selectedScenario?.id === s.id ? "border-[#8ab4f8]/30" : ""}`}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0"
+                  style={{ backgroundColor: `${s.accentColor}15`, border: `1px solid ${s.accentColor}30` }}
+                >
+                  <span className="material-symbols-outlined text-[18px]" style={{ color: s.accentColor }}>
+                    {s.icon}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">{s.title}</h3>
+                  <span className="text-[10px] uppercase tracking-wider font-bold" style={{ color: s.accentColor }}>{s.category}</span>
+                </div>
+              </div>
+              <p className="text-xs text-gray-400 leading-relaxed">{s.question}</p>
+            </button>
+          ))}
         </div>
       </section>
 
-      {/* 3. Overlapping distribution curves & Risk matrix */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Chart (Col 8) */}
-        <section className="lg:col-span-8 panel-layer p-5 flex flex-col h-[400px]">
-          <div className="flex justify-between items-center border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">
-              Probability Bell Distribution
-            </h3>
-            <div className="flex gap-2 font-mono text-[9px]">
-              <span className="bg-[#8ab4f8]/10 border border-[#8ab4f8]/30 text-[#8ab4f8] px-2.5 py-0.5 rounded font-bold">
-                Baseline Normal
+      {/* Loading */}
+      {isSimulating && (
+        <div className="panel-layer p-12 flex flex-col items-center justify-center gap-4">
+          <div className="w-10 h-10 border-2 border-[#8ab4f8] border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm text-gray-400">Running scenario simulation...</p>
+        </div>
+      )}
+
+      {/* Results Panel */}
+      {selectedScenario && !isSimulating && (
+        <section className="panel-layer p-6 md:p-8 space-y-6 animate-fade-in-up">
+          <div className="flex items-center justify-between border-b border-white/[0.04] pb-5">
+            <div>
+              <span className="text-[11px] uppercase tracking-wider font-bold" style={{ color: selectedScenario.accentColor }}>
+                Simulation Results
               </span>
-              <span className="bg-amber-500/10 border border-amber-500/30 text-amber-500 px-2.5 py-0.5 rounded font-bold">
-                Simulated Drift
-              </span>
+              <h2 className="font-display text-xl font-bold text-white mt-1">{selectedScenario.title}</h2>
+              <p className="text-sm text-gray-400 mt-0.5">{selectedScenario.question}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="confidence-bar w-20">
+                <div className="fill" style={{ width: `${selectedScenario.results.confidence}%` }}></div>
+              </div>
+              <span className="text-sm font-bold text-white">{selectedScenario.results.confidence}%</span>
+              <span className="text-[11px] text-gray-500">confidence</span>
             </div>
           </div>
 
-          <div className="flex-grow relative bg-[#050505]/50 rounded-xl border border-white/[0.03] flex items-center justify-center overflow-hidden">
-            <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
-
-            {/* SVG Overlapping distribution Curves */}
-            <svg className="absolute inset-0 w-full h-full p-6" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="baseCurveGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#8ab4f8" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#8ab4f8" stopOpacity="0" />
-                </linearGradient>
-                <linearGradient id="simCurveGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.2" />
-                  <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* Guidelines */}
-              <line x1="50" y1="250" x2="450" y2="250" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-              <line x1="50" y1="50" x2="450" y2="50" stroke="rgba(255,255,255,0.03)" strokeWidth="1" />
-
-              {/* Area path base */}
-              <path d={`${curvePath} L 450 250 L 50 250 Z`} fill="url(#baseCurveGrad)" className="transition-all duration-700" />
-              {/* Base line curve */}
-              <path d={curvePath} fill="none" stroke="#8ab4f8" strokeWidth="2.5" className="transition-all duration-700" />
-
-              {/* Area path sim */}
-              <path d={`${simulatedPath} L 450 250 L 50 250 Z`} fill="url(#simCurveGrad)" className="transition-all duration-700" />
-              {/* Sim line curve */}
-              <path d={simulatedPath} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="3" className="transition-all duration-700" />
-            </svg>
-          </div>
-        </section>
-
-        {/* Risk Matrix (Col 4) */}
-        <section className="lg:col-span-4 panel-layer p-5 flex flex-col h-[400px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">Simulation Risk Metrics</h3>
-          </div>
-          <div className="flex-1 flex flex-col justify-between overflow-y-auto scrollbar-thin">
-            <div className="space-y-2">
-              {riskMetrics.map((m, idx) => (
-                <div
-                  key={idx}
-                  className="bg-[#050505]/40 border border-white/[0.03] rounded-[12px] p-3 flex items-center justify-between font-mono text-[10px]"
-                >
-                  <span className="text-gray-400 font-sans">{m.name}</span>
-                  <div className="flex gap-3">
-                    <span className="text-gray-600">Base: {m.baseline}</span>
-                    <span className={`${m.colorClass} font-bold`}>{m.simulated}</span>
+          {/* Impact Metrics Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {selectedScenario.results.metrics.map((m, idx) => (
+              <div key={idx} className="metric-card !p-4">
+                <span className="text-[11px] text-gray-400 block mb-2">{m.label}</span>
+                <div className="flex items-center gap-3">
+                  <div className="text-center">
+                    <span className="text-[10px] text-gray-500 block">Current</span>
+                    <span className="text-sm text-gray-300 font-medium">{m.current}</span>
+                  </div>
+                  <span className="material-symbols-outlined text-[16px] text-gray-600">arrow_forward</span>
+                  <div className="text-center">
+                    <span className="text-[10px] text-gray-500 block">Simulated</span>
+                    <span className={`text-sm font-bold ${m.direction === "up" ? "text-[#4edea3]" : m.direction === "down" ? "text-[#f28b82]" : "text-white"}`}>
+                      {m.simulated}
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            <div className="pt-4 border-t border-white/[0.04] mt-4 space-y-1.5">
-              <span className="font-mono text-[8px] text-gray-500 uppercase tracking-widest block">Critical Swarm Parameters</span>
-              <div className="flex flex-wrap gap-1">
-                <span className="bg-red-400/10 text-red-400 border border-red-400/20 font-mono text-[8px] px-2 py-0.5 rounded font-bold">
-                  Retention_Index_Q3
-                </span>
-                <span className="bg-[#8ab4f8]/10 text-[#8ab4f8] border border-[#8ab4f8]/20 font-mono text-[8px] px-2 py-0.5 rounded font-bold">
-                  CAC_Volatility_Shift
-                </span>
               </div>
+            ))}
+          </div>
+
+          {/* AI Recommendation */}
+          <div className="insight-panel p-5 pl-7">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-[16px] text-[#4edea3]">lightbulb</span>
+              <span className="text-[11px] text-[#4edea3] uppercase tracking-wider font-bold">AI Recommendation</span>
+              <span className="ml-auto text-[11px] text-gray-500">{selectedScenario.results.timeHorizon} horizon</span>
             </div>
+            <p className="text-sm text-gray-200 leading-relaxed">{selectedScenario.results.recommendation}</p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-3 pt-2">
+            <button
+              onClick={() => setSelectedScenario(null)}
+              className="btn-action btn-secondary text-[11px] py-2.5"
+            >
+              Try Another Scenario
+            </button>
           </div>
         </section>
-      </div>
-
-      {/* 4. Scenario map flowchart & Monte Carlo outcomes */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Scenario Tree node mapping (Col 6) */}
-        <section className="lg:col-span-6 card-layer p-5 flex flex-col h-[300px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">
-              Scenario Path Mapping
-            </h3>
-          </div>
-          <div className="flex-grow bg-[#050505]/40 border border-white/[0.03] rounded-xl flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-grid-pattern opacity-25"></div>
-
-            {/* Tree nodes flow chart */}
-            <div className="relative flex items-center gap-6 z-10 font-mono text-[9px] text-gray-400">
-              <div className="bg-[#0d0e12] p-2.5 rounded-[10px] border border-[#8ab4f8]/30 text-white">
-                <span>Start Simulation</span>
-              </div>
-              <span className="text-gray-600">&rarr;</span>
-              <div className="flex flex-col gap-2">
-                <div className="bg-[#0d0e12] p-2.5 rounded-[10px] border border-amber-500/30 text-white">
-                  <span>Scenario A: High Churn (-12% ARR)</span>
-                </div>
-                <div className="bg-[#0d0e12] p-2.5 rounded-[10px] border border-white/[0.04]">
-                  <span>Scenario B: Low Churn (-2% ARR)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Monte Carlo data table + Recommendations (Col 6) */}
-        <div className="lg:col-span-6 flex flex-col gap-4 h-[300px]">
-          <div className="glass-panel rounded-xl flex-grow flex flex-col overflow-hidden border border-white/[0.04]">
-            <div className="p-3 border-b border-white/[0.04] bg-[#07080c]/50">
-              <h3 className="font-mono text-[9px] text-gray-500 uppercase tracking-widest font-bold">
-                Monte Carlo Simulation Percentiles (n=10,000)
-              </h3>
-            </div>
-            <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
-              <table className="w-full text-left font-mono text-[10px] text-gray-400">
-                <thead>
-                  <tr className="border-b border-white/[0.04] text-gray-500 text-[9px]">
-                    <th className="p-2 font-normal">PERCENTILE</th>
-                    <th className="p-2 font-normal text-right">BASE IMPACT</th>
-                    <th className="p-2 font-normal text-right">SIMULATED</th>
-                    <th className="p-2 font-normal text-right">PROBABILITY</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.02]">
-                  {monteCarlo.map((row, idx) => (
-                    <tr key={idx} className="hover:bg-white/[0.01] transition-colors">
-                      <td className="p-2 font-bold text-white">{row.percentile}</td>
-                      <td className="p-2 text-right">{row.baseline}</td>
-                      <td className={`p-2 text-right font-bold ${row.colorClass}`}>{row.simulated}</td>
-                      <td className="p-2 text-right text-white font-semibold">{row.prob}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* AI Recommendation Insight Panel */}
-          <div className="card-layer p-4 flex flex-col justify-between bg-gradient-to-r from-amber-500/5 to-transparent">
-            <h3 className="font-mono text-[9px] text-amber-500 flex items-center gap-1 font-bold uppercase tracking-widest">
-              <span className="material-symbols-outlined text-[14px]">psychology</span>
-              AI Decision Recommendation
-            </h3>
-            <p className="font-sans text-[11px] text-gray-300 mt-2 leading-relaxed">{aiRecommendation}</p>
-          </div>
-        </div>
-
-      </div>
+      )}
     </DashboardLayout>
   );
 }

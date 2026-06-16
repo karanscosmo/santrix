@@ -2,370 +2,228 @@
 
 import React, { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import { useSecurity } from "@/lib/SecurityContext";
 
-interface Rule {
+interface BusinessEvent {
   id: string;
-  name: string;
-  expression: string;
-  status: "ACTIVE" | "INACTIVE";
+  title: string;
+  category: "revenue" | "customer" | "market" | "operational" | "risk";
+  timestamp: string;
+  impact: string;
+  whyMatters: string;
+  suggestedAction: string;
 }
 
-interface MessageLog {
-  timestamp: string;
-  topic: string;
-  content: string;
-  colorClass?: string;
-}
+const categoryConfig = {
+  revenue: { label: "Revenue", icon: "payments", color: "#4edea3" },
+  customer: { label: "Customer", icon: "groups", color: "#8ab4f8" },
+  market: { label: "Market", icon: "public", color: "#c4b5fd" },
+  operational: { label: "Operational", icon: "precision_manufacturing", color: "#f59e0b" },
+  risk: { label: "Risk", icon: "warning", color: "#f28b82" },
+};
+
+const seedEvents: BusinessEvent[] = [
+  {
+    id: "ev1",
+    title: "Enterprise deal closed: Meridian Corp ($420K ACV)",
+    category: "revenue",
+    timestamp: "12 min ago",
+    impact: "+$420K ARR",
+    whyMatters: "Largest deal this quarter. Validates enterprise pricing strategy and creates a reference account for the financial services vertical.",
+    suggestedAction: "Trigger CSM onboarding workflow and schedule executive sponsor introduction",
+  },
+  {
+    id: "ev2",
+    title: "NPS score dropped 8 points in APAC enterprise segment",
+    category: "customer",
+    timestamp: "34 min ago",
+    impact: "14 accounts at risk",
+    whyMatters: "NPS decline correlates with churn in 78% of historical cases. APAC is already showing elevated churn signals — this compounds the risk.",
+    suggestedAction: "Schedule executive check-ins with top 5 APAC accounts this week",
+  },
+  {
+    id: "ev3",
+    title: "Competitor launched self-serve tier targeting mid-market",
+    category: "market",
+    timestamp: "2 hours ago",
+    impact: "Competitive pressure in $15K-50K ACV",
+    whyMatters: "Direct competitor to our planned mid-market launch. Accelerating our timeline by 30 days could capture first-mover advantage in 3 key verticals.",
+    suggestedAction: "Escalate to product team and evaluate acceleration of Q2 mid-market launch",
+  },
+  {
+    id: "ev4",
+    title: "Onboarding time-to-value reduced by 8 days",
+    category: "operational",
+    timestamp: "3 hours ago",
+    impact: "Efficiency milestone achieved",
+    whyMatters: "Faster time-to-value directly improves NPS and reduces early-stage churn. This 22% improvement exceeds our quarterly target by 8 points.",
+    suggestedAction: "Document the process improvement and replicate across remaining customer segments",
+  },
+  {
+    id: "ev5",
+    title: "Supply chain vendor delayed shipment by 12 days",
+    category: "risk",
+    timestamp: "4 hours ago",
+    impact: "8 enterprise implementations delayed",
+    whyMatters: "Affects 8 enterprise customers in the onboarding pipeline. Delivery delays are the #2 driver of first-year churn in our data.",
+    suggestedAction: "Activate backup vendor and notify affected account teams",
+  },
+  {
+    id: "ev6",
+    title: "Upsell opportunity detected: Atlas Financial (+$180K)",
+    category: "revenue",
+    timestamp: "5 hours ago",
+    impact: "+$180K expansion revenue",
+    whyMatters: "Atlas Financial's usage has grown 340% in 60 days, indicating strong product-market fit and readiness for the Enterprise tier upgrade.",
+    suggestedAction: "Route to account executive for expansion conversation",
+  },
+];
+
+const incomingEvents: Omit<BusinessEvent, "id" | "timestamp">[] = [
+  { title: "Customer renewal: Quantum Labs ($290K ACV) auto-renewed", category: "revenue", impact: "$290K retained", whyMatters: "Successful auto-renewal validates product stickiness. Quantum Labs was flagged as medium-risk last quarter — retention strategy worked.", suggestedAction: "Celebrate with CSM team and document the winning retention playbook" },
+  { title: "Employee satisfaction score improved 12% in Engineering", category: "operational", impact: "Retention risk reduced", whyMatters: "Engineering satisfaction directly correlates with code quality and release velocity. This improvement supports our product roadmap timelines.", suggestedAction: "Reinforce the initiatives that drove the improvement" },
+  { title: "Regulatory change in EU data processing requirements", category: "risk", impact: "Compliance update needed", whyMatters: "Non-compliance could block our European expansion plan. Timeline for compliance: 90 days. Our current architecture needs 2 minor modifications.", suggestedAction: "Assign to security team with 60-day delivery target" },
+  { title: "Support ticket volume decreased 18% month-over-month", category: "customer", impact: "Product quality improving", whyMatters: "Lower ticket volume with stable customer count indicates product improvements are reducing friction. This supports our efficiency metrics.", suggestedAction: "Continue investment in self-service documentation and in-app guidance" },
+];
+
+const categories = ["all", "revenue", "customer", "market", "operational", "risk"] as const;
 
 export default function EventFabricPage() {
-  const { addAuditLog, checkPermission } = useSecurity();
-  const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [throughput, setThroughput] = useState<number>(14842);
-  const [latencyHistory, setLatencyHistory] = useState<number[]>([12, 14, 11, 15, 13, 12, 14, 13, 12, 11]);
+  const [events, setEvents] = useState<BusinessEvent[]>(seedEvents);
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [isLive, setIsLive] = useState(true);
 
-  const [logs, setLogs] = useState<MessageLog[]>([
-    { timestamp: "23:51:02", topic: "telemetry.user_actions", content: 'user_login { user_id: "usr_8912", device: "MacBook Pro" }' },
-    { timestamp: "23:51:04", topic: "agents.reasoning_steps", content: 'agent_thought { role: "SDR Swarm Analyst", thought: "Ingesting target contact lists" }' },
-    { timestamp: "23:51:05", topic: "billing.transactions", content: 'invoice_paid { invoice_id: "inv_90a12", amount: "$4,200.00" }' },
-    { timestamp: "23:51:08", topic: "system:Trigger", content: "Executed Rule: ARR Net Runway recalculation triggered.", colorClass: "text-[#4edea3] font-bold" },
-  ]);
-
-  const [rules, setRules] = useState<Rule[]>([
-    {
-      id: "rule_1",
-      name: "Churn Warning Trigger",
-      expression: "If Churn > 15% in telemetry stream -> Run Monte Carlo -> alert CEO",
-      status: "ACTIVE",
-    },
-    {
-      id: "rule_2",
-      name: "Runout Optimizer",
-      expression: "If cash burn exceeds runway thresholds -> run budget optimization",
-      status: "ACTIVE",
-    },
-  ]);
-
-  const [newRuleName, setNewRuleName] = useState("");
-  const [newRuleExpr, setNewRuleExpr] = useState("");
-  const [showAddRule, setShowAddRule] = useState(false);
-
-  // Simulate incoming logs and variable throughput
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isLive) return;
     const interval = setInterval(() => {
-      const topics = ["telemetry.user_actions", "billing.transactions", "agents.reasoning_steps", "wolfram.math_jobs"];
-      const messages = [
-        'api_request { method: "POST", path: "/api/v1/simulate", status: 200 }',
-        'trade_execution { symbol: "USD/EUR", volume: 1500000, arbitrage_delta: 0.0024 }',
-        'agent_thought { agent: "Executive Copilot", state: "Analyzing ARR projections" }',
-        'calculation_complete { job_id: "job_98a72", engine: "Wolfram Kernel 3" }',
-      ];
-      const randomIdx = Math.floor(Math.random() * topics.length);
-      const now = new Date().toLocaleTimeString();
-      const newLog: MessageLog = {
-        timestamp: now,
-        topic: topics[randomIdx],
-        content: messages[randomIdx],
+      const randomEvent = incomingEvents[Math.floor(Math.random() * incomingEvents.length)];
+      const newEvent: BusinessEvent = {
+        ...randomEvent,
+        id: `ev_${Date.now()}`,
+        timestamp: "Just now",
       };
-      setLogs(prev => [newLog, ...prev.slice(0, 15)]);
-
-      // Adjust metrics slightly
-      setThroughput(prev => Math.round(prev + (Math.random() * 200 - 100)));
-      setLatencyHistory(prev => {
-        const nextVal = Math.max(8, Math.min(22, Math.round(prev[prev.length - 1] + (Math.random() * 4 - 2))));
-        return [...prev.slice(1), nextVal];
-      });
-    }, 2500);
+      setEvents(prev => [newEvent, ...prev.slice(0, 12)]);
+    }, 8000);
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isLive]);
 
-  const handleToggleRule = (id: string) => {
-    if (!checkPermission("config:write")) {
-      alert("Access Denied: Your role does not have permission to modify event rules.");
-      return;
-    }
-    setRules(prev =>
-      prev.map(r => {
-        if (r.id === id) {
-          const nextStatus = r.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
-          addAuditLog("fabric.toggle_rule", `Toggled rule ${r.name} to ${nextStatus}`, "SUCCESS");
-          return { ...r, status: nextStatus };
-        }
-        return r;
-      })
-    );
-  };
+  const filteredEvents = activeFilter === "all" ? events : events.filter(e => e.category === activeFilter);
 
-  const handleAddRuleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!checkPermission("config:write")) {
-      alert("Access Denied: Your role does not have permission to add trigger rules.");
-      return;
-    }
-    if (!newRuleName || !newRuleExpr) return;
-
-    const newRule: Rule = {
-      id: `rule_${Date.now()}`,
-      name: newRuleName,
-      expression: newRuleExpr,
-      status: "ACTIVE",
-    };
-
-    setRules(prev => [...prev, newRule]);
-    addAuditLog("fabric.add_rule", `Created event trigger rule: ${newRuleName}`, "SUCCESS");
-    setNewRuleName("");
-    setNewRuleExpr("");
-    setShowAddRule(false);
-  };
-
-  const triggerTestEvent = () => {
-    const now = new Date().toLocaleTimeString();
-    const newLog: MessageLog = {
-      timestamp: now,
-      topic: "user.triggered_test",
-      content: 'telemetry_ping { client: "Karan Sharma", action: "forced_fabric_ping" }',
-      colorClass: "text-[#8ab4f8] font-bold",
-    };
-    setLogs(prev => [newLog, ...prev]);
-    addAuditLog("fabric.manual_ping", "Sent manual event fabric telemetry ping", "SUCCESS");
-  };
+  // Count by category
+  const counts = Object.fromEntries(
+    Object.keys(categoryConfig).map(cat => [cat, events.filter(e => e.category === cat).length])
+  );
 
   return (
     <DashboardLayout>
-      {/* 1. Page Header matching visual hierarchy guidelines */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-5">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
           <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
-            Realtime Event Fabric
+            Business Event Center
           </h1>
-          <p className="text-xs text-gray-400 font-mono mt-1 uppercase tracking-wider">
-            Enterprise event monitoring system and real-time Kafka cluster broker routing.
+          <p className="text-sm text-gray-400 mt-1">
+            Real-time business events across revenue, customers, markets, operations, and risks
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Status Indicators */}
-          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[10px] font-mono font-bold text-gray-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
-            Broker status: ONLINE
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-[#0d0f14] border border-white/[0.06] rounded-[10px] px-3.5 py-1.5 text-[11px] font-medium text-gray-300">
+            <span className={`w-1.5 h-1.5 rounded-full ${isLive ? "bg-[#4edea3] animate-pulse" : "bg-gray-500"}`}></span>
+            {isLive ? "Live" : "Paused"}
           </div>
           <button
-            onClick={triggerTestEvent}
-            className="btn-action btn-primary text-[10px] py-2"
+            onClick={() => setIsLive(!isLive)}
+            className="btn-action btn-secondary text-[11px] py-2"
           >
-            Inject Test Event
-          </button>
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="btn-action btn-secondary text-[10px] py-2"
-          >
-            {isPlaying ? "Pause Stream" : "Resume Stream"}
+            {isLive ? "Pause" : "Resume"}
           </button>
         </div>
       </header>
 
-      {/* 2. Throughput & Latency Hero Telemetry Row */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: "Throughput (Events/sec)", val: `${isPlaying ? throughput : 0} eps`, color: "text-[#8ab4f8]" },
-          { label: "Broker Mean Latency", val: `${isPlaying ? latencyHistory[latencyHistory.length - 1] : 0}ms`, color: "text-[#4edea3]" },
-          { label: "Pipeline Load Factor", val: "22.4%", color: "text-[#8ab4f8]" },
-          { label: "Active Trigger Rules", val: `${rules.filter(r => r.status === "ACTIVE").length} Rules`, color: "text-amber-500" },
-        ].map((item, idx) => (
-          <div key={idx} className="card-layer p-4">
-            <span className="font-mono text-[9px] text-gray-500 uppercase tracking-widest block">{item.label}</span>
-            <span className={`font-display text-lg font-bold block mt-2 ${item.color}`}>{item.val}</span>
-          </div>
+      {/* Category Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {Object.entries(categoryConfig).map(([key, cfg]) => (
+          <button
+            key={key}
+            onClick={() => setActiveFilter(activeFilter === key ? "all" : key)}
+            className={`metric-card !p-3.5 text-left cursor-pointer transition-all ${activeFilter === key ? "!border-white/[0.15]" : ""}`}
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-[16px]" style={{ color: cfg.color }}>{cfg.icon}</span>
+              <span className="text-[11px] text-gray-400">{cfg.label}</span>
+            </div>
+            <span className="font-display text-lg font-bold text-white">{counts[key] || 0}</span>
+            <span className="text-[11px] text-gray-500 ml-1">events</span>
+          </button>
         ))}
-      </section>
-
-      {/* 3. Event stream pipelines & custom charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* Stream Pipeline Canvas (Col 7) */}
-        <section className="lg:col-span-7 panel-layer p-5 flex flex-col h-[400px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">
-              Kafka Pipeline Event Topology
-            </h3>
-            <p className="font-mono text-[9px] text-gray-500 mt-0.5">
-              REAL-TIME DATA STREAM FLOW AND BROKER ROUTING PIPES
-            </p>
-          </div>
-
-          <div className="flex-1 bg-[#050505]/60 rounded-xl border border-white/[0.03] relative flex flex-col justify-around p-4 overflow-hidden">
-            <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
-
-            {/* Stream Pipe 1: Telemetry */}
-            <div className="flex items-center justify-between relative z-10 font-mono text-[10px]">
-              <span className="w-36 text-[#8ab4f8] font-bold">telemetry.user_actions</span>
-              <div className="flex-1 h-[2px] bg-white/[0.04] relative mx-4">
-                {isPlaying && (
-                  <div className="absolute w-2 h-2 rounded-full bg-[#8ab4f8] -top-[3px] shadow-[0_0_8px_#8ab4f8] animate-ping" style={{ left: "30%" }}></div>
-                )}
-              </div>
-              <span className="text-gray-400">{isPlaying ? "4,282 msg/s" : "0 msg/s"}</span>
-            </div>
-
-            {/* Stream Pipe 2: Billing */}
-            <div className="flex items-center justify-between relative z-10 font-mono text-[10px]">
-              <span className="w-36 text-[#4edea3] font-bold">billing.transactions</span>
-              <div className="flex-1 h-[2px] bg-white/[0.04] relative mx-4">
-                {isPlaying && (
-                  <div className="absolute w-2 h-2 rounded-full bg-[#4edea3] -top-[3px] shadow-[0_0_8px_#4edea3] animate-ping" style={{ left: "60%" }}></div>
-                )}
-              </div>
-              <span className="text-gray-400">{isPlaying ? "148 msg/s" : "0 msg/s"}</span>
-            </div>
-
-            {/* Stream Pipe 3: Agent reasoning */}
-            <div className="flex items-center justify-between relative z-10 font-mono text-[10px]">
-              <span className="w-36 text-amber-500 font-bold">agents.reasoning_steps</span>
-              <div className="flex-1 h-[2px] bg-white/[0.04] relative mx-4">
-                {isPlaying && (
-                  <div className="absolute w-2 h-2 rounded-full bg-amber-500 -top-[3px] shadow-[0_0_8px_#f59e0b] animate-ping" style={{ left: "80%" }}></div>
-                )}
-              </div>
-              <span className="text-gray-400">{isPlaying ? "10,412 msg/s" : "0 msg/s"}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Latency History Graph (Col 5) */}
-        <section className="lg:col-span-5 panel-layer p-5 flex flex-col h-[400px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">Mean latency index</h3>
-            <p className="font-mono text-[9px] text-gray-500 mt-0.5">REALTIME TELEMETRY SHIFT // SECONDS</p>
-          </div>
-
-          <div className="flex-1 bg-[#050505]/40 rounded-xl border border-white/[0.03] flex items-end justify-center relative p-3">
-            <div className="absolute inset-0 bg-grid-pattern opacity-25"></div>
-
-            {/* Custom Latency Sparklines */}
-            <div className="w-full h-full flex items-end justify-between px-2 pt-8 gap-1.5">
-              {latencyHistory.map((val, idx) => {
-                const heightPct = Math.round((val / 25) * 100);
-                return (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1 group relative">
-                    {/* Hover tooltip */}
-                    <span className="absolute -top-6 bg-[#0d0f14] border border-white/[0.1] px-1.5 py-0.5 rounded font-mono text-[8px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                      {val}ms
-                    </span>
-                    <div 
-                      className="w-full bg-gradient-to-t from-[#8ab4f8]/10 to-[#8ab4f8]/50 rounded-t border-t border-[#8ab4f8]/70"
-                      style={{ height: `${heightPct}%` }}
-                    ></div>
-                    <span className="font-mono text-[7px] text-gray-600">t-{10 - idx}s</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
       </div>
 
-      {/* 4. Trigger rules & Stream Console console */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-8">
-        
-        {/* Trigger rules (Col 6) */}
-        <section className="lg:col-span-6 card-layer p-5 flex flex-col min-h-[300px] justify-between">
-          <div>
-            <div className="border-b border-white/[0.04] pb-3 mb-4 flex justify-between items-center">
-              <div>
-                <h3 className="font-display text-sm font-bold text-white tracking-wide font-sans">Autonomous Action Triggers</h3>
-                <p className="font-mono text-[9px] text-gray-500 mt-0.5">n8n KAFKA WEBHOOK TRIGGERS</p>
-              </div>
-              <button
-                onClick={() => setShowAddRule(!showAddRule)}
-                className="font-mono text-[9px] text-[#8ab4f8] hover:underline cursor-pointer"
-              >
-                {showAddRule ? "Cancel" : "+ Add Rule"}
-              </button>
-            </div>
+      {/* Filter Tabs */}
+      <div className="flex gap-2 flex-wrap">
+        {categories.map(cat => {
+          const cfg = cat !== "all" ? categoryConfig[cat] : null;
+          return (
+            <button
+              key={cat}
+              onClick={() => setActiveFilter(cat)}
+              className={`text-[11px] px-3 py-1.5 rounded-full border transition-all cursor-pointer ${
+                activeFilter === cat
+                  ? "font-bold"
+                  : "text-gray-400 border-white/[0.04] hover:text-white hover:border-white/[0.1]"
+              }`}
+              style={activeFilter === cat ? {
+                backgroundColor: cfg ? `${cfg.color}10` : "rgba(138,180,248,0.1)",
+                color: cfg ? cfg.color : "#8ab4f8",
+                borderColor: cfg ? `${cfg.color}30` : "rgba(138,180,248,0.3)",
+              } : {}}
+            >
+              {cat === "all" ? "All Events" : cfg?.label}
+            </button>
+          );
+        })}
+      </div>
 
-            <div className="space-y-2 max-h-[190px] overflow-y-auto pr-1 scrollbar-thin">
-              {showAddRule ? (
-                <form onSubmit={handleAddRuleSubmit} className="bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.04] space-y-3">
-                  <div>
-                    <label className="block text-[8px] text-gray-500 font-mono mb-1 uppercase tracking-wider font-bold">Rule Name</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Pipeline Spill trigger"
-                      value={newRuleName}
-                      onChange={e => setNewRuleName(e.target.value)}
-                      className="w-full bg-[#050505]/80 border border-white/[0.06] rounded-[8px] p-2 text-xs text-white focus:outline-none focus:border-[#8ab4f8] font-sans"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[8px] text-gray-500 font-mono mb-1 uppercase tracking-wider font-bold">Trigger Rule Expression</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="If latency > 100ms -> restart consumer swarms"
-                      value={newRuleExpr}
-                      onChange={e => setNewRuleExpr(e.target.value)}
-                      className="w-full bg-[#050505]/80 border border-white/[0.06] rounded-[8px] p-2 text-xs text-white focus:outline-none focus:border-[#8ab4f8] font-sans"
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="w-full btn-action btn-primary text-[10px] py-2"
-                  >
-                    Save Trigger Rule
-                  </button>
-                </form>
-              ) : (
-                rules.map(rule => (
+      {/* Event Stream */}
+      <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1 scrollbar-thin">
+        {filteredEvents.map(event => {
+          const cfg = categoryConfig[event.category];
+          return (
+            <div key={event.id} className={`event-card ${event.category}`}>
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <div
-                    key={rule.id}
-                    className="flex justify-between items-center bg-[#050505]/40 p-3 rounded-[12px] border border-white/[0.03] hover:border-white/[0.1] transition-colors"
+                    className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: `${cfg.color}10` }}
                   >
-                    <div className="space-y-1 min-w-0 flex-1 pr-3">
-                      <span className="text-xs font-bold text-white block font-mono">{rule.name}</span>
-                      <p className="text-[10px] text-gray-400 font-light leading-normal">{rule.expression}</p>
-                    </div>
-                    <button
-                      onClick={() => handleToggleRule(rule.id)}
-                      className={`text-[8px] font-mono font-bold px-2 py-1 rounded-[6px] border shrink-0 cursor-pointer ${
-                        rule.status === "ACTIVE"
-                          ? "text-[#4edea3] bg-[#4edea3]/10 border-[#4edea3]/20"
-                          : "text-gray-500 bg-white/5 border-transparent"
-                      }`}
-                    >
-                      {rule.status}
-                    </button>
+                    <span className="material-symbols-outlined text-[16px]" style={{ color: cfg.color }}>{cfg.icon}</span>
                   </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-white/[0.04] text-[8px] font-mono text-gray-500 mt-3 flex justify-between items-center">
-            <span>Broker Connections: LOCALHOST:9092</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3]"></span>
-          </div>
-        </section>
-
-        {/* Fabric Stream Console (Col 6) */}
-        <section className="lg:col-span-6 card-layer p-5 flex flex-col h-[300px]">
-          <div className="border-b border-white/[0.04] pb-3 mb-4 flex justify-between items-center">
-            <h3 className="font-display text-sm font-bold text-white tracking-wide">Fabric Stream Console</h3>
-            <span className="material-symbols-outlined text-gray-500 text-sm">terminal</span>
-          </div>
-
-          <div className="flex-1 bg-[#050505]/60 border border-white/[0.03] rounded-xl p-3.5 font-mono text-[10px] overflow-y-auto text-gray-400 space-y-1.5 scrollbar-thin">
-            {logs.map((log, index) => (
-              <div key={index} className={`${log.colorClass || ""} flex items-start gap-1.5 leading-relaxed font-light`}>
-                <span className="text-[#8ab4f8]/50 shrink-0">&raquo;</span>
-                <div className="min-w-0 flex-1 truncate">
-                  [{log.timestamp}] [TOPIC: <span className="text-white font-bold">{log.topic}</span>] MSG: {log.content}
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-bold text-white truncate">{event.title}</h3>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: cfg.color }}>{cfg.label}</span>
+                      <span className="text-[10px] text-gray-500">· {event.timestamp}</span>
+                    </div>
+                  </div>
                 </div>
+                <span className="text-[11px] text-white font-bold shrink-0 bg-[#050505]/60 px-2.5 py-1 rounded-full border border-white/[0.04]">
+                  {event.impact}
+                </span>
               </div>
-            ))}
-          </div>
-        </section>
 
+              {/* Why does this matter? */}
+              <div className="bg-[#050505]/30 border border-white/[0.03] rounded-[10px] p-3 mb-3">
+                <span className="text-[10px] text-[#8ab4f8] uppercase tracking-wider font-bold block mb-1">
+                  Why does this matter?
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">{event.whyMatters}</p>
+              </div>
+
+              <div className="flex items-center gap-2 text-[11px] text-gray-500">
+                <span className="material-symbols-outlined text-[14px] text-[#4edea3]">lightbulb</span>
+                <span className="text-gray-400">{event.suggestedAction}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </DashboardLayout>
   );
