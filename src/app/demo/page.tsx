@@ -111,9 +111,18 @@ export default function DemoPage() {
           <h2 className="font-display text-4xl text-on-surface">Demo Control Center</h2>
           <p className="font-mono text-xs text-on-surface-variant">One-click scenarios for hackathon pitch validation and user flow stress tests.</p>
         </div>
-        <div className="flex items-center gap-2 text-tertiary font-mono text-xs">
-          <span className="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
-          <span>5 Prebuilt Contexts Loaded</span>
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+          <div className="flex items-center gap-2 text-tertiary font-mono text-xs">
+            <span className="w-2 h-2 rounded-full bg-tertiary pulse-indicator"></span>
+            <span>5 Prebuilt Contexts Loaded</span>
+          </div>
+          <button 
+            onClick={() => router.push("/dashboard?tour=1&auto=true")}
+            className="bg-[#8ab4f8] text-[#050505] font-bold text-[11px] uppercase tracking-wider px-4 py-2 rounded flex items-center gap-2 hover:bg-[#a8c7fa] transition-colors shadow-[0_0_15px_rgba(138,180,248,0.2)] cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">videocam</span>
+            Run Automated Video Demo
+          </button>
         </div>
       </div>
 
