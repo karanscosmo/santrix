@@ -35,7 +35,7 @@ export default function ReportsPage() {
   const [reports, setReports] = useState<ReportItem[]>([
     {
       id: "rep_1",
-      name: "Q3 Board Report",
+      name: "Q3 Board Briefing",
       type: "PDF",
       status: "COMPLETED",
       time: "2 hrs ago",
@@ -55,7 +55,7 @@ export default function ReportsPage() {
       name: "FY24 Forecast Audit",
       type: "CSV",
       status: "COMPLETED",
-      time: "Analyzed against 4 data sets",
+      time: "Analyzed against 4 datasets",
       variance: "Variance Nominal",
       dataPoints: [30, 45, 35, 70, 85, 95],
       author: "JD",
@@ -70,35 +70,35 @@ export default function ReportsPage() {
       category: "CRM Data",
       status: "LIVE",
       lastSync: "2m ago",
-      color: "text-[#00a1e0]",
+      color: "#8ab4f8",
       icon: "cloud"
     },
     {
       id: "sys_2",
       name: "PostgreSQL",
-      category: "Core DB",
+      category: "Core Database",
       status: "LIVE",
       lastSync: "5s ago",
-      color: "text-[#336791]",
+      color: "#4edea3",
       icon: "data_object"
     },
     {
       id: "sys_3",
       name: "Jira",
-      category: "Issues",
+      category: "Issue Tracking",
       status: "SYNCING",
       lastSync: "Syncing",
       percent: 85,
-      color: "text-[#0052CC]",
+      color: "#c4b5fd",
       icon: "bug_report"
     },
     {
       id: "sys_4",
       name: "Slack",
-      category: "Comms",
+      category: "Communications",
       status: "PAUSED",
       lastSync: "Manual",
-      color: "text-[#E01E5A]",
+      color: "#f28b82",
       icon: "forum"
     }
   ]);
@@ -131,7 +131,7 @@ export default function ReportsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Secure File Upload Handlers (Layer 3 & 4)
+  // Secure File Upload Handlers
   const validateAndAddReport = (fileName: string, fileSize: number, fileType: string) => {
     // Check role permission
     if (!checkPermission("file:upload")) {
@@ -162,7 +162,7 @@ export default function ReportsPage() {
       return;
     }
 
-    // Filename Sanitization & XSS Mitigation
+    // Filename Sanitization
     const sanitizedName = sanitizeInput(fileName).replace(/[^a-zA-Z0-9_.-]/g, "_");
 
     const newReport: ReportItem = {
@@ -270,23 +270,29 @@ export default function ReportsPage() {
   return (
     <DashboardLayout>
       {/* Page Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-md border-b border-outline-variant pb-md streaming-pulse">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-white/[0.04] pb-6">
         <div>
-          <h2 className="font-display text-4xl text-on-surface">Intelligence Hub</h2>
-          <p className="font-mono text-xs text-on-surface-variant">System synchronization optimal. 42 Active pipelines.</p>
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-white">
+            Enterprise Reports
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">
+            Executive summaries, forecast audits, and data integrations
+          </p>
         </div>
-        <div className="flex gap-sm">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => alert("Filter overlays enabled.")}
-            className="border border-outline-variant text-on-surface px-md py-sm rounded-lg font-sans text-xs uppercase font-bold hover:bg-surface-container-high transition-colors flex items-center gap-xs cursor-pointer"
+            className="btn-action btn-secondary text-[11px] py-2"
           >
-            <span className="material-symbols-outlined text-sm">filter_list</span> Filter
+            <span className="material-symbols-outlined text-[14px]">filter_list</span>
+            Filter
           </button>
           <label
             htmlFor="header-upload-input"
-            className="bg-primary text-on-primary px-md py-sm rounded-lg font-sans text-xs uppercase font-bold hover:opacity-90 transition-opacity flex items-center gap-xs glow-active cursor-pointer"
+            className="btn-action btn-primary text-[11px] py-2 cursor-pointer"
           >
-            <span className="material-symbols-outlined text-sm">add</span> New Report
+            <span className="material-symbols-outlined text-[14px]">add</span>
+            New Report
             <input
               type="file"
               id="header-upload-input"
@@ -296,84 +302,81 @@ export default function ReportsPage() {
             />
           </label>
         </div>
-      </div>
+      </header>
 
-      {/* Bento Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-md pb-8">
-        {/* Reports panel (Spans 8 columns on desktop) */}
-        <div className="lg:col-span-8 space-y-md">
-          <h3 className="font-sans text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-xs">
-            <span className="material-symbols-outlined text-sm">assessment</span> Generated Reports
-          </h3>
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Reports Panel */}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">
+              Generated Reports
+            </h2>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reports.map((report) => (
               <div
                 key={report.id}
-                className={`glass-panel p-md relative overflow-hidden rounded-xl group hover:border-primary transition-colors cursor-pointer flex flex-col justify-between min-h-[160px] ${
-                  report.status === "COMPILING" ? "streaming-pulse" : ""
-                }`}
+                className="bg-[#050505]/40 border border-white/[0.04] hover:border-white/[0.15] p-5 rounded-[16px] transition-all flex flex-col justify-between min-h-[170px] relative group cursor-pointer"
               >
                 {report.status === "COMPLETED" ? (
-                  <div className="absolute top-0 right-0 p-sm text-tertiary">
-                    <span className="material-symbols-outlined text-sm">check_circle</span>
+                  <div className="absolute top-4 right-4 text-[#4edea3]">
+                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
                   </div>
                 ) : (
-                  <div className="absolute top-0 right-0 p-sm text-secondary">
-                    <span className="material-symbols-outlined text-sm animate-spin">sync</span>
+                  <div className="absolute top-4 right-4 text-[#8ab4f8]">
+                    <span className="material-symbols-outlined text-[18px] animate-spin">sync</span>
                   </div>
                 )}
 
-                <div className="mb-md">
-                  <span className="material-symbols-outlined text-on-surface-variant mb-xs">
-                    {report.type === "PDF" ? "pie_chart" : report.type === "CSV" ? "show_chart" : "description"}
-                  </span>
-                  <h4 className="font-display text-md text-on-surface font-semibold">{report.name}</h4>
-                  <p className="font-mono text-[10px] text-on-surface-variant mt-0.5">
+                <div className="mb-4 pr-6">
+                  <div className="w-8 h-8 rounded-[8px] bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-3">
+                    <span className="material-symbols-outlined text-[16px] text-gray-400">
+                      {report.type === "PDF" ? "pie_chart" : report.type === "CSV" ? "show_chart" : "description"}
+                    </span>
+                  </div>
+                  <h4 className="font-display text-lg font-bold text-white tracking-tight">{report.name}</h4>
+                  <p className="text-[11px] text-gray-500 mt-1">
                     {report.status === "COMPILING" ? report.time : `Generated: ${report.time}`}
                   </p>
                 </div>
 
                 {report.status === "COMPILING" && report.progress !== undefined && (
-                  <div className="w-full mb-md">
-                    <div className="w-full bg-surface-container-high rounded-full h-1.5 mt-2">
-                      <div
-                        className="bg-primary h-1.5 rounded-full transition-all duration-300"
-                        style={{ width: `${report.progress}%` }}
-                      ></div>
+                  <div className="w-full mt-auto">
+                    <div className="confidence-bar w-full h-1.5 mb-2">
+                      <div className="fill" style={{ width: `${report.progress}%` }}></div>
                     </div>
-                    <span className="font-mono text-[9px] text-secondary mt-1 block">{report.progress}% Complete</span>
+                    <span className="text-[10px] text-[#8ab4f8] font-bold">{report.progress}% Complete</span>
                   </div>
                 )}
 
-                {/* Render sparkline if fy24 forecast / dataPoints */}
+                {/* Sparkline for specific reports */}
                 {report.dataPoints && (
-                  <div className="h-16 bg-surface-container-low rounded border border-outline-variant/50 flex items-end justify-between p-1.5 mt-sm mb-md">
+                  <div className="h-12 flex items-end gap-1 mt-auto pt-2 border-t border-white/[0.04]">
                     {report.dataPoints.map((dp, idx) => (
                       <div
                         key={idx}
                         style={{ height: `${dp}%` }}
-                        className="w-[14%] bg-primary/40 rounded-t hover:bg-primary transition-all cursor-pointer"
+                        className="flex-1 bg-[#8ab4f8]/30 rounded-t hover:bg-[#8ab4f8] transition-colors"
                         title={`Variance score: ${dp}`}
                       ></div>
                     ))}
                   </div>
                 )}
 
-                <div className="flex justify-between items-center border-t border-outline-variant/30 pt-sm mt-sm">
+                <div className="flex justify-between items-center pt-4 mt-auto border-t border-white/[0.04]">
                   {report.author && (
-                    <div className="flex -space-x-1.5">
-                      <div className="w-5 h-5 rounded-full bg-surface-container-high border border-surface flex items-center justify-center text-[8px] text-on-surface font-bold">
-                        {report.author}
-                      </div>
+                    <div className="w-6 h-6 rounded-full bg-[#1a1b21] border border-white/[0.1] flex items-center justify-center text-[9px] text-white font-bold">
+                      {report.author}
                     </div>
                   )}
                   {report.variance && (
-                    <span className="text-[10px] font-mono text-tertiary bg-tertiary/10 border border-tertiary/20 px-1.5 py-0.5 rounded">
+                    <span className="text-[10px] text-[#4edea3] font-bold px-2 py-0.5 rounded-full border border-[#4edea3]/20 bg-[#4edea3]/10">
                       {report.variance}
                     </span>
                   )}
-                  <span className="font-sans text-[10px] font-bold text-primary group-hover:underline uppercase tracking-wider">
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${report.status === "COMPLETED" ? "text-[#8ab4f8] group-hover:underline" : "text-gray-500"}`}>
                     {report.status === "COMPLETED" ? `View ${report.type}` : "Processing"}
                   </span>
                 </div>
@@ -381,18 +384,18 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          {/* Secure File Ingestion widget */}
-          <div className="pt-md border-t border-outline-variant/30">
-            <h3 className="font-sans text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-xs mb-sm">
-              <span className="material-symbols-outlined text-sm">cloud_upload</span> File Schema Ingestion (Layer 3 Security)
-            </h3>
+          {/* Secure File Ingestion */}
+          <div className="pt-2">
+            <h2 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold mb-3">
+              Secure Document Ingestion
+            </h2>
             <div
               onDragEnter={handleDrag}
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-xl p-lg flex flex-col items-center justify-center transition-all cursor-pointer min-h-[160px] ${
-                dragActive ? "border-primary bg-primary/10" : "border-outline-variant hover:border-primary/50 bg-surface-container-lowest/50"
+              className={`border-2 border-dashed rounded-[16px] p-8 flex flex-col items-center justify-center transition-all cursor-pointer min-h-[160px] ${
+                dragActive ? "border-[#8ab4f8] bg-[#8ab4f8]/5" : "border-white/[0.1] hover:border-white/[0.2] bg-[#050505]/40"
               }`}
             >
               <input
@@ -403,11 +406,13 @@ export default function ReportsPage() {
                 onChange={handleFileInputChange}
               />
               <label htmlFor="sec-upload-input" className="cursor-pointer flex flex-col items-center">
-                <span className="material-symbols-outlined text-4xl text-on-surface-variant group-hover:text-primary mb-sm">
-                  file_upload
-                </span>
-                <p className="font-sans text-sm text-on-surface font-bold">Drag &amp; drop data reports or click to upload</p>
-                <p className="font-mono text-[9px] text-on-surface-variant mt-xs">
+                <div className="w-12 h-12 rounded-full bg-white/[0.03] flex items-center justify-center mb-3 group-hover:bg-white/[0.05] transition-colors">
+                  <span className="material-symbols-outlined text-[24px] text-gray-400">
+                    cloud_upload
+                  </span>
+                </div>
+                <p className="text-sm text-white font-bold">Drag &amp; drop data reports or click to upload</p>
+                <p className="text-[11px] text-gray-500 mt-2">
                   Supported extensions: PDF, CSV, XLSX, JSON, TXT (Maximum limit 10MB)
                 </p>
               </label>
@@ -415,62 +420,68 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Systems sync status (Spans 4 columns on desktop) */}
-        <div className="lg:col-span-4 space-y-md">
-          <h3 className="font-sans text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-xs">
-            <span className="material-symbols-outlined text-sm">database</span> Connected Systems
-          </h3>
+        {/* Connected Systems Panel */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[11px] text-gray-500 uppercase tracking-wider font-bold">
+              Connected Systems
+            </h2>
+          </div>
 
-          <div className="glass-panel rounded-xl flex flex-col h-full border border-outline-variant/60">
-            <div className="p-md border-b border-outline-variant flex justify-between items-center bg-[#090D1A]/50 rounded-t-xl">
-              <span className="font-sans text-xs uppercase font-bold text-on-surface">Data Connectors</span>
-              <span className="material-symbols-outlined text-on-surface-variant text-md">hub</span>
+          <div className="panel-layer flex flex-col border border-white/[0.05] rounded-[16px] overflow-hidden">
+            <div className="p-4 border-b border-white/[0.04] bg-[#0a0b0e] flex justify-between items-center">
+              <span className="text-xs font-bold text-white uppercase tracking-wider">Data Connectors</span>
+              <span className="material-symbols-outlined text-[16px] text-gray-500">hub</span>
             </div>
 
-            <div className="flex-1 p-sm space-y-sm">
+            <div className="flex-1 p-2 space-y-1">
               {systems.map((sys) => (
                 <div
                   key={sys.id}
-                  className="flex items-center justify-between p-sm hover:bg-surface-container rounded-xl transition-all border border-transparent hover:border-outline-variant/30 group"
+                  className="flex items-center justify-between p-3 hover:bg-white/[0.03] rounded-[10px] transition-colors group border border-transparent hover:border-white/[0.05]"
                 >
-                  <div className="flex items-center gap-md">
-                    <div className={`w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center ${sys.color}`}>
-                      <span className="material-symbols-outlined text-lg">{sys.icon}</span>
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${sys.color}15`, border: `1px solid ${sys.color}30` }}
+                    >
+                      <span className="material-symbols-outlined text-[18px]" style={{ color: sys.color }}>
+                        {sys.icon}
+                      </span>
                     </div>
                     <div>
-                      <p className="font-sans text-xs uppercase font-bold text-on-surface">{sys.name}</p>
-                      <p className="font-mono text-[9px] text-on-surface-variant">{sys.category}</p>
+                      <p className="text-sm font-bold text-white leading-tight">{sys.name}</p>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">{sys.category}</p>
                     </div>
                   </div>
 
-                  <div className="text-right flex flex-col items-end">
+                  <div className="text-right flex flex-col items-end min-w-[80px]">
                     {sys.status === "LIVE" && (
-                      <div className="flex items-center gap-1 text-tertiary">
-                        <span className="w-1.5 h-1.5 rounded-full bg-tertiary animate-pulse"></span>
-                        <span className="font-mono text-[10px]">Live</span>
+                      <div className="flex items-center gap-1.5 text-[#4edea3]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#4edea3] animate-pulse"></span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Live</span>
                       </div>
                     )}
                     {sys.status === "SYNCING" && (
-                      <div className="flex items-center gap-1 text-primary">
+                      <div className="flex items-center gap-1.5 text-[#8ab4f8]">
                         <span className="material-symbols-outlined text-[12px] animate-spin">sync</span>
-                        <span className="font-mono text-[10px]">Syncing</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Syncing</span>
                       </div>
                     )}
                     {sys.status === "PAUSED" && (
-                      <div className="flex items-center gap-1 text-on-surface-variant">
+                      <div className="flex items-center gap-1.5 text-gray-500">
                         <span className="material-symbols-outlined text-[12px]">pause_circle</span>
-                        <span className="font-mono text-[10px]">Paused</span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider">Paused</span>
                       </div>
                     )}
-                    <span className="font-mono text-[9px] text-on-surface-variant mt-0.5">
+                    <span className="text-[10px] text-gray-500 mt-1 block">
                       {sys.percent ? `${sys.percent}% complete` : `Last sync: ${sys.lastSync}`}
                     </span>
 
-                    {/* Sync Trigger button */}
                     <button
                       onClick={() => triggerSync(sys.id)}
                       disabled={sys.status === "SYNCING"}
-                      className="opacity-0 group-hover:opacity-100 text-[10px] text-primary font-bold uppercase tracking-wider hover:underline mt-1 transition-opacity cursor-pointer disabled:opacity-30"
+                      className="opacity-0 group-hover:opacity-100 text-[10px] text-[#8ab4f8] font-bold uppercase tracking-wider hover:underline mt-1.5 transition-opacity cursor-pointer disabled:opacity-30"
                     >
                       Sync Now
                     </button>
@@ -479,10 +490,10 @@ export default function ReportsPage() {
               ))}
             </div>
 
-            <div className="p-md border-t border-outline-variant/50 bg-[#090D1A]/50 rounded-b-xl">
+            <div className="p-3 border-t border-white/[0.04] bg-[#0a0b0e]">
               <button
                 onClick={() => alert("Activity logs loaded.")}
-                className="w-full text-center font-sans text-xs uppercase font-bold text-primary hover:text-primary-container transition-colors py-1 cursor-pointer"
+                className="w-full text-center text-xs font-bold text-[#8ab4f8] hover:text-[#a8c7fa] uppercase tracking-wider transition-colors py-1.5 cursor-pointer"
               >
                 View Activity Log
               </button>
