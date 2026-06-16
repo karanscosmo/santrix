@@ -43,15 +43,9 @@ export const ProductTour: React.FC = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tourStepParam = searchParams.get("tour");
-  const [currentStep, setCurrentStep] = useState<TourStep | null>(null);
-
-  useEffect(() => {
-    if (tourStepParam && TOUR_STEPS[tourStepParam]) {
-      setCurrentStep(TOUR_STEPS[tourStepParam]);
-    } else {
-      setCurrentStep(null);
-    }
-  }, [tourStepParam]);
+  
+  // Derive currentStep directly from the URL parameter without using useEffect and useState
+  const currentStep = tourStepParam && TOUR_STEPS[tourStepParam] ? TOUR_STEPS[tourStepParam] : null;
 
   if (!currentStep) return null;
 

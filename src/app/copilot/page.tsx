@@ -54,6 +54,7 @@ export default function ExecutiveCopilot() {
 
     const sanitized = sanitizeInput(query);
     const userMsg: Message = {
+      // eslint-disable-next-line react-hooks/purity
       id: `msg_${Date.now()}`,
       sender: "USER",
       text: sanitized,
