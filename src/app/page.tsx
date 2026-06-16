@@ -686,7 +686,7 @@ export default function LandingPage() {
                 <h4 className="text-xl text-white font-bold mb-2">Growth Plan</h4>
                 <p className="text-sm text-on-surface-variant mb-6">Perfect for mid-sized companies beginning their data integration journey.</p>
                 <div className="mb-6">
-                  <span className="text-4xl font-display font-bold text-white">₹25,000</span>
+                  <span className="text-4xl font-display font-bold text-white">₹4,999</span>
                   <span className="text-sm text-gray-500"> /month</span>
                 </div>
                 <ul className="space-y-4 text-sm text-gray-300 mb-8">
@@ -710,7 +710,7 @@ export default function LandingPage() {
                 <h4 className="text-xl text-white font-bold mb-2">Corporate OS</h4>
                 <p className="text-sm text-on-surface-variant mb-6">Full computational intelligence and autonomous agent integration.</p>
                 <div className="mb-6">
-                  <span className="text-4xl font-display font-bold text-white">₹75,000</span>
+                  <span className="text-4xl font-display font-bold text-white">₹9,999</span>
                   <span className="text-sm text-gray-500"> /month</span>
                 </div>
                 <ul className="space-y-4 text-sm text-gray-300 mb-8">
